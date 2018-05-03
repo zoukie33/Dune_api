@@ -8,7 +8,9 @@ var mysql = require("mysql");
 
 // Routes
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var profsRouter = require('./routes/profs');
+var elevesRouter = require('./routes/eleves');
+var ecoleRouter = require('./routes/ecole');
 
 var app = express();
 
@@ -26,14 +28,15 @@ app.use(function(req, res, next){
 		host     : 'localhost',
 		user     : 'root',
 		password : '',
-		database : 'test',
-    insecureAuth : true
+		database : 'test'
 	});
 	res.locals.connection.connect();
 	next();
 });
 app.use('/', indexRouter);
-app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/profs', profsRouter);
+app.use('/api/v1/eleves', elevesRouter);
+app.use('/api/v1/ecole', ecoleRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
