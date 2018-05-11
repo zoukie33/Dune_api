@@ -29,12 +29,14 @@ router.get('/:id?', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
 	var postData = req.body;
-	res.locals.connection.query('INSERT INTO d_eleves (nomEleve, prenomEleve) VALUES ?' + postData, function(error, results, fields) {
+	console.log(postData);
+	res.locals.connection.query('INSERT INTO d_eleves (nomEleve, prenomEleve) VALUES ?',  postData, function(error, results, fields) {
 		if (error){
 			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 		} else {
 			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
 		}
+	  res.end(JSON.stringify(results));
 	});
 });
 
