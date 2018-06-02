@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('prod'));
+app.use(logger('development'));
 /*
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -44,6 +44,7 @@ app.use(function(req, res, next){
 	next();
 });
 app.use('/', indexRouter);
+app.use('/api/v1/', indexRouter);
 app.use('/api/v1/profs', profsRouter);
 app.use('/api/v1/eleves', elevesRouter);
 app.use('/api/v1/ecole', ecoleRouter);
