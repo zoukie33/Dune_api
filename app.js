@@ -12,9 +12,8 @@ var indexRouter = require('./routes/index');
 var profsRouter = require('./routes/profs');
 var elevesRouter = require('./routes/eleves');
 var ecoleRouter = require('./routes/ecole');
-var classeRouter = require('./routes/classe');
 var ecoleProfsRouter = require('./routes/classe/classeProfs');
-var cProfsRouter = require('./routes/classe/classe');
+var classeRouter = require('./routes/classe/classe');
 var cEcoleRouter = require('./routes/classe/classeEcole');
 var cEleveRouter = require('./routes/classe/classeEleve');
 
