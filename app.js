@@ -12,6 +12,9 @@ var indexRouter = require('./routes/index');
 var profsRouter = require('./routes/profs');
 var elevesRouter = require('./routes/eleves');
 var ecoleRouter = require('./routes/ecole');
+var classeRouter = require('./routes/classe/classe');
+var cEcoleRouter = require('./routes/classe/classeEcole');
+var cEleveRouter = require('./routes/classe/classeEleve');
 
 var app = express();
 
@@ -48,6 +51,9 @@ app.use('/api/v1/', indexRouter);
 app.use('/api/v1/profs', profsRouter);
 app.use('/api/v1/eleves', elevesRouter);
 app.use('/api/v1/ecole', ecoleRouter);
+app.use('/api/v1/classe', classeRouter);
+app.use('/api/v1/classe/eleve', cEleveRouter);
+app.use('/api/v1/classe/ecole', cEcoleRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
