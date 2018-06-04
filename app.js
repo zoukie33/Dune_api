@@ -52,8 +52,8 @@ app.use('/api/v1/profs', profsRouter);
 app.use('/api/v1/eleves', elevesRouter);
 app.use('/api/v1/ecole', ecoleRouter);
 app.use('/api/v1/classe', classeRouter);
-app.use('/api/v1/classe/eleve', cEleveRouter);
-app.use('/api/v1/classe/ecole', cEcoleRouter);
+app.use('/api/v1/classes/eleve', cEleveRouter);
+app.use('/api/v1/classes/ecole', cEcoleRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
