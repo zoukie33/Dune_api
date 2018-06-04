@@ -12,6 +12,7 @@ var indexRouter = require('./routes/index');
 var profsRouter = require('./routes/profs');
 var elevesRouter = require('./routes/eleves');
 var ecoleRouter = require('./routes/ecole');
+var ecoleProfsRouter = require('./routes/ecoleProfs');
 var classeRouter = require('./routes/classe/classe');
 var cEcoleRouter = require('./routes/classe/classeEcole');
 var cEleveRouter = require('./routes/classe/classeEleve');
@@ -52,6 +53,7 @@ app.use('/api/v1/profs', profsRouter);
 app.use('/api/v1/eleves', elevesRouter);
 app.use('/api/v1/ecole', ecoleRouter);
 app.use('/api/v1/classe', classeRouter);
+app.use('/api/v1/ecole/profs', classeRouter);
 app.use('/api/v1/classes/eleve', cEleveRouter);
 app.use('/api/v1/classes/ecole', cEcoleRouter);
 
