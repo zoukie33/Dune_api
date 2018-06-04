@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:id?', function(req, res, next) {
-	res.locals.connection.query('SELECT * from d_profsAppClasse WHERE idClasse = ' + req.params.id , function (error, results, fields) {
+	res.locals.connection.query('SELECT p.nomProf, p.prenomProf, p.emailProf FROM d_profs as p, d_profsAppClasse as pac WHERE p.idProf = pac.idProf AND pac.idClasse = ' + req.params.id , function (error, results, fields) {
 	  	if(error){
 	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 	  		//If there is error, we send the error in the error section with 500 status
