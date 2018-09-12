@@ -9,6 +9,7 @@ var mysql = require("mysql");
 
 // Routes
 var indexRouter = require('./routes/index');
+var loginRouter = require('./routes/login');
 var profsRouter = require('./routes/profs');
 var elevesRouter = require('./routes/eleves');
 var ecoleRouter = require('./routes/ecole');
@@ -49,6 +50,7 @@ app.use(function(req, res, next){
 });
 app.use('/', indexRouter);
 app.use('/api/v1/', indexRouter);
+app.use('/api/v1/login', loginRouter);
 app.use('/api/v1/profs', profsRouter);
 app.use('/api/v1/eleves', elevesRouter);
 app.use('/api/v1/ecole', ecoleRouter);
