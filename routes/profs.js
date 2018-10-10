@@ -1,5 +1,12 @@
 var express = require('express');
+var crypto = require('crypto');
 var router = express.Router();
+
+function hashPassword(pass, salt) {
+  var sum = crypto.createHash('sha256');
+  sum.update(email + salt);
+  return 'sha256$'+ sum.digest('hex');
+}
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -26,7 +33,12 @@ router.get('/:id?', function(req, res, next) {
   	});
 });
 
-router.post('/', function(req, res, next) {
+router.post('/register', function(req, res, next) {
+
+
+
+
+
 	var postData = req.body;
 	console.log(postData);
 	res.locals.connection.query('INSERT INTO d_profs SET ?',  postData, function(error, results, fields) {

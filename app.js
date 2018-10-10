@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
-
+var verifyToken = require('./verify');
 var mysql = require("mysql");
 
 // Routes
@@ -19,6 +19,8 @@ var cEcoleRouter = require('./routes/classe/classeEcole');
 var cEleveRouter = require('./routes/classe/classeEleve');
 
 var app = express();
+
+//Database connection
 
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
@@ -40,9 +42,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(function(req, res, next){
 	res.locals.connection = mysql.createConnection({
 		host     : 'localhost',
-		user     : 'root',
-		password : '',
-		database : 'dune_bdd',
+		user     : 'admin',
+		password : 'fnbxfzmxfn33',
+		database : 'dune_api',
 		insecureAuth : true
 	});
 	res.locals.connection.connect();
@@ -50,6 +52,7 @@ app.use(function(req, res, next){
 });
 app.use('/', indexRouter);
 app.use('/api/v1/', indexRouter);
+app.use(verifyToken);
 app.use('/api/v1/login', loginRouter);
 app.use('/api/v1/profs', profsRouter);
 app.use('/api/v1/eleves', elevesRouter);
@@ -63,9 +66,6 @@ app.use('/api/v1/classes/ecole', cEcoleRouter);
 app.use(function(req, res, next) {
   next(createError(404));
 });
-
-//Database connection
-
 
 // error handler
 app.use(function(err, req, res, next) {
