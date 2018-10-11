@@ -11,6 +11,7 @@ router.post('/', function(req, res, next) {
 		email:req.body.email,
 		password:req.body.password
 	}
+	console.log(post);
 		var query = "SELECT * FROM ?? WHERE ??=? AND ??=?";
 
 		var table = ["d_profs","pass",  md5(post.password), "emailProf", post.email];
@@ -26,9 +27,9 @@ router.post('/', function(req, res, next) {
 				var token = jwt.sign({ id: rows[0].idProf }, config.secret, {
 					expiresIn: '7d'
 				});
-				user_id= rows[0].userid;
+				user_id= rows[0].idProf;
 				var data  = {
-					user_id:rows[0].userid,
+					user_id:rows[0].idProf,
 					device_type:rows[0].device_type,
 					access_token:token,
 					device_token:rows[0].device_token,
