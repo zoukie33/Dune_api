@@ -36,6 +36,7 @@ router.get('/:id?', function(req, res, next) {
 });
 
 router.post('/add', function(req, res, next) {
+<<<<<<< HEAD
   var query = "SELECT * FROM ?? WHERE ??=?";
   var table = ["d_profs", "emailProf", req.body.email];
   query = mysql.format(query,table);
@@ -80,6 +81,30 @@ router.post('/add', function(req, res, next) {
     }
   }
   });
+=======
+	var postData = {
+    nom:req.body.nom,
+    prenom:req.body.prenom,
+    mail:req.body.email,
+    directorId:req.body.directorId,
+    device_type:"web"
+  }
+	console.log(postData);
+
+  var query = "INSERT INTO ?? SET ?";
+  var table = ["d_profs"];
+  query = mysql.format(query,table);
+
+	res.locals.connection.query(query, postData, function(error, results, fields) {
+		if (error){
+			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+		} else {
+			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+      console.log("Un Prof a été ajouté: " + postData);
+		}
+	  res.end(JSON.stringify(results));
+	});
+>>>>>>> 07c59398565157f884560731f06054e670eeb96c
 });
 
 module.exports = router;
