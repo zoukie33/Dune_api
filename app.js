@@ -52,8 +52,8 @@ app.use(function(req, res, next){
 });
 app.use('/', indexRouter);
 app.use('/api/v1/', indexRouter);
-app.use(verifyToken);
 app.use('/api/v1/login', loginRouter);
+app.use(verifyToken);
 app.use('/api/v1/profs', profsRouter);
 app.use('/api/v1/eleves', elevesRouter);
 app.use('/api/v1/ecole', ecoleRouter);

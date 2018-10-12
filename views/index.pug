@@ -5,41 +5,68 @@ block content
   p Welcome to #{title}
   h2= routes
 
-  h3= '/api/v1/login/prof/{mail}/{pass}'
+  h3= 'Status codes'
+  h4= '500'
+  p Error code
+
+  h4= '501'
+  p Erreur : Un utilisateur est déjà inscrit avec cet email.
+
+  h4= '200'
+  p Success code
+
+  h4= '401'
+  p Invalid access code
+
+  h3= 'POST'
+
+  h4= '/api/v1/login'
   p Try to login the prof
+  p Body : email, password
 
-  h3= '/api/v1/login/reset/{mail}'
+  h4= '/api/v1/login/reset'
   p Try to reset a pwd of an account
+  p Body : mail, token
 
-  h3= '/api/v1/profs'
+  h4= '/api/v1/profs/add'
+  p Adding a professor
+  p Body : nom, prenom, email, directorId, token
+
+  h4= '/api/v1/eleves/add'
+  p Adding a student
+  p Body : nom, prenom, directorId, token
+
+  h3= 'GET'
+
+  h4= '/api/v1/profs'
   p give the list of all profesors
 
-  h3= '/api/v1/profs/1'
+  h4= '/api/v1/profs/1'
   p give the result of the profesor with the id 1
 
-  h3= '/api/v1/eleves'
+  h4= '/api/v1/eleves'
   p give the list of all students
 
-  h3= '/api/v1/eleves/1'
+  h4= '/api/v1/eleves/1'
   p give the result of the sudient with the id 1
 
-  h3= '/api/v1/ecole'
+  h4= '/api/v1/ecole'
   p give the list of all school
 
-  h3= '/api/v1/ecole/1'
+  h4= '/api/v1/ecole/1'
   p give the result of the school with the id 1
 
-  h3= '/api/v1/classe'
+  h4= '/api/v1/classe'
   p give the list of classes
 
-  h3= '/api/v1/classes/ecole'
+  h4= '/api/v1/classes/ecole'
   p Donne les appartennances entre ecole et classes
 
-  h3= '/api/v1/classes/eleve'
+  h4= '/api/v1/classes/eleve'
   p Donne les appartennances entre ecole et classes
 
-  h3= '/api/v1/classe/profs'
+  h4= '/api/v1/classe/profs'
   p Donne les appartennances entre profs et ecole
 
-  h3= '/api/v1/classe/profs/1'
+  h4= '/api/v1/classe/profs/1'
   p Donne les appartennances entre profs et ecole qui grère la classe a l id 1
