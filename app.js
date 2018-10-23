@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var verifyToken = require('./verify');
-var mysql = require("mysql");
+var mysql = require('mysql');
 
 // Routes
 var indexRouter = require('./routes/index');
@@ -13,6 +13,7 @@ var loginRouter = require('./routes/login');
 var profsRouter = require('./routes/profs');
 var elevesRouter = require('./routes/eleves');
 var ecoleRouter = require('./routes/ecole');
+var tableProfRouter = require('./routes/table/tableProf');
 var cProfsRouter = require('./routes/classe/classeProfs');
 var classeRouter = require('./routes/classe/classe');
 var cEcoleRouter = require('./routes/classe/classeEcole');
@@ -20,8 +21,13 @@ var cEleveRouter = require('./routes/classe/classeEleve');
 
 var app = express();
 
-//Database connection
-
+var pool = mysql.createPool({
+  host: 'localhost',
+  user: 'admin',
+  password: 'fnbxfzmxfn33',
+  database: 'dune_api',
+  insecureAuth: true,
+});
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -48,20 +54,14 @@ app.use(express.urlencoded({ extended: false }));
 */
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(function(req, res, next){
-	res.locals.connection = mysql.createConnection({
-		host     : 'localhost',
-		user     : 'admin',
-		password : 'fnbxfzmxfn33',
-		database : 'dune_api',
-		insecureAuth : true
-	});
-	res.locals.connection.connect();
-	next();
+app.use(function (req, res, next) {
+    req.mysql = pool;
+    next();
 });
 app.use('/', indexRouter);
 app.use('/api/v1/', indexRouter);
 app.use('/api/v1/login', loginRouter);
+app.use('/api/v1/table', tableProfRouter);
 app.use(verifyToken);
 app.use('/api/v1/profs', profsRouter);
 app.use('/api/v1/eleves', elevesRouter);

@@ -1,9 +1,11 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1= Dune-API
+  p Welcome to DUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUNE
   h2= routes
+
+  p ____________________________________________________________________________
 
   h3= 'Status codes'
   h4= '500'
@@ -17,6 +19,8 @@ block content
 
   h4= '401'
   p Invalid access code
+
+  p ____________________________________________________________________________
 
   h3= 'POST'
 
@@ -32,41 +36,76 @@ block content
   p Adding a professor
   p Body : nom, prenom, email, directorId, token
 
+  h4= '/api/v1/profs/update'
+  p IN DEV
+  p Updatging a professor
+  p Body : nom, prenom, email, directorId, token
+
   h4= '/api/v1/eleves/add'
   p Adding a student
   p Body : nom, prenom, directorId, token
 
+  h4= '/api/v1/eleves/update'
+  p IN DEV
+  p Updating a student
+  p Body : nom, prenom, directorId, token
+
+  h4= '/api/v1/table/delToken'
+  p Deleteting token qrCode
+  p Body : token, tokenTable
+
+  h4= '/api/v1/table/useToken'
+  p Deleteting token qrCode
+  p Body : token, tokenTable, idProf
+
+  p ____________________________________________________________________________
+
   h3= 'GET'
+
+  h4= '/api/v1/table/genToken'
+  p generating token qrCode
+  p Header : token
 
   h4= '/api/v1/profs'
   p give the list of all profesors
+  p Header : token
 
   h4= '/api/v1/profs/1'
   p give the result of the profesor with the id 1
+  p Header : token
 
   h4= '/api/v1/eleves'
   p give the list of all students
+  p Header : token
 
   h4= '/api/v1/eleves/1'
   p give the result of the sudient with the id 1
+  p Header : token
 
   h4= '/api/v1/ecole'
   p give the list of all school
+  p Header : token
 
   h4= '/api/v1/ecole/1'
   p give the result of the school with the id 1
+  p Header : token
 
   h4= '/api/v1/classe'
   p give the list of classes
+  p Header : token
 
   h4= '/api/v1/classes/ecole'
   p Donne les appartennances entre ecole et classes
+  p Header : token
 
   h4= '/api/v1/classes/eleve'
   p Donne les appartennances entre ecole et classes
+  p Header : token
 
   h4= '/api/v1/classe/profs'
   p Donne les appartennances entre profs et ecole
+  p Header : token
 
   h4= '/api/v1/classe/profs/1'
   p Donne les appartennances entre profs et ecole qui grère la classe a l id 1
+  p Header : token

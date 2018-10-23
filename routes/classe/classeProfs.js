@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-	res.locals.connection.query('SELECT * from d_profsAppClasse', function (error, results, fields) {
+	req.mysql.query('SELECT * from d_profsAppClasse', function (error, results, fields) {
 	  	if(error){
 	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 	  		//If there is error, we send the error in the error section with 500 status
@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:id?', function(req, res, next) {
-	res.locals.connection.query('SELECT p.nomProf, p.prenomProf, p.emailProf FROM d_profs as p, d_profsAppClasse as pac WHERE p.idProf = pac.idProf AND pac.idClasse = ' + req.params.id , function (error, results, fields) {
+	req.mysql.query('SELECT p.nomProf, p.prenomProf, p.emailProf FROM d_profs as p, d_profsAppClasse as pac WHERE p.idProf = pac.idProf AND pac.idClasse = ' + req.params.id , function (error, results, fields) {
 	  	if(error){
 	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 	  		//If there is error, we send the error in the error section with 500 status
@@ -29,7 +29,7 @@ router.get('/:id?', function(req, res, next) {
 router.post('/', function(req, res, next) {
 	var postData = req.body;
 	console.log(postData);
-	res.locals.connection.query('INSERT INTO d_profsAppClasse SET ?',  postData, function(error, results, fields) {
+	req.mysql.query('INSERT INTO d_profsAppClasse SET ?',  postData, function(error, results, fields) {
 		if (error){
 			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 		} else {
