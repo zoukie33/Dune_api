@@ -51,19 +51,49 @@ block content
   p Updating a student
   p Body : nom, prenom, directorId, token
 
-  h4= '/api/v1/table/delToken'
+  h4= '/api/v1/cnxTable/delToken'
   p Deleteting token qrCode
   p Body : token, tokenTable
 
-  h4= '/api/v1/table/useToken'
+  h4= '/api/v1/cnxTable/useToken'
   p Deleteting token qrCode
   p Body : token, tokenTable, idProf
+
+  h4= '/api/v1/tables/add'
+  p UNDER CONSTRUCTION
+  p Adding one new Table
+  p body : token
+
+  h4= '/api/v1/tables/update'
+  p UNDER CONSTRUCTION
+  p Updating one Table
+  p body : token, idTable
+
+  h4= '/api/v1/games/add'
+  p Adding one new Game
+  p body : token, name, creator
+
+  h4= '/api/v1/games/update'
+  p Updating one Table
+  p body : token, name, creator
 
   p ____________________________________________________________________________
 
   h3= 'GET'
 
-  h4= '/api/v1/table/genToken'
+  h4= '/api/v1/games'
+  p give the list of all the games
+  p Header : token
+
+  h4= '/api/v1/games/1'
+  p give the result of the game with the id 1
+  p Header : token
+
+  h4= '/api/v1/tables'
+  p give the list of all the Tables
+  p Header : token
+
+  h4= '/api/v1/cnxTable/genToken'
   p generating token qrCode
   p Header : token
 
