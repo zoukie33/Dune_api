@@ -83,50 +83,22 @@ router.post('/add', function(req, res, next) {
 });
 
 router.post('/update', function(req, res, next) {
-  res.json({"Error" : true, "Message" : "This route is not working now"});
-  /*var query = "SELECT * FROM ?? WHERE ??=?";
-  var table = ["d_profs", "emailProf", req.body.email];
-  query = mysql.format(query,table);
+  var id  = req.body.idProf;
+  var nom  = req.body.nomProf;
+  var prenom  = req.body.prenomProf;
+  var email  = req.body.emailProf;
 
-  req.mysql.query(query,function(err,rows){
-  if(err) {
-    res.json({"Error" : true, "Message" : "Error executing MySQL query"});
-  }
-  else {
-    if(rows.length==0){
-      var password = generator.generate({
-        length: 8,
-        numbers: true
-      });
-      var directorId = req.body.directorId;
-    	var postData = {
-        nomProf:req.body.nom,
-        prenomProf:req.body.prenom,
-        emailProf:req.body.email,
-        pass: md5(password),
-        access_token:"n/a",
-        device_type:"web"
-      }
-    	console.log(postData);
+  var query = "UPDATE d_profs SET nomProf = '"+ nom +"', prenomProf = '"+ prenom +"', emailProf = '"+ email +"' WHERE idProf = " + id;
 
-      var query = "UPDATE ?? SET ?";
-      var table = ["d_profs"];
-      query = mysql.format(query,table);
-
-    	req.mysql.query(query, postData, function(error, results, fields) {
-    		if (error){
-    			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-    		} else {
-    			res.send(JSON.stringify({"status": 200, "error": null, "pass": password}));
-          console.log("Un Prof a été ajouté: " + postData);
-    		}
-    	  res.end(JSON.stringify(results));
-    	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error){
+      res.send(JSON.stringify({"status": 500, "error": error, "response": "Impossible de mettre a jour cet utilisateur."}));
+    } else {
+      res.send(JSON.stringify({"status": 200, "response": "User Updated"}));
+      console.log("Un Prof a été mis a jour : [" + id + " - " + nom + " - " + prenom + " - " + email + "]");
     }
-    else {
-      res.send(JSON.stringify({"status": 501, "error": err, "response": "Un utilisateur est déja inscrit avec cet Email."}));
-    }
-  }
-});*/
+    res.end(JSON.stringify(results));
+  });
+
 });
 module.exports = router;

@@ -13,7 +13,7 @@ router.get('/genToken', function(req, res, next) {
 	  		//If there is error, we send the error in the error section with 500 status
 	  	} else {
   			res.send(JSON.stringify({"status": 200, "error": null, "tokenTable": tokenTable}));
-  			//If there is no error, all is good and response is 200OK.
+	      console.log("Un token a été généré : [" + tokenTable + "]");
 	  	}
   	});
 });
@@ -26,7 +26,7 @@ router.post('/delToken', function(req, res, next) {
 	  		//If there is error, we send the error in the error section with 500 status
 	  	} else {
   			res.send(JSON.stringify({"status": 200, "response": "Token deleted."}));
-  			//If there is no error, all is good and response is 200OK.
+	      console.log("Un token a été supprimé : [" + token + "]");
 	  	}
   	});
 });

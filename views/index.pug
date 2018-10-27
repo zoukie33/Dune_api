@@ -33,15 +33,16 @@ block content
   p Body : mail, token
 
   h4= '/api/v1/profs/add'
+  p IN DEV (Presque fini, correction erreures + mail)
   p Adding a professor
   p Body : nom, prenom, email, directorId, token
 
   h4= '/api/v1/profs/update'
-  p IN DEV
   p Updatging a professor
-  p Body : nom, prenom, email, directorId, token
+  p Body : idProf, nomProf, prenomProf, emailProf, token
 
   h4= '/api/v1/eleves/add'
+  p IN DEV
   p Adding a student
   p Body : nom, prenom, directorId, token
 

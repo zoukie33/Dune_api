@@ -27,6 +27,8 @@ var pool = mysql.createPool({
   password: 'fnbxfzmxfn33',
   database: 'dune_api',
   insecureAuth: true,
+  queueLimit : 0,
+  connectionLimit : 0,
 });
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
