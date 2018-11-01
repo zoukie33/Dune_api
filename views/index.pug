@@ -25,19 +25,19 @@ block content
   h3= 'POST'
 
   h4= '/api/v1/login'
-  p Try to login the prof
+  p Try to login the User
   p Body : email, password
 
   h4= '/api/v1/login/reset'
   p Try to reset a pwd of an account
   p Body : mail, token
 
-  h4= '/api/v1/profs/add'
+  h4= '/api/v1/users/add'
   p IN DEV (Presque fini, correction erreures + mail)
   p Adding a professor
   p Body : nom, prenom, email, directorId, token
 
-  h4= '/api/v1/profs/update'
+  h4= '/api/v1/users/update'
   p Updatging a professor
   p Body : idProf, nomProf, prenomProf, emailProf, token
 
@@ -97,12 +97,12 @@ block content
   p generating token qrCode
   p Header : token
 
-  h4= '/api/v1/profs'
-  p give the list of all profesors
+  h4= '/api/v1/users'
+  p give the list of all users
   p Header : token
 
-  h4= '/api/v1/profs/1'
-  p give the result of the profesor with the id 1
+  h4= '/api/v1/users/1'
+  p give the result of the user with the id 1
   p Header : token
 
   h4= '/api/v1/eleves'

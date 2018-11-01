@@ -16,7 +16,7 @@ router.post('/', function(req, res, next) {
 	console.log(post);
 		var query = "SELECT * FROM ?? WHERE ??=? AND ??=?";
 
-		var table = ["d_profs","pass",  md5(post.password), "emailProf", post.email];
+		var table = ["d_users","pass",  md5(post.password), "emailUser", post.email];
 
 		query = mysql.format(query,table);
 
@@ -26,12 +26,13 @@ router.post('/', function(req, res, next) {
 		}
 		else {
 			if(rows.length==1){
-				var token = jwt.sign({ id: rows[0].idProf }, config.secret, {
+				var token = jwt.sign({ id: rows[0].idUser }, config.secret, {
 					expiresIn: '7d'
 				});
-				user_id= rows[0].idProf;
+				typeUser = rows[0].typeUser;
+				user_id= rows[0].idUser;
 				var data  = {
-					user_id:rows[0].idProf,
+					user_id:rows[0].idUser,
 					device_type:rows[0].device_type,
 					access_token:token,
 					device_token:rows[0].device_token,
@@ -49,7 +50,8 @@ router.post('/', function(req, res, next) {
 							success: true,
 							message: 'Token generated',
 							token: token,
-							currUser: user_id
+							currUser: user_id,
+							typeUser: typeUser
 						});
            				 }
            				});
@@ -60,22 +62,5 @@ router.post('/', function(req, res, next) {
 		}
 	});
 });
-
-// router.post('/reset', function(req, res, next) {
-// 	var password = generator.generate({
-// 		length: 8,
-// 		numbers: true
-// 	});
-// 	var email = req.body.email;
-//
-// 	req.mysql.query("UPDATE d_profs SET pass = " + password + " WHERE emailProf = " + email, function(error, results, fields) {
-// 		if (error){
-// 			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-// 		} else {
-// 			resetPass.sendPasswordReset(email, password);
-// 			res.send(JSON.stringify({"status": 200, "error": null, "pass": password}));
-// 		}
-// 	});
-// });
 
 module.exports = router;
