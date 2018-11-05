@@ -34,9 +34,7 @@ router.post('/', function(req, res, next) {
 				var data  = {
 					user_id:rows[0].idUser,
 					device_type:rows[0].device_type,
-					access_token:token,
-					device_token:rows[0].device_token,
-					ip_address:rows[0].ip_address
+					access_token:token
 				}
 				var query = "INSERT INTO  ?? SET  ?";
 				var table = ["access_token"];
@@ -59,6 +57,24 @@ router.post('/', function(req, res, next) {
 			else {
 				res.json({"Error" : true, "Message" : "wrong email/password combination"});
 			}
+		}
+	});
+});
+
+
+router.post('/reset', function(req, res, next) {
+	var password = generator.generate({
+		length: 8,
+		numbers: true
+	});
+	var email = req.body.email;
+
+	req.mysql.query("UPDATE d_users SET pass = '" + md5(password) + "' WHERE emailUser = '" + email + "'", function(error, results, fields) {
+		if (error){
+			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+		} else {
+			resetPass.sendPasswordReset(email, password);
+			res.send(JSON.stringify({"status": 200, "error": null, "pass": password}));
 		}
 	});
 });

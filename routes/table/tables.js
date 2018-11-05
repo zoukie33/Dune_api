@@ -15,28 +15,6 @@ router.get('/', function(req, res, next) {
   	});
 });
 
-router.post('/add', function(req, res, next) {
-  // var directorId = req.body.directorId;
-	// var postData = {
-  //   nomEleve:req.body.nom,
-  //   prenomEleve:req.body.prenom
-  // }
-	// console.log(postData);
-  //
-  // var query = "INSERT INTO ?? SET ?";
-  // var table = ["d_eleves"];
-  // query = mysql.format(query,table);
-  //
-	// req.mysql.query(query, postData, function(error, results, fields) {
-	// 	if (error){
-	// 		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	// 	} else {
-	// 		res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  //     console.log("Un Prof a été ajouté : [" + nom + " - " + prenom + "]");
-	// 	}
-	//   res.end(JSON.stringify(results));
-	// });
-});
 
 router.post('/update', function(req, res, next) {
 	// var id  = req.body.idEleve;

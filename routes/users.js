@@ -3,12 +3,8 @@ var router = express.Router();
 var generator = require('generate-password');
 var md5 = require("MD5");
 var mysql   = require("mysql");
+var resetPass = require('../functions/mails/createAccount');
 
-router.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -20,6 +16,7 @@ router.get('/', function(req, res, next) {
   			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
   			//If there is no error, all is good and response is 200OK.
 	  	}
+      console.log("user");
   	});
 });
 
@@ -32,6 +29,7 @@ router.get('/:id?', function(req, res, next) {
   			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
   			//If there is no error, all is good and response is 200OK.
 	  	}
+      console.log("user id");
   	});
 });
 
@@ -70,6 +68,7 @@ router.post('/add', function(req, res, next) {
     		if (error){
     			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
     		} else {
+					resetPass.sendPasswordReset(req.body.email, password);
     			res.send(JSON.stringify({"status": 200, "error": null, "pass": password}));
           console.log("Un User a été ajouté: " + postData);
     		}

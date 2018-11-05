@@ -4,15 +4,15 @@ var config = require('../../config');
 
 var transporter = nodeMailer.createTransport('smtps://' + config.sender + ':' + config.emailPass + '@smtp.gmail.com');
 
-var sendResetPasswordLink = transporter.templateSender(
-  new EmailTemplate('./templates/resetPassword'), {
+var sendCreateAccountLink = transporter.templateSender(
+  new EmailTemplate('./templates/createAccount'), {
     	from: 'Dune <noreply@dune.com>',
   });
 exports.sendPasswordReset = function (email, pass) {
     // transporter.template
-    sendResetPasswordLink({
+    sendCreateAccountLink({
         to: email,
-        subject: 'Password Reset - Dune.com'
+        subject: 'Account Created - Dune.com'
     }, {
         email: email,
         password: pass

@@ -31,6 +31,24 @@ router.post('/delToken', function(req, res, next) {
   	});
 });
 
+router.post('/install', function(req, res, next) {
+	var licenceEcole = req.body.licence;
+	var nomTable = req.body.nom;
+	var token = jwt.sign({ id: nomTable }, config.secret, {
+		expiresIn: '7d'
+	});
+
+	req.mysql.query('INSERT INTO d_tables (nomTable) VALUES ("' + nomTable + '")', function(error, results, fields) {
+		if (error){
+			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+		} else {
+			res.send(JSON.stringify({"status": 200, "error": null, "token": token}));
+      console.log("Une Table a été ajoutée : [" + nomTable + " - " + licenceEcole + "]");
+		}
+	  res.end(JSON.stringify(results));
+	});
+});
+
 router.post('/useToken', function(req, res, next) {
   var token = req.body.tokenTable;
 	var idProf = req.body.idProf;
