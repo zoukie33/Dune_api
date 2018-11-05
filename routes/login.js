@@ -15,9 +15,7 @@ router.post('/', function(req, res, next) {
 	}
 	console.log(post);
 		var query = "SELECT * FROM ?? WHERE ??=? AND ??=?";
-
 		var table = ["d_users","pass",  md5(post.password), "emailUser", post.email];
-
 		query = mysql.format(query,table);
 
 		req.mysql.query(query,function(err,rows){
@@ -36,9 +34,11 @@ router.post('/', function(req, res, next) {
 					device_type:rows[0].device_type,
 					access_token:token
 				}
+
 				var query = "INSERT INTO  ?? SET  ?";
 				var table = ["access_token"];
 				query = mysql.format(query,table);
+
 				req.mysql.query(query, data, function(err,rows){
 					if(err) {
 						res.send(JSON.stringify({"status": 500, "error": error, "response":"Error executing MySQL query"}));
@@ -51,11 +51,23 @@ router.post('/', function(req, res, next) {
 							currUser: user_id,
 							typeUser: typeUser
 						});
-           				 }
-           				});
-			}
-			else {
-				res.json({"Error" : true, "Message" : "wrong email/password combination"});
+          }
+        });
+
+				var query = "UPDATE d_users SET access_token = '"+ token +"' WHERE idUser = " + user_id;
+
+				req.mysql.query(query, function(error, results, fields) {
+			    if (error){
+			      res.send(JSON.stringify({"status": 500, "error": error, "response": "Erreur d'ajout de token dans la base User."}));
+			    } else {
+			      res.send(JSON.stringify({"status": 200, "response": "User Updated"}));
+			      console.log("Un Token a été mis a jour : [" + token + "]");
+			    }
+			    res.end(JSON.stringify(results));
+			  });
+
+			}	else {
+				res.send(JSON.stringify({"status": 502, "error": err, "response": "Aucun utilisateur ne correspond à ces identifiants."}));
 			}
 		}
 	});
@@ -63,18 +75,33 @@ router.post('/', function(req, res, next) {
 
 
 router.post('/reset', function(req, res, next) {
-	var password = generator.generate({
-		length: 8,
-		numbers: true
-	});
 	var email = req.body.email;
+	var query = "SELECT * FROM ?? WHERE ??=?";
+  var table = ["d_users", "emailUser", email];
+  query = mysql.format(query,table);
 
-	req.mysql.query("UPDATE d_users SET pass = '" + md5(password) + "' WHERE emailUser = '" + email + "'", function(error, results, fields) {
-		if (error){
-			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-		} else {
-			resetPass.sendPasswordReset(email, password);
-			res.send(JSON.stringify({"status": 200, "error": null, "pass": password}));
+	req.mysql.query(query,function(err,rows){
+		if(err) {
+	    res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+	  }
+		else {
+			if(rows.length != 0){
+				var password = generator.generate({
+					length: 8,
+					numbers: true
+				});
+
+				req.mysql.query("UPDATE d_users SET pass = '" + md5(password) + "' WHERE emailUser = '" + email + "'", function(error, results, fields) {
+					if (error){
+						res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+					} else {
+						resetPass.sendPasswordReset(email, password);
+						res.send(JSON.stringify({"status": 200, "error": null, "pass": password}));
+					}
+				});
+			}	else {
+				res.send(JSON.stringify({"status": 502, "error": err, "response": "Aucun utilisateur ne correspond à ces identifiants."}));
+			}
 		}
 	});
 });

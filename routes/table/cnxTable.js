@@ -35,10 +35,10 @@ router.post('/install', function(req, res, next) {
 	var licenceEcole = req.body.licence;
 	var nomTable = req.body.nom;
 	var token = jwt.sign({ id: nomTable }, config.secret, {
-		expiresIn: '7d'
+		expiresIn: '3650d'
 	});
 
-	req.mysql.query('INSERT INTO d_tables (nomTable) VALUES ("' + nomTable + '")', function(error, results, fields) {
+	req.mysql.query('INSERT INTO d_tables (nomTable, access_token) VALUES ("' + nomTable + ', '" + token + "'")', function(error, results, fields) {
 		if (error){
 			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 		} else {
