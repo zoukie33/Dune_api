@@ -52,26 +52,31 @@ router.post('/install', function(req, res, next) {
 router.post('/useToken', function(req, res, next) {
   var token = req.body.tokenTable;
 	var idProf = req.body.idProf;
-	req.mysql.query('SELECT * FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
-	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
-	  	} else {
-  			if (results[0].tokenTable == token){
-					req.mysql.query('UPDATE d_tableProf SET idProf = ' + idProf + ' WHERE tokenTable = "' + token + '"', function (error, results, fields) {
-						if(error){
-				  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-				  		//If there is error, we send the error in the error section with 500 status
-				  	} else {
-			  			res.send(JSON.stringify({"status": 200, "response": "User linked !"}));
-			  			//If there is no error, all is good and response is 200OK.
-				  	}
-				});
-	  	}
-			else {
-				res.send(JSON.stringify({"status": 500, "error": error, "response": "ERREUR"}));
+	if (req.body.tokenTable != "" && req.body.idProf != "") {
+		req.mysql.query('SELECT * FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
+				if(error){
+					res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+					//If there is error, we send the error in the error section with 500 status
+				} else {
+					if (results[0].tokenTable == token){
+						req.mysql.query('UPDATE d_tableProf SET idProf = ' + idProf + ' WHERE tokenTable = "' + token + '"', function (error, results, fields) {
+							if(error){
+								res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+								//If there is error, we send the error in the error section with 500 status
+							} else {
+								res.send(JSON.stringify({"status": 200, "response": "User linked !"}));
+								//If there is no error, all is good and response is 200OK.
+							}
+					});
+				}
+				else {
+					res.send(JSON.stringify({"status": 510, "error": error, "response": "ERREUR"}));
+				}
 			}
-  	}
-});
+		});
+	} else {
+		res.send(JSON.stringify({"status": 500, "error": error, "response": "ERREUR"}));
+	}
+
 });
 module.exports = router;

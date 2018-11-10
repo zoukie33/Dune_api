@@ -25,6 +25,9 @@ block content
   h4= '502'
   p Erreur : Aucun utilisateur ne correspond à ces identifiants.
 
+  h4= '510'
+  p Erreur : Une des informations envoyées dans le body est invalide ou manquante.
+
   h4= '200'
   p Success code
 
@@ -44,13 +47,12 @@ block content
   p Body : email
 
   h4= '/api/v1/users/add'
-  p IN DEV (Presque fini, correction erreures + mail)
   p Adding a professor
   p Body : nom, prenom, email, directorId, token
 
   h4= '/api/v1/users/update'
-  p Updatging a professor
-  p Body : idProf, nomProf, prenomProf, emailProf, token
+  p Updatging an user
+  p Body : idUser, nomUser, prenomUser, emailUser, token
 
   h4= '/api/v1/eleves/add'
   p IN DEV

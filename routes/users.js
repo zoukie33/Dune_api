@@ -88,17 +88,28 @@ router.post('/update', function(req, res, next) {
   var prenom  = req.body.prenomUser;
   var email  = req.body.emailUser;
 
+	var verifUser = "SELECT * FROM d_users WHERE emailUser = '" + email + "' AND idUser != " + id;
   var query = "UPDATE d_users SET nomUser = '"+ nom +"', prenomUser = '"+ prenom +"', emailUser = '"+ email +"' WHERE idUser = " + id;
 
-  req.mysql.query(query, function(error, results, fields) {
-    if (error){
-      res.send(JSON.stringify({"status": 500, "error": error, "response": "Impossible de mettre a jour cet utilisateur."}));
-    } else {
-      res.send(JSON.stringify({"status": 200, "response": "User Updated"}));
-      console.log("Un User a été mis a jour : [" + id + " - " + nom + " - " + prenom + " - " + email + "]");
-    }
-    res.end(JSON.stringify(results));
-  });
-
+	req.mysql.query(verifUser,function(err,rows){
+	  if(err) {
+	    res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+	  } else {
+			if (rows.length == 0) {
+				req.mysql.query(query, function(error, results, fields) {
+					if (error){
+						res.send(JSON.stringify({"status": 500, "error": error, "response": "Impossible de mettre a jour cet utilisateur."}));
+					} else {
+						res.send(JSON.stringify({"status": 200, "response": "User Updated"}));
+						console.log("Un User a été mis a jour : [" + id + " - " + nom + " - " + prenom + " - " + email + "]");
+					}
+					res.end(JSON.stringify(results));
+				});
+			}
+			else {
+				res.send(JSON.stringify({"status": 501, "error": error, "response": "Email déjà existant."}));
+			}
+		}
+	});
 });
 module.exports = router;
