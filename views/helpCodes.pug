@@ -1,0 +1,26 @@
+extends layout
+
+block content
+  h1= Dune-API
+  p Welcome to DUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUNE
+  h2= routes
+
+  p ____________________________________________________________________________
+  h3= 'Status codes'
+  h4= '500'
+  p Error code
+
+  h4= '501'
+  p Erreur : Un utilisateur est déjà inscrit avec cet email.
+
+  h4= '502'
+  p Erreur : Aucun utilisateur ne correspond à ces identifiants.
+
+  h4= '510'
+  p Erreur : Une des informations envoyées dans le body est invalide ou manquante.
+
+  h4= '200'
+  p Success code
+
+  h4= '401'
+  p Invalid access code

@@ -1,0 +1,67 @@
+extends layout
+
+block content
+  h1= Dune-API
+  p Welcome to DUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUNE
+  h2= routes
+
+  p ____________________________________________________________________________
+
+  h2= 'POST'
+  h3 = 'LOGIN Routes'
+  h4= '/api/v1/login'
+  p Try to login the User
+  p Body : email, password
+
+  h4= '/api/v1/login/reset'
+  p Try to reset a pwd of an account
+  p Body : email
+
+  h3 = 'USERS Routes'
+  h4= '/api/v1/users/add'
+  p Adding a user
+  p Body : nom, prenom, email, directorId, token
+
+  h4= '/api/v1/users/update'
+  p Updatging an user
+  p Body : idUser, nomUser, prenomUser, emailUser, token
+
+  h3 = 'ELEVES Routes'
+  h4= '/api/v1/eleves/add'
+  p IN DEV
+  p Adding a student
+  p Body : nom, prenom, directorId, token
+
+  h4= '/api/v1/eleves/update'
+  p IN DEV
+  p Updating a student
+  p Body : nom, prenom, directorId, token
+
+  h3 = 'CNXTABLE Routes'
+  h4= '/api/v1/cnxTable/delToken'
+  p Deleteting token qrCode
+  p Body : token, tokenTable
+
+  h4= '/api/v1/cnxTable/useToken'
+  p Using token qrCode
+  p Body : token, tokenTable, idProf
+
+  h3 = 'TABLES Routes'
+  h4= '/api/v1/tables/add'
+  p UNDER CONSTRUCTION
+  p Adding one new Table
+  p body : token
+
+  h4= '/api/v1/tables/update'
+  p UNDER CONSTRUCTION
+  p Updating one Table
+  p body : token, idTable
+
+  h3 = 'GAMES Routes'
+  h4= '/api/v1/games/add'
+  p Adding one new Game
+  p body : token, name, creator
+
+  h4= '/api/v1/games/update'
+  p Updating one Table
+  p body : token, name, creator
