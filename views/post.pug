@@ -5,7 +5,7 @@ block content
   p ____________________________________________________________________________
 
   h2= 'POST'
-  h3 = 'LOGIN Routes'
+  h3= 'LOGIN Routes'
   h4= '/api/v1/login'
   p Try to login the User
   p Body : email, password
@@ -14,7 +14,7 @@ block content
   p Try to reset a pwd of an account
   p Body : email
 
-  h3 = 'USERS Routes'
+  h3= 'USERS Routes'
   h4= '/api/v1/users/add'
   p Adding a user
   p Body : nom, prenom, email, directorId, token
@@ -23,7 +23,7 @@ block content
   p Updatging an user
   p Body : idUser, nomUser, prenomUser, emailUser, token
 
-  h3 = 'ELEVES Routes'
+  h3= 'ELEVES Routes'
   h4= '/api/v1/eleves/add'
   p IN DEV
   p Adding a student
@@ -34,7 +34,7 @@ block content
   p Updating a student
   p Body : nom, prenom, directorId, token
 
-  h3 = 'CNXTABLE Routes'
+  h3= 'CNXTABLE Routes'
   h4= '/api/v1/cnxTable/delToken'
   p Deleteting token qrCode
   p Body : token, tokenTable
@@ -43,7 +43,7 @@ block content
   p Using token qrCode
   p Body : token, tokenTable, idProf
 
-  h3 = 'TABLES Routes'
+  h3= 'TABLES Routes'
   h4= '/api/v1/tables/add'
   p UNDER CONSTRUCTION
   p Adding one new Table
@@ -54,7 +54,7 @@ block content
   p Updating one Table
   p body : token, idTable
 
-  h3 = 'GAMES Routes'
+  h3= 'GAMES Routes'
   h4= '/api/v1/games/add'
   p Adding one new Game
   p body : token, name, creator
