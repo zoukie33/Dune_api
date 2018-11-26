@@ -9,7 +9,9 @@ var mysql = require('mysql');
 
 // Routes
 var indexRouter = require('./routes/index');
-var loginRouter = require('./routes/login');
+var loginRouter = require('./routes/auth/login');
+var logoutRouter = require('./routes/auth/logout');
+var tokensRouter = require('./routes/auth/tokens');
 var usersRouter = require('./routes/users');
 var elevesRouter = require('./routes/eleves');
 var ecoleRouter = require('./routes/ecole');
@@ -54,6 +56,7 @@ app.all('*', function(req, res, next) {
       next();
     }
   });
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(function (req, res, next) {
@@ -63,7 +66,9 @@ app.use(function (req, res, next) {
 app.use('/', indexRouter);
 app.use('/api/v1/', indexRouter);
 app.use('/api/v1/login', loginRouter);
+app.use('/api/v1/logout', logoutRouter);
 app.use('/api/v1/cnxTable', cnxTableRouter);
+app.use('/api/v1/tokens', tokensRouter);
 app.use(verifyToken);
 app.use('/api/v1/games', gamesRouter);
 app.use('/api/v1/tables', tablesRouter);

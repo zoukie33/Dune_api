@@ -2,18 +2,21 @@ var express = require('express');
 var mysql   = require("mysql");
 var router = express.Router();
 var md5 = require("MD5");
+var jwt = require('jsonwebtoken');
+var config = require('../../config');
 
 /* GET users listing. */
-router.get('/genToken', function(req, res, next) {
+router.post('/genToken', function(req, res, next) {
+	var idTable = req.body.idTable;
 	var tokenTable = md5(Date.now());
 	console.log(tokenTable);
-	req.mysql.query('INSERT INTO d_tableProf (tokenTable) VALUES ("' + tokenTable + '")', function (error, results, fields) {
+	req.mysql.query('INSERT INTO d_tableProf (tokenTable, idTable) VALUES ("' + tokenTable + '", "' + idTable + '")', function (error, results, fields) {
 	  	if(error){
 	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 	  		//If there is error, we send the error in the error section with 500 status
 	  	} else {
   			res.send(JSON.stringify({"status": 200, "error": null, "tokenTable": tokenTable}));
-	      console.log("Un token a été généré : [" + tokenTable + "]");
+	      console.log("Un token a été généré : [" + tokenTable + " - " + idTable + "]");
 	  	}
   	});
 });
@@ -31,6 +34,27 @@ router.post('/delToken', function(req, res, next) {
   	});
 });
 
+router.post('/verifToken', function(req, res, next) {
+	var token = req.body.tokenTable;
+	req.mysql.query('SELECT idProf FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
+	  	if(error){
+	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+				console.log("token null");
+	  	} else {
+				if (results.length > 0) {
+					var idProf = results[0].idProf
+					if (idProf == 0) {
+						res.send(JSON.stringify({"status": 510, "error": "Token pas utilisé"}));
+						console.log("nope");
+					} else if (idProf > 0) {
+						res.send(JSON.stringify({"status": 200, "idProf": idProf}));
+						console.log("Token utilisé, avec l'idProf : " + idProf);
+					}
+				}
+	  	}
+  	});
+});
+
 router.post('/install', function(req, res, next) {
 	var licenceEcole = req.body.licence;
 	var nomTable = req.body.nom;
@@ -38,7 +62,7 @@ router.post('/install', function(req, res, next) {
 		expiresIn: '3650d'
 	});
 
-	req.mysql.query('INSERT INTO d_tables (nomTable, access_token) VALUES ("' + nomTable + ', '" + token + "'")', function(error, results, fields) {
+	req.mysql.query("INSERT INTO d_tables (nomTable, access_token) VALUES ('" + nomTable + "', '" + token + "')", function(error, results, fields) {
 		if (error){
 			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 		} else {

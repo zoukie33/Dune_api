@@ -26,6 +26,42 @@ router.get('/:id?', function(req, res, next) {
   	});
 });
 
+router.post('/byClasse', function(req, res, next) {
+	var idClasse = req.body.idClasse;
+	if (idClasse) {
+		req.mysql.query('SELECT e.nomEleve, e.prenomEleve FROM d_classeEleve as c, d_eleves as e WHERE e.idEleve = c.idEleve AND c.idClasse = ' + idClasse , function (error, results, fields) {
+		  	if(error){
+		  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+		  	} else {
+					if (results.length != 0) {
+						res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+					}
+		  	}
+	  	});
+	}
+	else {
+		res.send(JSON.stringify({"status": 510, "error": "idClasse is missing"}));
+	}
+});
+
+router.post('/byProf', function(req, res, next) {
+	var idProf = req.body.idProf;
+	if (idProf) {
+		req.mysql.query('SELECT e.idEleve, e.nomEleve, e.prenomEleve, e.BAE, e.INE FROM d_eleves AS e, d_classeEleve AS ce, d_classe AS c, d_profsAppClasse AS pc, d_users AS u WHERE u.idUser = pc.idProf AND pc.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEleve = e.idEleve AND u.idUser = ' + idProf , function (error, results, fields) {
+		  	if(error){
+		  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+		  	} else {
+					if (results.length != 0) {
+						res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+					}
+		  	}
+	  	});
+	}
+	else {
+		res.send(JSON.stringify({"status": 510, "error": "idProf is missing"}));
+	}
+});
+
 router.post('/add', function(req, res, next) {
   var directorId = req.body.directorId;
 	var postData = {
