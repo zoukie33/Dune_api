@@ -3,9 +3,9 @@ var mysql   = require("mysql");
 var router = express.Router();
 var jwt = require('jsonwebtoken');
 var md5 = require("MD5");
-var config = require('../config');
+var config = require('../../config');
 var generator = require('generate-password');
-var resetPass = require('../functions/mails/resetPass');
+var resetPass = require('../../functions/mails/resetPass');
 
 /* GET users listing. */
 router.post('/', function(req, res, next) {
@@ -60,10 +60,8 @@ router.post('/', function(req, res, next) {
 			    if (error){
 			      res.send(JSON.stringify({"status": 500, "error": error, "response": "Erreur d'ajout de token dans la base User."}));
 			    } else {
-			      res.send(JSON.stringify({"status": 200, "response": "User Updated"}));
 			      console.log("Un Token a été mis a jour : [" + token + "]");
 			    }
-			    res.end(JSON.stringify(results));
 			  });
 
 			}	else {
