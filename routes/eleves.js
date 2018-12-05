@@ -1,6 +1,8 @@
 var express = require('express');
 var mysql   = require("mysql");
 var router = express.Router();
+const fileUpload = require('express-fileupload');
+var filez = require('../functions/files/files');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -101,6 +103,33 @@ router.post('/update', function(req, res, next) {
     }
     res.end(JSON.stringify(results));
   });
+});
+
+router.post('/picEleve', function(req, res, next) {
+	if (Object.keys(req.files).length != 0) {
+		var id  = req.body.idEleve;
+		let file;
+
+		file = req.files.picEleve;
+		var fileName = id + "-eleve.png";
+		if (filez.filesGest(file, "eleves/", fileName)) {
+			var query = "UPDATE d_eleves SET picPath = '" + fileName + "'  WHERE idEleve = " + id;
+						req.mysql.query(query, function(error, results, fields) {
+							if (error){
+								res.send(JSON.stringify({"status": 500, "error": error, "response": "Impossible de mettre a jour cet utilisateur."}));
+							} else {
+								res.send(JSON.stringify({"status": 200, "response": "User Updated"}));
+								console.log("Une photo User a été mis a jour : [" + fileName + "]");
+							}
+							res.end(JSON.stringify(results));
+						});
+		} else {
+			res.send(JSON.stringify({"status": 500, "error": "shut"}));
+		}
+	} else {
+		res.send(JSON.stringify({"status": 500, "error": "Error uploading File"}));
+	}
+
 });
 
 module.exports = router;

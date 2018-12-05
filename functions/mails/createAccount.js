@@ -8,7 +8,7 @@ var sendCreateAccountLink = transporter.templateSender(
   new EmailTemplate('./templates/createAccount'), {
     	from: 'Dune <noreply@dune.com>',
   });
-exports.sendPasswordReset = function (email, pass) {
+exports.sendCreateAccount = function (email, pass) {
     // transporter.template
     sendCreateAccountLink({
         to: email,

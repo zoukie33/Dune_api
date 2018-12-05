@@ -58,7 +58,7 @@ router.post('/verifToken', function(req, res, next) {
 router.post('/install', function(req, res, next) {
 	var licenceEcole = req.body.licence;
 	var nomTable = req.body.nom;
-	var token = jwt.sign({ id: nomTable }, config.secret, {
+	var token = jwt.sign({ id: nomTable, perm: 4 }, config.secret, {
 		expiresIn: '3650d'
 	});
 
@@ -76,13 +76,13 @@ router.post('/install', function(req, res, next) {
 router.post('/useToken', function(req, res, next) {
   var token = req.body.tokenTable;
 	var idProf = req.body.idProf;
-	if (req.body.tokenTable != "" && req.body.idProf != "") {
+	if (token && token.length === 32 && idProf) {
 		req.mysql.query('SELECT * FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
 				if(error){
 					res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 					//If there is error, we send the error in the error section with 500 status
 				} else {
-					if (results[0].tokenTable == token){
+					if (results.length > 0 && results[0].tokenTable == token){
 						req.mysql.query('UPDATE d_tableProf SET idProf = ' + idProf + ' WHERE tokenTable = "' + token + '"', function (error, results, fields) {
 							if(error){
 								res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
@@ -94,12 +94,12 @@ router.post('/useToken', function(req, res, next) {
 					});
 				}
 				else {
-					res.send(JSON.stringify({"status": 510, "error": error, "response": "ERREUR"}));
+					res.send(JSON.stringify({"status": 510, "response": "ERREUR"}));
 				}
 			}
 		});
 	} else {
-		res.send(JSON.stringify({"status": 500, "error": error, "response": "ERREUR"}));
+		res.send(JSON.stringify({"status": 500, "response": "ERREUR"}));
 	}
 
 });

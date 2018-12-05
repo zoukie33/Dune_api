@@ -24,7 +24,7 @@ router.post('/', function(req, res, next) {
 		}
 		else {
 			if(rows.length==1){
-				var token = jwt.sign({ id: rows[0].idUser }, config.secret, {
+				var token = jwt.sign({ id: rows[0].idUser, perm: rows[0].typeUser }, config.secret, {
 					expiresIn: '7d'
 				});
 				typeUser = rows[0].typeUser;

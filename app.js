@@ -6,6 +6,7 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var verifyToken = require('./verify');
 var mysql = require('mysql');
+var fileUpload = require('express-fileupload');
 
 // Routes
 var indexRouter = require('./routes/index');
@@ -14,6 +15,7 @@ var logoutRouter = require('./routes/auth/logout');
 var tokensRouter = require('./routes/auth/tokens');
 var usersRouter = require('./routes/users');
 var elevesRouter = require('./routes/eleves');
+var trombiRouter = require('./routes/trombi');
 var ecoleRouter = require('./routes/ecole');
 var gamesRouter = require('./routes/games/games');
 var tablesRouter = require('./routes/table/tables');
@@ -25,27 +27,6 @@ var cEleveRouter = require('./routes/classe/classeEleve');
 
 var app = express();
 
-var pool = mysql.createPool({
-  host: 'localhost',
-  user: 'admin',
-  password: 'fnbxfzmxfn33',
-  database: 'dune_api',
-  insecureAuth: true,
-  queueLimit : 0,
-  connectionLimit : 0,
-});
-
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
-}));
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-
-app.use(logger('development'));
-
 app.all('*', function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -56,6 +37,34 @@ app.all('*', function(req, res, next) {
       next();
     }
   });
+
+var pool = mysql.createPool({
+  host: 'localhost',
+  user: 'admin',
+  password: 'fnbxfzmxfn33',
+  database: 'dune_api',
+  insecureAuth: true,
+  queueLimit : 0,
+  connectionLimit : 0,
+});
+
+app.use(fileUpload({
+  limits: { fileSize: 50 * 1024 * 1024 },
+  preserveExtension: 2
+}));
+
+app.use(express.static('public'));
+app.use('/files', express.static('files'));
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+}));
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+app.use(logger('development'));
 
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -71,6 +80,7 @@ app.use('/api/v1/cnxTable', cnxTableRouter);
 app.use('/api/v1/tokens', tokensRouter);
 app.use(verifyToken);
 app.use('/api/v1/games', gamesRouter);
+app.use('/api/v1/trombi', trombiRouter);
 app.use('/api/v1/tables', tablesRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/eleves', elevesRouter);
