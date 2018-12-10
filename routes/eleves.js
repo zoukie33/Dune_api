@@ -81,7 +81,7 @@ router.post('/add', function(req, res, next) {
 			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 		} else {
 			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-      console.log("Un Prof a été ajouté : [" + nom + " - " + prenom + "]");
+      console.log("Un élève a été ajouté : [" + nom + " - " + prenom + "]");
 		}
 	  res.end(JSON.stringify(results));
 	});

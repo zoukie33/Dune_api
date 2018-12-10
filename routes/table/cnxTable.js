@@ -61,16 +61,21 @@ router.post('/install', function(req, res, next) {
 	var token = jwt.sign({ id: nomTable, perm: 4 }, config.secret, {
 		expiresIn: '3650d'
 	});
+	console.log("Install demandée : [" + nomTable + " - " + licenceEcole + "]");
+	if (licenceEcole === "123") {
+		req.mysql.query("INSERT INTO d_tables (nomTable, access_token) VALUES ('" + nomTable + "', '" + token + "')", function(error, results, fields) {
+			if (error){
+				res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+			} else {
+				res.send(JSON.stringify({"status": 200, "error": null, "token": token}));
+	      console.log("Une Table a été ajoutée : [" + nomTable + " - " + licenceEcole + "]");
+			}
+		  res.end(JSON.stringify(results));
+		});
+	} else {
+		res.send(JSON.stringify({"status": 500, "response": "Licence Not found."}));
+	}
 
-	req.mysql.query("INSERT INTO d_tables (nomTable, access_token) VALUES ('" + nomTable + "', '" + token + "')", function(error, results, fields) {
-		if (error){
-			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-		} else {
-			res.send(JSON.stringify({"status": 200, "error": null, "token": token}));
-      console.log("Une Table a été ajoutée : [" + nomTable + " - " + licenceEcole + "]");
-		}
-	  res.end(JSON.stringify(results));
-	});
 });
 
 router.post('/useToken', function(req, res, next) {
