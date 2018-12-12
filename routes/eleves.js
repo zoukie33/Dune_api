@@ -19,7 +19,7 @@ router.get('/', function(req, res, next) {
 
 
 router.get('/:id?', function(req, res, next) {
-	req.mysql.query('SELECT * from d_eleves WHERE idEleve = ' + req.params.id , function (error, results, fields) {
+	req.mysql.query('SELECT e.*, c.idClasse FROM d_eleves AS e, d_classeEleve AS c WHERE e.idEleve = c.idEleve AND e.idEleve = ' + req.params.id , function (error, results, fields) {
 	  	if(error){
 	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 	  	} else {
