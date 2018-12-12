@@ -14,9 +14,7 @@ router.post('/', function(req, res, next) {
 		password:req.body.password
 	}
 	console.log(post);
-		var query = "SELECT * FROM ?? WHERE ??=? AND ??=?";
-		var table = ["d_users","pass",  md5(post.password), "emailUser", post.email];
-		query = mysql.format(query,table);
+		var query = "SELECT u.*, a.idEcole FROM d_users as u, d_profsAppEcole as a WHERE u.idUser = a.idProf AND u.pass='"+ md5(post.password) +"' AND u.emailUser= '" + post.email +"'";
 
 		req.mysql.query(query,function(err,rows){
 		if(err) {
@@ -28,7 +26,9 @@ router.post('/', function(req, res, next) {
 					expiresIn: '7d'
 				});
 				typeUser = rows[0].typeUser;
-				user_id= rows[0].idUser;
+				user_id = rows[0].idUser;
+				idEcole = rows[0].idEcole;
+
 				var data  = {
 					user_id:rows[0].idUser,
 					device_type:rows[0].device_type,
@@ -49,7 +49,8 @@ router.post('/', function(req, res, next) {
 							message: 'Token generated',
 							token: token,
 							currUser: user_id,
-							typeUser: typeUser
+							typeUser: typeUser,
+							idEcole: idEcole
 						});
           }
         });

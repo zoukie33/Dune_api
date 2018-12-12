@@ -144,4 +144,75 @@ router.post('/picProf', function(req, res, next) {
 		res.send(JSON.stringify({"status": 500, "error": "Error uploading File"}));
 	}
 });
+
+router.post('/changePassword', function(req, res, next) {
+		var idUser  = req.body.idUser;
+		var oldPassword = req.body.oldPassword;
+		var newPassword = req.body.newPassword;
+
+		if (idUser && oldPassword && newPassword) {
+			var query = "SELECT pass FROM d_users WHERE idUser = " + idUser;
+			req.mysql.query(query,function(err,rows) {
+				if(err) {
+					res.json({"Error" : true, "Message" : err});
+				} else {
+					if (rows[0].pass == md5(oldPassword)) {
+						var query = "UPDATE d_users SET pass = '"+ md5(newPassword) +"' WHERE idUser = " + idUser;
+						req.mysql.query(query,function(err,rows) {
+							if(err) {
+								res.json({"Error" : true, "Message" : err});
+							} else {
+								res.send(JSON.stringify({"status": 200, "response": "Password changed."}));
+							}
+						});
+					} else {
+						res.send(JSON.stringify({"status": 500, "error": "Invalid old password."}));
+					}
+				}
+			});
+		} else {
+			res.send(JSON.stringify({"status": 500, "error": "Un de ces paramètres manquent dans le body: idUser, oldPassword, newPassword."}));
+		}
+});
+
+router.post('/changeEmail', function(req, res, next) {
+		var idUser  = req.body.idUser;
+		var password = req.body.password;
+		var newEmail = req.body.newEmail;
+
+		if (idUser && password && newEmail) {
+			var query = "SELECT pass FROM d_users WHERE idUser = " + idUser;
+			req.mysql.query(query,function(err,rows) {
+				if(err) {
+					res.json({"Error" : true, "Message" : err});
+				} else {
+					if (rows[0].pass == md5(password)) {
+						var query2 = "SELECT idUser FROM d_users WHERE emailUser = '" + newEmail + "'";
+						req.mysql.query(query2,function(err,rows) {
+							if(err) {
+								res.json({"Error" : true, "Message" : err});
+							} else {
+								if (rows.length == 0) {
+									var query3 = "UPDATE d_users SET emailUser = '"+ newEmail +"' WHERE idUser = " + idUser;
+									req.mysql.query(query3,function(err,rows) {
+										if(err) {
+											res.json({"Error" : true, "Message" : err});
+										} else {
+											res.send(JSON.stringify({"status": 200, "response": "Email changed."}));
+										}
+									});
+								} else {
+									res.send(JSON.stringify({"status": 500, "error": "This Email already exist."}));
+								}
+							}
+						});
+					} else {
+						res.send(JSON.stringify({"status": 500, "error": "Invalid password."}));
+					}
+				}
+			});
+		} else {
+			res.send(JSON.stringify({"status": 500, "error": "Un de ces paramètres manquent dans le body: idUser, oldPassword, newPassword."}));
+		}
+});
 module.exports = router;

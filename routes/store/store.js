@@ -3,7 +3,7 @@ var mysql   = require("mysql");
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
-	req.mysql.query('SELECT g.id, g.name, c.nom, g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator' , function (error, results, fields) {
+	req.mysql.query('SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator' , function (error, results, fields) {
 	  	if(error){
 	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 	  		//If there is error, we send the error in the error section with 500 status
