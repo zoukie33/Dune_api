@@ -33,7 +33,7 @@ router.post('/validating', function(req, res, next) {
   var idDemande = req.body.idDemande;
 
   if (typeUser && idDemande) {
-    if (typeUser === 2) {
+    if (typeUser == 2) {
       var query = "SELECT idGame, idEcole FROM d_demandeAchatGame WHERE idDemande = " + idDemande;
     } else {
       res.send(JSON.stringify({"status": 500, "response": "Seulement un directeur peut utiliser cette fonction."}));
@@ -51,4 +51,26 @@ router.post('/validating', function(req, res, next) {
   }
 });
 
+router.post('/getNotifsNb', function(req, res, next) {
+  var typeUser = req.body.typeUser;
+  var idUser = req.body.idUser;
+  var idEcole = req.body.idEcole;
+
+  if (idEcole || idUser) {
+    if (typeUser == 2 && idEcole) {
+      var query = "SELECT COUNT(idDemande) AS nb FROM d_demandeAchatGame WHERE idEcole = " + idEcole;
+    } else {
+      var query = "SELECT COUNT(idDemande) AS nb FROM d_demandeAchatGame WHERE idProf = " + idUser;
+    }
+      req.mysql.query(query, function (error, results, fields) {
+    	  	if(error){
+    	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+    	  	} else {
+      			res.send(JSON.stringify({"status": 200, "error": null, "nb": results[0].nb}));
+    	  	}
+      	});
+  } else {
+    res.send(JSON.stringify({"status": 500, "response": "Parametres demandées : typeUser et/ou idEcole ou idUser"}));
+  }
+});
 module.exports = router;
