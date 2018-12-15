@@ -2,8 +2,14 @@ var express = require('express');
 var mysql   = require("mysql");
 var router = express.Router();
 
-router.get('/', function(req, res, next) {
-	req.mysql.query('SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator' , function (error, results, fields) {
+router.post('/', function(req, res, next) {
+	var idType = req.body.idType;
+	if (idType == 0) {
+		var query = "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator";
+	} else {
+		var query = "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND idType = " + idType;
+	}
+	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
 	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 	  		//If there is error, we send the error in the error section with 500 status
@@ -99,4 +105,14 @@ router.post('/buyAppDirecteur', function(req, res, next) {
 
 });
 
+router.get('/typesGames', function(req, res, next) {
+	var query = "SELECT * FROM d_typeGames";
+    req.mysql.query(query, function (error, results, fields) {
+  	  	if(error){
+  	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+  	  	} else {
+    			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+  	  	}
+    	});
+});
 module.exports = router;
