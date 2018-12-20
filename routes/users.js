@@ -8,7 +8,42 @@ var filez = require('../functions/files/files');
 var jwtDecode = require('../functions/tokens');
 const fileUpload = require('express-fileupload');
 
-/* GET users listing. */
+/**
+ * @api {get} /users/ Request All Users
+ * @apiName GetUsers
+ * @apiGroup Users
+ * @apiPermission Loged
+ *
+ *
+ * @apiSuccess {Int} idUser Firstname of the User.
+ * @apiSuccess {String} nomUser Firstname of the User.
+ * @apiSuccess {String} prenomUser Firstname of the User.
+ * @apiSuccess {String} emailUser  Lastname of the User.
+ * @apiSuccess {String} pass  Lastname of the User.
+ * @apiSuccess {Int} typeUser  Lastname of the User.
+ * @apiSuccess {String} picPath  Lastname of the User.
+ * @apiSuccess {Text} access_token  Lastname of the User.
+ * @apiSuccess {String} device_type  Lastname of the User.
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *    "status": 200,
+ *    "error": null,
+ *    "response": [
+ *        {
+ *            "idUser": 0,
+ *            "nomUser": "blank",
+ *            "prenomUser": "blank",
+ *            "emailUser": "blank@blank.com",
+ *            "pass": "04b2c7d23cdd19843241b20b331992a7",
+ *            "typeUser": 3,
+ *            "picPath": null,
+ *            "access_token": "TokenAuth",
+ *            "device_type": "web"
+ *        }
+ * }
+ *
+ */
 router.get('/', function(req, res, next) {
 	req.mysql.query('SELECT * from d_users', function (error, results, fields) {
 	  	if(error){
@@ -22,6 +57,45 @@ router.get('/', function(req, res, next) {
   	});
 });
 
+/**
+ * @api {get} /users/:id Request User information
+ * @apiName GetUser
+ * @apiGroup Users
+ * @apiPermission Loged
+ *
+ * @apiParam {Number} id Users unique ID.
+ *
+ * @apiSuccess {Int} idUser Firstname of the User.
+ * @apiSuccess {String} nomUser Firstname of the User.
+ * @apiSuccess {String} prenomUser Firstname of the User.
+ * @apiSuccess {String} emailUser  Lastname of the User.
+ * @apiSuccess {String} pass  Lastname of the User.
+ * @apiSuccess {Int} typeUser  Lastname of the User.
+ * @apiSuccess {String} picPath  Lastname of the User.
+ * @apiSuccess {Text} access_token  Lastname of the User.
+ * @apiSuccess {String} device_type  Lastname of the User.
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *         {
+ *             "idUser": 0,
+ *             "nomUser": "blank",
+ *             "prenomUser": "blank",
+ *             "emailUser": "blank@blank.com",
+ *             "pass": "04b2c7d23cdd19843241b20b331992a7",
+ *             "typeUser": 3,
+ *             "picPath": null,
+ *             "access_token": "n/a",
+ *             "device_type": "web"
+ *         }
+ *     ]
+ * }
+ *
+ */
+
 router.get('/:id?', function(req, res, next) {
 	req.mysql.query('SELECT * from d_users WHERE idUser = ' + req.params.id , function (error, results, fields) {
 	  	if(error){
@@ -34,6 +108,20 @@ router.get('/:id?', function(req, res, next) {
       console.log("user id");
   	});
 });
+
+/**
+ * @api {post} /users/add Create new User
+ * @apiName AddUser
+ * @apiGroup Users
+ * @apiPermission Loged
+ *
+ * @apiParam {String} nom.
+ * @apiParam {String} prenom.
+ * @apiParam {String} email.
+ *
+ *
+ *
+ */
 
 router.post('/add', function(req, res, next) {
 
