@@ -28,6 +28,17 @@ router.get('/:id?', function(req, res, next) {
   	});
 });
 
+/**
+ * @api {post} /eleves/byClasse Get students by idClasse
+ * @apiName byClasse
+ * @apiGroup Eleves
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idClasse
+ *
+ */
+
 router.post('/byClasse', function(req, res, next) {
 	var idClasse = req.body.idClasse;
 	if (idClasse) {
@@ -46,6 +57,17 @@ router.post('/byClasse', function(req, res, next) {
 	}
 });
 
+/**
+ * @api {post} /eleves/byProf Get students by idProf
+ * @apiName byProf
+ * @apiGroup Eleves
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idProf
+ *
+ */
+
 router.post('/byProf', function(req, res, next) {
 	var idProf = req.body.idProf;
 	if (idProf) {
@@ -63,6 +85,19 @@ router.post('/byProf', function(req, res, next) {
 		res.send(JSON.stringify({"status": 510, "error": "idProf is missing"}));
 	}
 });
+
+/**
+ * @api {post} /eleves/add Create new student
+ * @apiName add
+ * @apiGroup Eleves
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} directorId L'id du mec
+ * @apiParam {String} nom
+ * @apiParam {Int} prenom
+ *
+ */
 
 router.post('/add', function(req, res, next) {
   var directorId = req.body.directorId;
@@ -87,6 +122,19 @@ router.post('/add', function(req, res, next) {
 	});
 });
 
+/**
+ * @api {post} /eleves/update Updating a student
+ * @apiName update
+ * @apiGroup Eleves
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idEleve
+ * @apiParam {String} nomEleve
+ * @apiParam {String} prenomEleve
+ *
+ */
+
 router.post('/update', function(req, res, next) {
 	var id  = req.body.idEleve;
   var nom  = req.body.nomEleve;
@@ -104,6 +152,18 @@ router.post('/update', function(req, res, next) {
     res.end(JSON.stringify(results));
   });
 });
+
+/**
+ * @api {post} /eleves/picEleve Uploading studient picture
+ * @apiName picEleve
+ * @apiGroup Eleves
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idEleve
+ * @apiParam {File} picEleve
+ *
+ */
 
 router.post('/picEleve', function(req, res, next) {
 	if (Object.keys(req.files).length != 0) {

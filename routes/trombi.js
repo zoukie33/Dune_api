@@ -2,6 +2,20 @@ var express = require('express');
 var mysql   = require("mysql");
 var router = express.Router();
 
+/**
+ * @api {post} /trombi/ Get all students trombi
+ * @apiName getAllStudents
+ * @apiGroup Trombi
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idUser
+ * @apiParam {String} typeUser
+ * @apiParam {String} search
+ *
+ *
+ */
+
 router.post('/', function(req, res, next) {
   var idUser = req.body.idUser;
   var typeUser = req.body.typeUser;
@@ -35,6 +49,19 @@ router.post('/', function(req, res, next) {
   }
 });
 
+/**
+ * @api {post} /trombi/classes Get all classes the user can view
+ * @apiName classes
+ * @apiGroup Trombi
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idUser
+ * @apiParam {String} typeUser
+ *
+ *
+ */
+
 router.post('/classes', function(req, res, next) {
   var idUser = req.body.idUser;
   var typeUser = req.body.typeUser;
@@ -56,6 +83,21 @@ router.post('/classes', function(req, res, next) {
     res.send(JSON.stringify({"status": 500, "error": "idUser ou typeUser manquants."}));
   }
 });
+
+/**
+ * @api {post} /trombi/byClasse Get all trombi students for one class
+ * @apiName byClasse
+ * @apiGroup Trombi
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idUser
+ * @apiParam {String} typeUser
+ * @apiParam {Int} idClasse
+ * @apiParam {String} search
+ *
+ *
+ */
 
 router.post('/byClasse', function(req, res, next) {
   var idUser = req.body.idUser;

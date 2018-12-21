@@ -4,7 +4,14 @@ var router = express.Router();
 const fileUpload = require('express-fileupload');
 var filez = require('../../functions/files/files');
 
-/* GET users listing. */
+/**
+ * @api {get} /games/ Getting all the games
+ * @apiName games
+ * @apiGroup Games
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ */
+
 router.get('/', function(req, res, next) {
 	req.mysql.query('SELECT * from d_games', function (error, results, fields) {
 	  	if(error){
@@ -17,6 +24,14 @@ router.get('/', function(req, res, next) {
   	});
 });
 
+/**
+ * @api {get} /games/:id Getting a game
+ * @apiName gamesById
+ * @apiGroup Games
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ */
+
 router.get('/:id?', function(req, res, next) {
 	req.mysql.query('SELECT * from d_games WHERE id = ' + req.params.id , function (error, results, fields) {
 	  	if(error){
@@ -28,6 +43,17 @@ router.get('/:id?', function(req, res, next) {
 	  	}
   	});
 });
+
+/**
+ * @api {post} /games/add Creating a game
+ * @apiName addGame
+ * @apiGroup Games
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {String} name
+ * @apiParam {String} creator
+ */
 
 router.post('/add', function(req, res, next) {
   var name  = req.body.name;
@@ -46,6 +72,18 @@ router.post('/add', function(req, res, next) {
   });
 });
 
+/**
+ * @api {post} /games/update Updating a game
+ * @apiName updateGame
+ * @apiGroup Games
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} id
+ * @apiParam {String} name
+ * @apiParam {String} creator
+ */
+
 router.post('/update', function(req, res, next) {
   var id  = req.body.id;
   var name  = req.body.name;
@@ -63,6 +101,17 @@ router.post('/update', function(req, res, next) {
     res.end(JSON.stringify(results));
   });
 });
+
+/**
+ * @api {post} /games/picGame Uploading a picture for the game
+ * @apiName picGame
+ * @apiGroup Games
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idGame
+ * @apiParam {File} picGame
+ */
 
 router.post('/picGame', function(req, res, next) {
 	if (Object.keys(req.files).length != 0) {

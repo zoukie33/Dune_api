@@ -15,7 +15,6 @@ router.get('/', function(req, res, next) {
   	});
 });
 
-
 router.post('/update', function(req, res, next) {
 	// var id  = req.body.idEleve;
   // var nom  = req.body.nomEleve;

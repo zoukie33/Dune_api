@@ -7,7 +7,17 @@ var config = require('../../config');
 var generator = require('generate-password');
 var resetPass = require('../../functions/mails/resetPass');
 
-/* GET users listing. */
+/**
+ * @api {post} /login/ Login an User
+ * @apiName Login
+ * @apiGroup Auth
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {String} email
+ * @apiParam {String} password
+ */
+
 router.post('/', function(req, res, next) {
 	var post = {
 		email:req.body.email,
@@ -72,6 +82,15 @@ router.post('/', function(req, res, next) {
 	});
 });
 
+/**
+ * @api {post} /login/reset Forget password
+ * @apiName Reset
+ * @apiGroup Auth
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {String} email
+ */
 
 router.post('/reset', function(req, res, next) {
 	var email = req.body.email;

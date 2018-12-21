@@ -1,7 +1,7 @@
 {
-  "name": "Task API documentation",
+  "name": "Dune API documentation",
   "version": "1.0.0",
-  "description": "API task list manager",
+  "description": "Dune task Routes",
   "template": {
     "forceLanguage": "en"
   },
@@ -10,7 +10,7 @@
   "apidoc": "0.3.0",
   "generator": {
     "name": "apidoc",
-    "time": "2018-12-20T04:49:28.384Z",
+    "time": "2018-12-21T00:46:26.632Z",
     "url": "http://apidocjs.com",
     "version": "0.17.7"
   }

@@ -12,7 +12,8 @@ const fileUpload = require('express-fileupload');
  * @api {get} /users/ Request All Users
  * @apiName GetUsers
  * @apiGroup Users
- * @apiPermission Loged
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
  *
  *
  * @apiSuccess {Int} idUser Firstname of the User.
@@ -61,7 +62,8 @@ router.get('/', function(req, res, next) {
  * @api {get} /users/:id Request User information
  * @apiName GetUser
  * @apiGroup Users
- * @apiPermission Loged
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
  *
  * @apiParam {Number} id Users unique ID.
  *
@@ -113,11 +115,12 @@ router.get('/:id?', function(req, res, next) {
  * @api {post} /users/add Create new User
  * @apiName AddUser
  * @apiGroup Users
- * @apiPermission Loged
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
  *
- * @apiParam {String} nom.
- * @apiParam {String} prenom.
- * @apiParam {String} email.
+ * @apiParam {String} nom
+ * @apiParam {String} prenom
+ * @apiParam {String} email
  *
  *
  *
@@ -178,6 +181,21 @@ router.post('/add', function(req, res, next) {
 	}
 });
 
+/**
+ * @api {post} /users/update Update an User
+ * @apiName updateUser
+ * @apiGroup Users
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idUser
+ * @apiParam {String} nomUser
+ * @apiParam {String} prenomUser
+ *
+ *
+ *
+ */
+
 router.post('/update', function(req, res, next) {
   var id  = req.body.idUser;
   var nom  = req.body.nomUser;
@@ -206,6 +224,20 @@ router.post('/update', function(req, res, next) {
 			}
 });
 
+/**
+ * @api {post} /users/picProf Uploading an Users picture
+ * @apiName picProf
+ * @apiGroup Users
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idUser
+ * @apiParam {File} picProf
+ *
+ *
+ *
+ */
+
 router.post('/picProf', function(req, res, next) {
 	if (Object.keys(req.files).length != 0) {
 		var id  = req.body.idUser;
@@ -232,6 +264,21 @@ router.post('/picProf', function(req, res, next) {
 		res.send(JSON.stringify({"status": 500, "error": "Error uploading File"}));
 	}
 });
+
+/**
+ * @api {post} /users/changePassword Changing an Users password
+ * @apiName changePassword
+ * @apiGroup Users
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idUser
+ * @apiParam {String} oldPassword
+ * @apiParam {String} newPassword
+ *
+ *
+ *
+ */
 
 router.post('/changePassword', function(req, res, next) {
 		var idUser  = req.body.idUser;
@@ -262,6 +309,21 @@ router.post('/changePassword', function(req, res, next) {
 			res.send(JSON.stringify({"status": 500, "error": "Un de ces paramètres manquent dans le body: idUser, oldPassword, newPassword."}));
 		}
 });
+
+/**
+ * @api {post} /users/changeEmail Changing an Users Email
+ * @apiName changeEmail
+ * @apiGroup Users
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idUser
+ * @apiParam {String} password
+ * @apiParam {String} newEmail
+ *
+ *
+ *
+ */
 
 router.post('/changeEmail', function(req, res, next) {
 		var idUser  = req.body.idUser;

@@ -4,6 +4,16 @@ var router = express.Router();
 var jwt = require('jsonwebtoken');
 var config = require('../../config');
 
+/**
+ * @api {post} /tokens/verifyToken Verifying a jwt token
+ * @apiName verifyToken
+ * @apiGroup Auth
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {String} token
+ */
+
 router.post('/verifyToken', function(req, res, next) {
   var token = req.body.token || req.query.token || req.headers['token'];
    if (token) {

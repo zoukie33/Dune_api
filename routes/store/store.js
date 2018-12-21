@@ -2,6 +2,16 @@ var express = require('express');
 var mysql   = require("mysql");
 var router = express.Router();
 
+/**
+ * @api {post} /store/ Getting all items in store
+ * @apiName Store
+ * @apiGroup Store
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idType
+ */
+
 router.post('/', function(req, res, next) {
 	var idType = req.body.idType;
 	if (idType == 0) {
@@ -20,6 +30,16 @@ router.post('/', function(req, res, next) {
   	});
 });
 
+/**
+ * @api {post} /store/getApp Getting an app by id
+ * @apiName getApp
+ * @apiGroup Store
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idApp
+ */
+
 router.post('/getApp', function(req, res, next) {
   var idApp = req.body.idApp;
   if (idApp) {
@@ -37,6 +57,16 @@ router.post('/getApp', function(req, res, next) {
   }
 });
 
+/**
+ * @api {post} /store/getAppsEcole Getting apps already buyed by a school
+ * @apiName getAppsEcole
+ * @apiGroup Store
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idEcole
+ */
+
 router.post('/getAppsEcole', function(req, res, next) {
   var idEcole = req.body.idEcole;
   if (idEcole) {
@@ -53,6 +83,19 @@ router.post('/getAppsEcole', function(req, res, next) {
     res.send(JSON.stringify({"status": 500, "response": "Parametre manquant : idEcole"}));
   }
 });
+
+/**
+ * @api {post} /store/buyApp Asking for buying an app by a prof
+ * @apiName buyApp
+ * @apiGroup Store
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idApp
+ * @apiParam {Int} idProf
+ * @apiParam {Int} idEcole
+ * @apiParam {String} commentaire
+ */
 
 router.post('/buyApp', function(req, res, next) {
   var idApp = req.body.idApp;
@@ -79,6 +122,17 @@ router.post('/buyApp', function(req, res, next) {
 
 });
 
+/**
+ * @api {post} /store/buyAppDirecteur Buying directly an App
+ * @apiName buyAppDirecteur
+ * @apiGroup Store
+ * @apiPermission Logged + Director
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idApp
+ * @apiParam {Int} idEcole
+ */
+
 router.post('/buyAppDirecteur', function(req, res, next) {
   var idApp = req.body.idApp;
   var idEcole = req.body.idEcole;
@@ -104,6 +158,14 @@ router.post('/buyAppDirecteur', function(req, res, next) {
   }
 
 });
+
+/**
+ * @api {get} /store/typesGames Getting all games types
+ * @apiName typesGames
+ * @apiGroup Store
+ * @apiPermission Logged + Director
+ * @apiVersion 1.0.0
+ */
 
 router.get('/typesGames', function(req, res, next) {
 	var query = "SELECT * FROM d_typeGames";

@@ -2,6 +2,18 @@ var express = require('express');
 var mysql   = require("mysql");
 var router = express.Router();
 
+/**
+ * @api {post} /notifs/ Get all notifications
+ * @apiName Notifs
+ * @apiGroup Notifs
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} typeUser
+ * @apiParam {Int} idUser
+ * @apiParam {Int} idEcole
+ */
+
 router.post('/', function(req, res, next) {
   var typeUser = req.body.typeUser;
   var idUser = req.body.idUser;
@@ -28,6 +40,17 @@ router.post('/', function(req, res, next) {
   }
 });
 
+/**
+ * @api {post} /notifs/validating Validating an appAsk
+ * @apiName Validating
+ * @apiGroup Notifs
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} typeUser
+ * @apiParam {Int} idDemande
+ */
+
 router.post('/validating', function(req, res, next) {
   var typeUser = req.body.typeUser;
   var idDemande = req.body.idDemande;
@@ -50,6 +73,18 @@ router.post('/validating', function(req, res, next) {
     res.send(JSON.stringify({"status": 500, "response": "Parametres demandées : typeUser, idDemande"}));
   }
 });
+
+/**
+ * @api {post} /notifs/getNotifsNb Getting the number of the notifications
+ * @apiName getNotifsNb
+ * @apiGroup Notifs
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} typeUser
+ * @apiParam {Int} idUser
+ * @apiParam {Int} idEcole
+ */
 
 router.post('/getNotifsNb', function(req, res, next) {
   var typeUser = req.body.typeUser;

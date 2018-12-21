@@ -5,7 +5,16 @@ var md5 = require("MD5");
 var jwt = require('jsonwebtoken');
 var config = require('../../config');
 
-/* GET users listing. */
+/**
+ * @api {post} /cnxTable/genToken Generating a token Table
+ * @apiName genToken
+ * @apiGroup Table
+ * @apiPermission notLogged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idTable
+ */
+
 router.post('/genToken', function(req, res, next) {
 	var idTable = req.body.idTable;
 	var tokenTable = md5(Date.now());
@@ -21,6 +30,16 @@ router.post('/genToken', function(req, res, next) {
   	});
 });
 
+/**
+ * @api {post} /cnxTable/delToken Deleting a token Table
+ * @apiName delToken
+ * @apiGroup Table
+ * @apiPermission notLogged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {String} tokenTable
+ */
+
 router.post('/delToken', function(req, res, next) {
   var token = req.body.tokenTable;
 	req.mysql.query('DELETE FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
@@ -33,6 +52,16 @@ router.post('/delToken', function(req, res, next) {
 	  	}
   	});
 });
+
+/**
+ * @api {post} /cnxTable/verifToken Virifying a token Table
+ * @apiName verifToken
+ * @apiGroup Table
+ * @apiPermission notLogged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {String} tokenTable
+ */
 
 router.post('/verifToken', function(req, res, next) {
 	var token = req.body.tokenTable;
@@ -54,6 +83,17 @@ router.post('/verifToken', function(req, res, next) {
 	  	}
   	});
 });
+
+/**
+ * @api {post} /cnxTable/install Installing a new Table
+ * @apiName install
+ * @apiGroup Table
+ * @apiPermission notLogged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {String} licence
+ * @apiParam {String} nom
+ */
 
 router.post('/install', function(req, res, next) {
 	var licenceEcole = req.body.licence;
@@ -77,6 +117,17 @@ router.post('/install', function(req, res, next) {
 	}
 
 });
+
+/**
+ * @api {post} /cnxTable/useToken Joining a Table with user (qrCode)
+ * @apiName useToken
+ * @apiGroup Table
+ * @apiPermission notLogged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {String} tokenTable
+ * @apiParam {Int} idProf
+ */
 
 router.post('/useToken', function(req, res, next) {
   var token = req.body.tokenTable;
