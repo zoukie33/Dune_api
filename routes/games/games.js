@@ -10,6 +10,22 @@ var filez = require('../../functions/files/files');
  * @apiGroup Games
  * @apiPermission Logged
  * @apiVersion 1.0.0
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *         {
+ *             "id": 1,
+ *             "idType": 1,
+ *             "name": "testApp",
+ *             "creator": 1,
+ *             "path": "NULL",
+ *             "picPath": "1-app.png"
+ *         }
+ *     ]
+ * }
+ *
  */
 
 router.get('/', function(req, res, next) {
@@ -30,6 +46,21 @@ router.get('/', function(req, res, next) {
  * @apiGroup Games
  * @apiPermission Logged
  * @apiVersion 1.0.0
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *         {
+ *             "id": 1,
+ *             "idType": 1,
+ *             "name": "testApp",
+ *             "creator": 1,
+ *             "path": "NULL",
+ *             "picPath": "1-app.png"
+ *         }
+ *     ]
+ * }
  */
 
 router.get('/:id?', function(req, res, next) {
@@ -51,8 +82,8 @@ router.get('/:id?', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {String} name
- * @apiParam {String} creator
+ * @apiParam {String} name Nom de l'application/jeu.
+ * @apiParam {String} creator Nom du créateur.
  */
 
 router.post('/add', function(req, res, next) {
@@ -79,9 +110,9 @@ router.post('/add', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} id
- * @apiParam {String} name
- * @apiParam {String} creator
+ * @apiParam {Int} id Id de l'app/jeu.
+ * @apiParam {String} name Nom de l'application.
+ * @apiParam {String} creator Nom du créateur.
  */
 
 router.post('/update', function(req, res, next) {
@@ -109,8 +140,8 @@ router.post('/update', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idGame
- * @apiParam {File} picGame
+ * @apiParam {Int} idGame Id de l'app/jeu.
+ * @apiParam {File} picGame Image.
  */
 
 router.post('/picGame', function(req, res, next) {

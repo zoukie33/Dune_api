@@ -4,7 +4,31 @@ var router = express.Router();
 const fileUpload = require('express-fileupload');
 var filez = require('../functions/files/files');
 
-/* GET users listing. */
+/**
+ * @api {get} /eleves/ Get all students
+ * @apiName getAll
+ * @apiGroup Eleves
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiError 500 SQL Error.
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *         {
+ *            "idEleve": 1,
+ *            "nomEleve": "Merveillau",
+ *            "prenomEleve": "Denis",
+ *            "BAE": null,
+ *            "INE": null,
+ *            "picPath": "1-eleve.png"
+ *        }
+ *     ]
+ * }
+ */
 router.get('/', function(req, res, next) {
 	req.mysql.query('SELECT * from d_eleves', function (error, results, fields) {
 	  	if(error){
@@ -17,6 +41,31 @@ router.get('/', function(req, res, next) {
   	});
 });
 
+/**
+ * @api {get} /eleves/:id Get student by id
+ * @apiName getById
+ * @apiGroup Eleves
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiError 500 SQL Error.
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *         {
+ *            "idEleve": 1,
+ *            "nomEleve": "Merveillau",
+ *            "prenomEleve": "Denis",
+ *            "BAE": null,
+ *            "INE": null,
+ *            "picPath": "1-eleve.png"
+ *        }
+ *     ]
+ * }
+ */
 
 router.get('/:id?', function(req, res, next) {
 	req.mysql.query('SELECT e.*, c.idClasse FROM d_eleves AS e, d_classeEleve AS c WHERE e.idEleve = c.idEleve AND e.idEleve = ' + req.params.id , function (error, results, fields) {
@@ -35,8 +84,24 @@ router.get('/:id?', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idClasse
- *
+ * @apiParam {Int} idClasse IdClasse des élèves à récupérer.
+ * @apiError 510 idClasse is missing.
+ * @apiError 500 SQL Error.
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *         {
+ *            "nomEleve": "Merveillau",
+ *            "prenomEleve": "Denis"
+ *         },
+ *         {
+ *            "nomEleve": "Senouci",
+ *            "prenomEleve": "Elies"
+ *         }
+ *     ]
+ * }
  */
 
 router.post('/byClasse', function(req, res, next) {
@@ -64,8 +129,31 @@ router.post('/byClasse', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idProf
+ * @apiParam {Int} idProf idProf associé aux classes voulues.
+ * @apiError 510 idProf is missing.
+ * @apiError 500 SQL Error.
  *
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ * 				 {
+ *             "idEleve": 1,
+ *             "nomEleve": "Merveillau",
+ *             "prenomEleve": "Denis",
+ *             "BAE": null,
+ *             "INE": null
+ *        	},
+ *        	{
+ *             "idEleve": 2,
+ *             "nomEleve": "Senouci",
+ *             "prenomEleve": "Elies",
+ *             "BAE": null,
+ *             "INE": null
+ *        	}
+ *     ]
+ * }
  */
 
 router.post('/byProf', function(req, res, next) {
@@ -93,9 +181,10 @@ router.post('/byProf', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} directorId L'id du mec
- * @apiParam {String} nom
- * @apiParam {Int} prenom
+ * @apiParam {Int} directorId L'id du directeur.
+ * @apiParam {String} nom Nom de l'élève a ajouter.
+ * @apiParam {Int} prenom Prénom de l'élève a ajouter.
+ * @apiError 500 SQL Error.
  *
  */
 
@@ -129,9 +218,9 @@ router.post('/add', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idEleve
- * @apiParam {String} nomEleve
- * @apiParam {String} prenomEleve
+ * @apiParam {Int} idEleve Id de l'élève a mettre a jour.
+ * @apiParam {String} nomEleve Nom de l'élève a mettre a jour.
+ * @apiParam {String} prenomEleve Prénom de l'élève a mettre a jour.
  *
  */
 
@@ -160,8 +249,8 @@ router.post('/update', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idEleve
- * @apiParam {File} picEleve
+ * @apiParam {Int} idEleve Id de l'élève en question.
+ * @apiParam {File} picEleve Image de l'élève à uploader.
  *
  */
 

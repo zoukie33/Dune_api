@@ -9,9 +9,10 @@ var router = express.Router();
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} typeUser
- * @apiParam {Int} idUser
- * @apiParam {Int} idEcole
+ * @apiParam {Int} typeUser Type de l'utilisateur (1 ou 2).
+ * @apiParam {Int} idUser Id de l'utilisateur connecté.
+ * @apiParam {Int} idEcole Id de l'école de lutilisateur connecté.
+ * @apiDescription Route permettant la récupération des notifications.
  */
 
 router.post('/', function(req, res, next) {
@@ -47,8 +48,9 @@ router.post('/', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} typeUser
- * @apiParam {Int} idDemande
+ * @apiParam {Int} typeUser Type de l'utilisateur (1 ou 2).
+ * @apiParam {Int} idDemande Id de la demande d'achat.
+ * @apiDescription Route permettant la validation d'un achat demandé par un professeur.
  */
 
 router.post('/validating', function(req, res, next) {
@@ -81,9 +83,10 @@ router.post('/validating', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} typeUser
- * @apiParam {Int} idUser
- * @apiParam {Int} idEcole
+ * @apiParam {Int} typeUser Type de l'utilisateur (1 ou 2).
+ * @apiParam {Int} idUser Id de l'utilisateur connnecté.
+ * @apiParam {Int} idEcole Id de l'école de l'utilisateur connecté.
+ * @apiDescription Route permettant la récupération du nombre de notifications d'un utilisateur.
  */
 
 router.post('/getNotifsNb', function(req, res, next) {

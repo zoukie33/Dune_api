@@ -11,11 +11,15 @@ var resetPass = require('../../functions/mails/resetPass');
  * @api {post} /login/ Login an User
  * @apiName Login
  * @apiGroup Auth
- * @apiPermission Logged
+ * @apiPermission Public
  * @apiVersion 1.0.0
  *
- * @apiParam {String} email
- * @apiParam {String} password
+ * @apiError 502 Aucun utilisateur ne correspond à ces identifiants.
+ * @apiError 500 SQL Error
+ * @apiError 500 Erreur d'ajout de token dans la base User.
+ * @apiParam {String} email Email de l'utilisateur
+ * @apiParam {String} password Mot de passe de l'utilisateur
+ * @apiDescription Route permettant à un utilisateur de se connecter.
  */
 
 router.post('/', function(req, res, next) {
@@ -86,10 +90,13 @@ router.post('/', function(req, res, next) {
  * @api {post} /login/reset Forget password
  * @apiName Reset
  * @apiGroup Auth
- * @apiPermission Logged
+ * @apiPermission Public
  * @apiVersion 1.0.0
  *
- * @apiParam {String} email
+ * @apiError 502 Aucun utilisateur ne correspond à ces identifiants.
+ * @apiError 500 SQL Error
+ * @apiParam {String} email Email de l'utilisateur
+ * @apiDescription Route permettant à un utilisateur de générer un nouveau mot de passe.
  */
 
 router.post('/reset', function(req, res, next) {

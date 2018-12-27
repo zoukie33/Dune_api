@@ -16,15 +16,15 @@ const fileUpload = require('express-fileupload');
  * @apiVersion 1.0.0
  *
  *
- * @apiSuccess {Int} idUser Firstname of the User.
- * @apiSuccess {String} nomUser Firstname of the User.
- * @apiSuccess {String} prenomUser Firstname of the User.
- * @apiSuccess {String} emailUser  Lastname of the User.
- * @apiSuccess {String} pass  Lastname of the User.
- * @apiSuccess {Int} typeUser  Lastname of the User.
- * @apiSuccess {String} picPath  Lastname of the User.
- * @apiSuccess {Text} access_token  Lastname of the User.
- * @apiSuccess {String} device_type  Lastname of the User.
+ * @apiSuccess {Int} idUser Id de l'utilisateur.
+ * @apiSuccess {String} nomUser Nom de l'utilisateur.
+ * @apiSuccess {String} prenomUser Prénom de l'utilisateur.
+ * @apiSuccess {String} emailUser  Email de l'utilisateur.
+ * @apiSuccess {String} pass  Mot de passe de l'utilisateur.
+ * @apiSuccess {Int} typeUser  Type de l'utilisateur.
+ * @apiSuccess {String} picPath  Photo de l'utilisateur.
+ * @apiSuccess {Text} access_token  Token de l'utilisateur.
+ * @apiSuccess {String} device_type  Type de device utilisé.
  *
  * @apiSuccessExample Success-Response:
  * {
@@ -44,6 +44,7 @@ const fileUpload = require('express-fileupload');
  *        }
  * }
  *
+ * @apiDescription Route permettant la récupération de tous les utilisateurs.
  */
 router.get('/', function(req, res, next) {
 	req.mysql.query('SELECT * from d_users', function (error, results, fields) {
@@ -67,15 +68,15 @@ router.get('/', function(req, res, next) {
  *
  * @apiParam {Number} id Users unique ID.
  *
- * @apiSuccess {Int} idUser Firstname of the User.
- * @apiSuccess {String} nomUser Firstname of the User.
- * @apiSuccess {String} prenomUser Firstname of the User.
- * @apiSuccess {String} emailUser  Lastname of the User.
- * @apiSuccess {String} pass  Lastname of the User.
- * @apiSuccess {Int} typeUser  Lastname of the User.
- * @apiSuccess {String} picPath  Lastname of the User.
- * @apiSuccess {Text} access_token  Lastname of the User.
- * @apiSuccess {String} device_type  Lastname of the User.
+ * @apiSuccess {Int} idUser Id de l'utilisateur.
+ * @apiSuccess {String} nomUser Nom de l'utilisateur.
+ * @apiSuccess {String} prenomUser Prénom de l'utilisateur.
+ * @apiSuccess {String} emailUser  Email de l'utilisateur.
+ * @apiSuccess {String} pass  Mot de passe de l'utilisateur.
+ * @apiSuccess {Int} typeUser  Type de l'utilisateur.
+ * @apiSuccess {String} picPath  Photo de l'utilisateur.
+ * @apiSuccess {Text} access_token  Token de l'utilisateur.
+ * @apiSuccess {String} device_type  Type de device utilisé.
  *
  * @apiSuccessExample Success-Response:
  * {
@@ -96,6 +97,7 @@ router.get('/', function(req, res, next) {
  *     ]
  * }
  *
+ * @apiDescription Route permettant la récupération d'un utilisateur.
  */
 
 router.get('/:id?', function(req, res, next) {
@@ -118,11 +120,12 @@ router.get('/:id?', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {String} nom
- * @apiParam {String} prenom
- * @apiParam {String} email
+ * @apiParam {String} nom Nome de l'utilisateur.
+ * @apiParam {String} prenom Prénom de l'utilisateur.
+ * @apiParam {String} email Email de l'utilisateur
  *
  *
+ * @apiDescription Route permettant la création d'un utilisateur.
  *
  */
 
@@ -188,11 +191,12 @@ router.post('/add', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idUser
- * @apiParam {String} nomUser
- * @apiParam {String} prenomUser
+ * @apiParam {Int} idUser Id de l'utilisateur.
+ * @apiParam {String} nomUser Nom de l'utilisateur.
+ * @apiParam {String} prenomUser Prénom de l'utilisateur.
  *
  *
+ * @apiDescription Route permettant la mise à jour d'un utilisateur.
  *
  */
 
@@ -231,10 +235,11 @@ router.post('/update', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idUser
- * @apiParam {File} picProf
+ * @apiParam {Int} idUser Id de l'utilisateur.
+ * @apiParam {File} picProf Image de l'utilisateur a uploader.
  *
  *
+ * @apiDescription Route permettant l'upload de la photo d'un utilisateur.
  *
  */
 
@@ -272,11 +277,12 @@ router.post('/picProf', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idUser
- * @apiParam {String} oldPassword
- * @apiParam {String} newPassword
+ * @apiParam {Int} idUser Id de l'utilisateur.
+ * @apiParam {String} oldPassword Ancien mot de passe.
+ * @apiParam {String} newPassword Nouveau mot de passe.
  *
  *
+ * @apiDescription Route permettant le changement de mot de passe d'un utilisateur.
  *
  */
 
@@ -317,11 +323,12 @@ router.post('/changePassword', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idUser
- * @apiParam {String} password
- * @apiParam {String} newEmail
+ * @apiParam {Int} idUser Id de l'utilisateur.
+ * @apiParam {String} password Mot de passe de l'utilisateur.
+ * @apiParam {String} newEmail Nouvel Emai lde l'utilisateur.
  *
  *
+ * @apiDescription Route permettant le changement de l'email d'un utilisateur.
  *
  */
 

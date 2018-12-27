@@ -9,7 +9,8 @@ var router = express.Router();
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idType
+ * @apiParam {Int} idType Id du type d'application voulue.
+ * @apiDescription Route permettant de récupérer toutes les applications par rapport à un Type d'application.
  */
 
 router.post('/', function(req, res, next) {
@@ -37,7 +38,8 @@ router.post('/', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idApp
+ * @apiParam {Int} idApp Id de l'application voulue.
+ * @apiDescription Route permettant de récupérer les informations d'une application.
  */
 
 router.post('/getApp', function(req, res, next) {
@@ -64,7 +66,8 @@ router.post('/getApp', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idEcole
+ * @apiParam {Int} idEcole Id Ecole de l'utilisateur connecté.
+ * @apiDescription Route permettant de récupérer les applications déjà achetées pour une école.
  */
 
 router.post('/getAppsEcole', function(req, res, next) {
@@ -91,10 +94,11 @@ router.post('/getAppsEcole', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idApp
- * @apiParam {Int} idProf
- * @apiParam {Int} idEcole
- * @apiParam {String} commentaire
+ * @apiParam {Int} idApp Id de l'application à acheter.
+ * @apiParam {Int} idProf Id du prof qui achète l'application.
+ * @apiParam {Int} idEcole Id de l'école du prof demandeur.
+ * @apiParam {String} commentaire Commantaide de demande d'achat.
+ * @apiDescription Route permettant de faire une demande d'achat d'application.
  */
 
 router.post('/buyApp', function(req, res, next) {
@@ -129,8 +133,9 @@ router.post('/buyApp', function(req, res, next) {
  * @apiPermission Logged + Director
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idApp
- * @apiParam {Int} idEcole
+ * @apiParam {Int} idApp Id de l'application a acheter.
+ * @apiParam {Int} idEcole Id de l'école pour laquelle l'achat sera fait.
+ * @apiDescription Route permettant l'achat d'une application sans vérification nécessaire.
  */
 
 router.post('/buyAppDirecteur', function(req, res, next) {
@@ -165,6 +170,7 @@ router.post('/buyAppDirecteur', function(req, res, next) {
  * @apiGroup Store
  * @apiPermission Logged + Director
  * @apiVersion 1.0.0
+ * @apiDescription Route permettant de récupérer tous les types de jeux disponibles.
  */
 
 router.get('/typesGames', function(req, res, next) {

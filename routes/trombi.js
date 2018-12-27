@@ -9,11 +9,43 @@ var router = express.Router();
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idUser
- * @apiParam {String} typeUser
- * @apiParam {String} search
+ * @apiParam {Int} idUser Id de l'utilisateur connecté.
+ * @apiParam {String} typeUser TypeUser de l'utilisateur connecté.
+ * @apiParam {String} [search] Affiner la recherche.
+ * @apiDescription Route permettant la récupération du trombi des étudiants d'un professeur (ou directeur).
  *
+ * @apiError 500 SQL Error
+ * @apiError 510 idUser ou typeUser manquants.
  *
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *         {
+ *            "idEleve": 4,
+ *            "nomEleve": "Bonduelle",
+ *            "prenomEleve": "James",
+ *            "BAE": null,
+ *            "INE": null,
+ *            "picPath": "NULL",
+ *            "idClasse": 1,
+ *            "num": 1,
+ *            "level": 4
+ *        },
+ *        {
+ *            "idEleve": 13,
+ *            "nomEleve": "Bozon",
+ *            "prenomEleve": "Jessica",
+ *            "BAE": null,
+ *            "INE": null,
+ *            "picPath": null,
+ *            "idClasse": 5,
+ *            "num": 1,
+ *            "level": 7
+ *        }
+ *     ]
+ * }
  */
 
 router.post('/', function(req, res, next) {
@@ -45,7 +77,7 @@ router.post('/', function(req, res, next) {
   	  	}
     	});
   } else {
-    res.send(JSON.stringify({"status": 500, "error": "idUser ou typeUser manquants."}));
+    res.send(JSON.stringify({"status": 510, "error": "idUser ou typeUser manquants."}));
   }
 });
 
@@ -56,10 +88,32 @@ router.post('/', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idUser
- * @apiParam {String} typeUser
+ * @apiParam {Int} idUser Id de l'utilisateur connecté.
+ * @apiParam {String} typeUser TypeUser de l'utilisateur connecté.
+ * @apiDescription Route permettant de récupérer les classes de l'utilisateur connecté pour trier le trombi.
  *
+ * @apiError 500 SQL Error
+ * @apiError 510 idUser ou typeUser manquants.
  *
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *          {
+ *             "idClasse": 1,
+ *             "level": 4,
+ *             "num": 1,
+ *             "annee": "2017/2018"
+ *         },
+ *         {
+ *             "idClasse": 3,
+ *             "level": 5,
+ *             "num": 1,
+ *             "annee": "2017/2018"
+ *         }
+ *     ]
+ * }
  */
 
 router.post('/classes', function(req, res, next) {
@@ -80,7 +134,7 @@ router.post('/classes', function(req, res, next) {
   	  	}
     	});
   } else {
-    res.send(JSON.stringify({"status": 500, "error": "idUser ou typeUser manquants."}));
+    res.send(JSON.stringify({"status": 510, "error": "idUser ou typeUser manquants."}));
   }
 });
 
@@ -91,12 +145,43 @@ router.post('/classes', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idUser
- * @apiParam {String} typeUser
- * @apiParam {Int} idClasse
- * @apiParam {String} search
+ * @apiParam {Int} idUser Id de l'utilisateur connecté.
+ * @apiParam {String} typeUser TypeUser de l'utilisateur connecté.
+ * @apiParam {Int} idClasse Id de la classe voulue.
+ * @apiParam {String} [search] Affiner la recherche.
  *
+ * @apiError 500 SQL Error
+ * @apiError 510 idUser ou typeUser ou idClasse manquants.
  *
+ * @apiDescription Route permettant la récupération du trombi des étudiants d'un professeur (ou directeur) par une classe spécifique.
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *          {
+ *             "idEleve": 13,
+ *             "nomEleve": "Bozon",
+ *             "prenomEleve": "Jessica",
+ *             "BAE": null,
+ *             "INE": null,
+ *             "picPath": null,
+ *             "num": 1,
+ *             "level": 7
+ *         },
+ *         {
+ *             "idEleve": 14,
+ *             "nomEleve": "Couturier",
+ *             "prenomEleve": "Eleonore",
+ *             "BAE": null,
+ *             "INE": null,
+ *             "picPath": null,
+ *             "num": 1,
+ *             "level": 7
+ *         }
+ *     ]
+ * }
  */
 
 router.post('/byClasse', function(req, res, next) {
@@ -129,7 +214,7 @@ router.post('/byClasse', function(req, res, next) {
   	  	}
     	});
   } else {
-    res.send(JSON.stringify({"status": 500, "error": "idUser ou typeUser ou idClasse manquants."}));
+    res.send(JSON.stringify({"status": 510, "error": "idUser ou typeUser ou idClasse manquants."}));
   }
 });
 module.exports = router;

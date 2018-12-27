@@ -312,6 +312,15 @@
       }
     ],
     "version": "1.0.0",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": [\n        {\n            \"id\": 1,\n            \"idType\": 1,\n            \"name\": \"testApp\",\n            \"creator\": 1,\n            \"path\": \"NULL\",\n            \"picPath\": \"1-app.png\"\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
     "filename": "routes/games/games.js",
     "groupTitle": "Games"
   },
@@ -327,6 +336,15 @@
       }
     ],
     "version": "1.0.0",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": [\n        {\n            \"id\": 1,\n            \"idType\": 1,\n            \"name\": \"testApp\",\n            \"creator\": 1,\n            \"path\": \"NULL\",\n            \"picPath\": \"1-app.png\"\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
     "filename": "routes/games/games.js",
     "groupTitle": "Games"
   },

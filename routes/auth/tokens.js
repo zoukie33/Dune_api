@@ -11,7 +11,9 @@ var config = require('../../config');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {String} token
+ * @apiError 401 Invalid Access
+ * @apiParam {String} token Token d'authentification
+ * @apiDescription Route permettant la vérification d'un JWT Token.
  */
 
 router.post('/verifyToken', function(req, res, next) {
