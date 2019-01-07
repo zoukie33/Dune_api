@@ -1,4 +1,5 @@
 var jwt = require('jsonwebtoken');
+var mysql   = require("mysql");
 var config = require('./config');
 
 
@@ -21,3 +22,14 @@ var verifyToken=function (req, res,next) {
 	}
 };
 module.exports=verifyToken;
+//
+// var myQuery = 'SELECT FROM d_users WHERE';
+// 
+//
+// req.mysql.query(myQuery, function (error, results, fields) {
+// 		if(error){
+// 			res.send(JSON.stringify({"status": 500, "error": error}));
+// 		} else {
+// 			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+// 		}
+// 	});

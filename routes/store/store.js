@@ -11,15 +11,38 @@ var router = express.Router();
  *
  * @apiParam {Int} idType Id du type d'application voulue.
  * @apiDescription Route permettant de récupérer toutes les applications par rapport à un Type d'application.
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *        {
+ *            "id": 1,
+ *            "nomApp": "testApp",
+ *            "nomCreator": "test",
+ *            "picPath": "1-app.png"
+ *        }
+ *    ]
+ * }
  */
 
-router.post('/', function(req, res, next) {
+ router.post('/', function(req, res, next) {
 	var idType = req.body.idType;
-	if (idType == 0) {
-		var query = "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator";
-	} else {
-		var query = "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND idType = " + idType;
-	}
+ 	var search = req.body.search;
+  if (search) {
+    if (idType == 0) {
+  		var query = "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND (g.name LIKE '" + search +"%') OR (c.nom LIKE '" + search +"%')";
+  	} else {
+  		var query = "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND (g.name LIKE '" + search +"%') OR (c.nom LIKE '" + search +"%') AND idType = " + idType;
+  	}
+  } else {
+    if (idType == 0) {
+  		var query = "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator";
+  	} else {
+  		var query = "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND idType = " + idType;
+  	}
+  }
+
 	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
 	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
@@ -40,12 +63,26 @@ router.post('/', function(req, res, next) {
  *
  * @apiParam {Int} idApp Id de l'application voulue.
  * @apiDescription Route permettant de récupérer les informations d'une application.
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *        {
+ *            "id": 1,
+ *            "nomApp": "testApp",
+ *            "nomCreator": "test",
+ *            "picPath": "1-app.png",
+ *            "path": "NULL"
+ *        }
+ *    ]
+ * }
  */
 
 router.post('/getApp', function(req, res, next) {
   var idApp = req.body.idApp;
   if (idApp) {
-    req.mysql.query('SELECT g.id, g.name, c.nom, g.picPath, g.path FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND g.id = ' + idApp, function (error, results, fields) {
+    req.mysql.query('SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND g.id = ' + idApp, function (error, results, fields) {
   	  	if(error){
   	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
   	  		//If there is error, we send the error in the error section with 500 status
@@ -68,12 +105,26 @@ router.post('/getApp', function(req, res, next) {
  *
  * @apiParam {Int} idEcole Id Ecole de l'utilisateur connecté.
  * @apiDescription Route permettant de récupérer les applications déjà achetées pour une école.
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *        {
+ *            "id": 1,
+ *            "nomApp": "testApp",
+ *            "nomCreator": "test",
+ *            "picPath": "1-app.png",
+ *            "path": "NULL"
+ *        }
+ *    ]
+ * }
  */
 
 router.post('/getAppsEcole', function(req, res, next) {
   var idEcole = req.body.idEcole;
   if (idEcole) {
-    req.mysql.query('SELECT g.id, g.name, g.picPath, g.path FROM d_games AS g, d_gamesAppEcole AS ga WHERE g.id = ga.idGame AND ga.idEcole = ' + idEcole, function (error, results, fields) {
+    req.mysql.query('SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path FROM d_games AS g, d_gamesAppEcole AS ga, d_creator as c WHERE g.id = ga.idGame AND g.creator = c.idCreator AND ga.idEcole = ' + idEcole, function (error, results, fields) {
   	  	if(error){
   	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
   	  		//If there is error, we send the error in the error section with 500 status
@@ -99,6 +150,22 @@ router.post('/getAppsEcole', function(req, res, next) {
  * @apiParam {Int} idEcole Id de l'école du prof demandeur.
  * @apiParam {String} commentaire Commantaide de demande d'achat.
  * @apiDescription Route permettant de faire une demande d'achat d'application.
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": {
+ *         "fieldCount": 0,
+ *         "affectedRows": 1,
+ *         "insertId": 1,
+ *         "serverStatus": 2,
+ *         "warningCount": 0,
+ *         "message": "",
+ *         "protocol41": true,
+ *         "changedRows": 0
+ *     }
+ * }
+ *
  */
 
 router.post('/buyApp', function(req, res, next) {
@@ -136,13 +203,28 @@ router.post('/buyApp', function(req, res, next) {
  * @apiParam {Int} idApp Id de l'application a acheter.
  * @apiParam {Int} idEcole Id de l'école pour laquelle l'achat sera fait.
  * @apiDescription Route permettant l'achat d'une application sans vérification nécessaire.
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": {
+ *         "fieldCount": 0,
+ *         "affectedRows": 1,
+ *         "insertId": 0,
+ *         "serverStatus": 2,
+ *         "warningCount": 0,
+ *         "message": "",
+ *         "protocol41": true,
+ *         "changedRows": 0
+ *     }
+ * }
  */
 
 router.post('/buyAppDirecteur', function(req, res, next) {
   var idApp = req.body.idApp;
   var idEcole = req.body.idEcole;
   var query = "SELECT * FROM d_gamesAppEcole WHERE idGame = " + idApp + " AND idEcole = " + idEcole;
-  var query2 = "INSERT INTO d_demandeAchatGame (idGame, idEcole) VALUES ('" + idApp + "', '" + idEcole + "')";
+  var query2 = "INSERT INTO d_gamesAppEcole (idGame, idEcole) VALUES ('" + idApp + "', '" + idEcole + "')";
 
   if (idApp && idEcole) {
     req.mysql.query(query, function (error, results, fields) {
@@ -171,6 +253,17 @@ router.post('/buyAppDirecteur', function(req, res, next) {
  * @apiPermission Logged + Director
  * @apiVersion 1.0.0
  * @apiDescription Route permettant de récupérer tous les types de jeux disponibles.
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ *        {
+ *            "idType": 1,
+ *            "labelType": "Jeux"
+ *        }
+ *    ]
+ * }
  */
 
 router.get('/typesGames', function(req, res, next) {

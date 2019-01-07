@@ -184,18 +184,21 @@ router.post('/byProf', function(req, res, next) {
  * @apiParam {Int} directorId L'id du directeur.
  * @apiParam {String} nom Nom de l'élève a ajouter.
  * @apiParam {Int} prenom Prénom de l'élève a ajouter.
+ * @apiParam {Int} idClasse Id de la classe à laquelle ajouter un élève.
+ * @apiParam {File} [picEleve] Photo de l'étudiant ajouté.
  * @apiError 500 SQL Error.
  *
  */
 
 router.post('/add', function(req, res, next) {
   var directorId = req.body.directorId;
+  var idClasse = req.body.idClasse;
 	var postData = {
     nomEleve:req.body.nom,
     prenomEleve:req.body.prenom
   }
-	console.log(postData);
-
+  let file;
+  let idEleve;
   var query = "INSERT INTO ?? SET ?";
   var table = ["d_eleves"];
   query = mysql.format(query,table);
@@ -204,8 +207,29 @@ router.post('/add', function(req, res, next) {
 		if (error){
 			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
 		} else {
+      idEleve = results.insertId;
 			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-      console.log("Un élève a été ajouté : [" + nom + " - " + prenom + "]");
+      console.log("Un élève a été ajouté : [" + idEleve + " - " + postData.nomEleve + " - " + postData.prenomEleve + "]");
+      if (idClasse) {
+        req.mysql.query("INSERT INTO d_classeEleve VALUES ('"+ idClasse +"', '"+ idEleve +"')", function(error, results, fields) {
+        });
+      }
+      if (req.files && Object.keys(req.files).length != 0) {
+        file = req.files.picEleve;
+    		var fileName = idEleve + "-eleve.png";
+        if (filez.filesGest(file, "eleves/", fileName)) {
+    			var query = "UPDATE d_eleves SET picPath = '" + fileName + "'  WHERE idEleve = " + idEleve;
+    						req.mysql.query(query, function(error, results, fields) {
+    							if (error){
+    								console.log(JSON.stringify({"status": 500}));
+    							} else {
+    								console.log(JSON.stringify({"status": 200}));
+    								console.log("Une photo User a été mis a jour : [" + fileName + "]");
+    							}
+    							res.end(JSON.stringify(results));
+    						});
+    		}
+      }
 		}
 	  res.end(JSON.stringify(results));
 	});
