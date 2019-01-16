@@ -9,8 +9,6 @@ var router = express.Router();
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idUser Id de l'utilisateur connecté.
- * @apiParam {String} typeUser TypeUser de l'utilisateur connecté.
  * @apiParam {String} [search] Affiner la recherche.
  * @apiDescription Route permettant la récupération du trombi des étudiants d'un professeur (ou directeur).
  *
@@ -49,17 +47,17 @@ var router = express.Router();
  */
 
 router.post('/', function(req, res, next) {
-  var idUser = req.body.idUser;
-  var typeUser = req.body.typeUser;
+  var idUser = req.currUser.idUser;
+  var typeUser = req.currUser.typeUser;
   var search = req.body.search;
   console.log("req /trombi/ : " + req.body.idUser + " " + req.body.typeUser);
 
   if (typeUser && idUser) {
     if (search) {
       if (typeUser == 1) {
-        var myQuery = 'SELECT DISTINCT e.idEleve, e.nomEleve, e.prenomEleve, e.picPath, c.idClasse, c.num, c.level FROM d_eleves AS e INNER JOIN d_classeEleve AS ce ON ce.idEleve = e.idEleve INNER JOIN d_classe AS c ON c.idClasse = ce.idClasse INNER JOIN d_profsAppClasse AS pa ON c.idClasse = pa.idClasse WHERE pa.idProf = ' + idUser + ' AND (e.nomEleve LIKE "' + search + '%") OR (e.prenomEleve LIKE "' + search + '%") ORDER BY e.nomEleve ASC';
+        var myQuery = 'SELECT DISTINCT e.idEleve, e.nomEleve, e.prenomEleve, e.picPath, c.idClasse, c.num, c.level FROM d_eleves AS e INNER JOIN d_classeEleve AS ce ON ce.idEleve = e.idEleve INNER JOIN d_classe AS c ON c.idClasse = ce.idClasse INNER JOIN d_profsAppClasse AS pa ON c.idClasse = pa.idClasse WHERE pa.idProf = ' + idUser + ' AND ((e.nomEleve LIKE "' + search + '%") OR (e.prenomEleve LIKE "' + search + '%")) ORDER BY e.nomEleve ASC';
       } else {
-        var myQuery = 'SELECT DISTINCT e.idEleve, e.nomEleve, e.prenomEleve, e.picPath, c.idClasse, c.num, c.level FROM d_eleves AS e INNER JOIN d_classeEleve AS ce ON ce.idEleve = e.idEleve INNER JOIN d_classe AS c ON c.idClasse = ce.idClasse INNER JOIN d_classeEcole AS cec ON cec.idClasse = c.idClasse INNER JOIN d_profsAppEcole AS pa ON cec.idEcole = pa.idEcole WHERE  pa.idProf = ' + idUser + ' AND (e.nomEleve LIKE "' + search + '%") OR (e.prenomEleve LIKE "' + search + '%") ORDER BY e.nomEleve ASC';
+        var myQuery = 'SELECT DISTINCT e.idEleve, e.nomEleve, e.prenomEleve, e.picPath, c.idClasse, c.num, c.level FROM d_eleves AS e INNER JOIN d_classeEleve AS ce ON ce.idEleve = e.idEleve INNER JOIN d_classe AS c ON c.idClasse = ce.idClasse INNER JOIN d_classeEcole AS cec ON cec.idClasse = c.idClasse INNER JOIN d_profsAppEcole AS pa ON cec.idEcole = pa.idEcole WHERE  pa.idProf = ' + idUser + ' AND ((e.nomEleve LIKE "' + search + '%") OR (e.prenomEleve LIKE "' + search + '%")) ORDER BY e.nomEleve ASC';
       }
     } else {
       if (typeUser == 1) {
@@ -82,14 +80,12 @@ router.post('/', function(req, res, next) {
 });
 
 /**
- * @api {post} /trombi/classes Get all classes the user can view
+ * @api {get} /trombi/classes Get all classes the user can view
  * @apiName classes
  * @apiGroup Trombi
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idUser Id de l'utilisateur connecté.
- * @apiParam {String} typeUser TypeUser de l'utilisateur connecté.
  * @apiDescription Route permettant de récupérer les classes de l'utilisateur connecté pour trier le trombi.
  *
  * @apiError 500 SQL Error
@@ -116,10 +112,9 @@ router.post('/', function(req, res, next) {
  * }
  */
 
-router.post('/classes', function(req, res, next) {
-  var idUser = req.body.idUser;
-  var typeUser = req.body.typeUser;
-  console.log("req /trombi/classes/ : " + req.body.idUser + " " + req.body.typeUser);
+router.get('/classes', function(req, res, next) {
+  var idUser = req.currUser.idUser;
+  var typeUser = req.currUser.typeUser;
   if (typeUser && idUser) {
     if (typeUser == 1) {
       var myQuery = 'SELECT c.* FROM d_classe AS c, d_users AS u, d_profsAppClasse AS ac WHERE u.idUser = ac.idProf AND ac.idClasse = c.idClasse AND u.idUser = ' + idUser + ' ORDER BY c.level, c.num ASC';
@@ -145,8 +140,6 @@ router.post('/classes', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idUser Id de l'utilisateur connecté.
- * @apiParam {String} typeUser TypeUser de l'utilisateur connecté.
  * @apiParam {Int} idClasse Id de la classe voulue.
  * @apiParam {String} [search] Affiner la recherche.
  *
@@ -185,8 +178,8 @@ router.post('/classes', function(req, res, next) {
  */
 
 router.post('/byClasse', function(req, res, next) {
-  var idUser = req.body.idUser;
-  var typeUser = req.body.typeUser;
+  var idUser = req.currUser.idUser;
+  var typeUser = req.currUser.typeUser;
   var idClasse = req.body.idClasse;
   var search = req.body.search;
   console.log("req /trombi/byClasse/ : " + req.body.idUser + " " + req.body.typeUser + " " + req.body.idClasse);

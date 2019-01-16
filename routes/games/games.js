@@ -104,7 +104,7 @@ router.post('/add', function(req, res, next) {
 });
 
 /**
- * @api {post} /games/update Updating a game
+ * @api {put} /games/update Updating a game
  * @apiName updateGame
  * @apiGroup Games
  * @apiPermission Logged
@@ -115,7 +115,7 @@ router.post('/add', function(req, res, next) {
  * @apiParam {String} creator Nom du créateur.
  */
 
-router.post('/update', function(req, res, next) {
+router.put('/update', function(req, res, next) {
   var id  = req.body.id;
   var name  = req.body.name;
   var creator  = req.body.creator;
@@ -134,7 +134,7 @@ router.post('/update', function(req, res, next) {
 });
 
 /**
- * @api {post} /games/picGame Uploading a picture for the game
+ * @api {put} /games/picGame Uploading a picture for the game
  * @apiName picGame
  * @apiGroup Games
  * @apiPermission Logged
@@ -144,7 +144,7 @@ router.post('/update', function(req, res, next) {
  * @apiParam {File} picGame Image.
  */
 
-router.post('/picGame', function(req, res, next) {
+router.put('/picGame', function(req, res, next) {
 	if (Object.keys(req.files).length != 0) {
 		var id  = req.body.idGame;
 		let file;
@@ -157,8 +157,8 @@ router.post('/picGame', function(req, res, next) {
 							if (error){
 								res.send(JSON.stringify({"status": 500, "error": error, "response": "Impossible de mettre a jour cet utilisateur."}));
 							} else {
-								res.send(JSON.stringify({"status": 200, "response": "User Updated"}));
-								console.log("Une photo User a été mis a jour : [" + fileName + "]");
+								res.send(JSON.stringify({"status": 200, "response": "Game Updated"}));
+								console.log("Une photo Game a été mis a jour : [" + fileName + "]");
 							}
 							res.end(JSON.stringify(results));
 						});

@@ -29,19 +29,19 @@ router.post('/', function(req, res, next) {
 	}
 	console.log(post);
 		var query = "SELECT u.*, a.idEcole FROM d_users as u, d_profsAppEcole as a WHERE u.idUser = a.idProf AND u.pass='"+ md5(post.password) +"' AND u.emailUser= '" + post.email +"'";
-
 		req.mysql.query(query,function(err,rows){
 		if(err) {
 			res.json({"Error" : true, "Message" : err});
 		}
 		else {
 			if(rows.length==1){
-				var token = jwt.sign({ id: rows[0].idUser, perm: rows[0].typeUser }, config.secret, {
-					expiresIn: '7d'
-				});
 				typeUser = rows[0].typeUser;
 				user_id = rows[0].idUser;
 				idEcole = rows[0].idEcole;
+				emailUser = rows[0].emailUser;
+				var token = jwt.sign({ idUser: user_id, typeUser: typeUser, emailUser: emailUser, idEcole: idEcole }, config.secret, {
+					expiresIn: '7d'
+				});
 
 				var data  = {
 					user_id:rows[0].idUser,
@@ -62,9 +62,7 @@ router.post('/', function(req, res, next) {
 							success: true,
 							message: 'Token generated',
 							token: token,
-							currUser: user_id,
-							typeUser: typeUser,
-							idEcole: idEcole
+							typeUser: typeUser
 						});
           }
         });

@@ -48,6 +48,12 @@ router.get('/', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiSuccess {Int} idEleve de l'élève.
+ * @apiSuccess {String} nomEleve de l'élève.
+ * @apiSuccess {String} prenomEleve de l'élève.
+ * @apiSuccess {String} BAE de l'élève.
+ * @apiSuccess {String} INE de l'élève.
+ * @apiSuccess {Text} picPath de l'élève.
  * @apiError 500 SQL Error.
  *
  * @apiSuccessExample Success-Response:
@@ -123,13 +129,12 @@ router.post('/byClasse', function(req, res, next) {
 });
 
 /**
- * @api {post} /eleves/byProf Get students by idProf
+ * @api {get} /eleves/byProf Get students by prof
  * @apiName byProf
  * @apiGroup Eleves
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idProf idProf associé aux classes voulues.
  * @apiError 510 idProf is missing.
  * @apiError 500 SQL Error.
  *
@@ -140,7 +145,7 @@ router.post('/byClasse', function(req, res, next) {
  *     "response": [
  * 				 {
  *             "idEleve": 1,
- *             "nomEleve": "Merveillau",
+ *             "nomEleve": "Merveilleau",
  *             "prenomEleve": "Denis",
  *             "BAE": null,
  *             "INE": null
@@ -156,8 +161,8 @@ router.post('/byClasse', function(req, res, next) {
  * }
  */
 
-router.post('/byProf', function(req, res, next) {
-	var idProf = req.body.idProf;
+router.get('/byProf', function(req, res, next) {
+	var idProf = req.currUser.idProf;
 	if (idProf) {
 		req.mysql.query('SELECT e.idEleve, e.nomEleve, e.prenomEleve, e.BAE, e.INE FROM d_eleves AS e, d_classeEleve AS ce, d_classe AS c, d_profsAppClasse AS pc, d_users AS u WHERE u.idUser = pc.idProf AND pc.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEleve = e.idEleve AND u.idUser = ' + idProf , function (error, results, fields) {
 		  	if(error){
@@ -236,7 +241,7 @@ router.post('/add', function(req, res, next) {
 });
 
 /**
- * @api {post} /eleves/update Updating a student
+ * @api {put} /eleves/update Updating a student
  * @apiName update
  * @apiGroup Eleves
  * @apiPermission Logged
@@ -248,7 +253,7 @@ router.post('/add', function(req, res, next) {
  *
  */
 
-router.post('/update', function(req, res, next) {
+router.put('/update', function(req, res, next) {
 	var id  = req.body.idEleve;
   var nom  = req.body.nomEleve;
   var prenom  = req.body.prenomEleve;
@@ -267,7 +272,7 @@ router.post('/update', function(req, res, next) {
 });
 
 /**
- * @api {post} /eleves/picEleve Uploading studient picture
+ * @api {put} /eleves/picEleve Uploading studient picture
  * @apiName picEleve
  * @apiGroup Eleves
  * @apiPermission Logged
@@ -278,7 +283,7 @@ router.post('/update', function(req, res, next) {
  *
  */
 
-router.post('/picEleve', function(req, res, next) {
+router.put('/picEleve', function(req, res, next) {
 	if (Object.keys(req.files).length != 0) {
 		var id  = req.body.idEleve;
 		let file;

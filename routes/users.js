@@ -185,7 +185,7 @@ router.post('/add', function(req, res, next) {
 });
 
 /**
- * @api {post} /users/update Update an User
+ * @api {put} /users/update Update an User
  * @apiName updateUser
  * @apiGroup Users
  * @apiPermission Logged
@@ -200,7 +200,7 @@ router.post('/add', function(req, res, next) {
  *
  */
 
-router.post('/update', function(req, res, next) {
+router.put('/update', function(req, res, next) {
   var id  = req.body.idUser;
   var nom  = req.body.nomUser;
   var prenom  = req.body.prenomUser;
@@ -229,7 +229,7 @@ router.post('/update', function(req, res, next) {
 });
 
 /**
- * @api {post} /users/picProf Uploading an Users picture
+ * @api {put} /users/picProf Uploading an Users picture
  * @apiName picProf
  * @apiGroup Users
  * @apiPermission Logged
@@ -243,7 +243,7 @@ router.post('/update', function(req, res, next) {
  *
  */
 
-router.post('/picProf', function(req, res, next) {
+router.put('/picProf', function(req, res, next) {
 	if (Object.keys(req.files).length != 0) {
 		var id  = req.body.idUser;
 		let file;
@@ -271,7 +271,7 @@ router.post('/picProf', function(req, res, next) {
 });
 
 /**
- * @api {post} /users/changePassword Changing an Users password
+ * @api {put} /users/changePassword Changing an Users password
  * @apiName changePassword
  * @apiGroup Users
  * @apiPermission Logged
@@ -286,7 +286,7 @@ router.post('/picProf', function(req, res, next) {
  *
  */
 
-router.post('/changePassword', function(req, res, next) {
+router.put('/changePassword', function(req, res, next) {
 		var idUser  = req.body.idUser;
 		var oldPassword = req.body.oldPassword;
 		var newPassword = req.body.newPassword;
@@ -317,7 +317,7 @@ router.post('/changePassword', function(req, res, next) {
 });
 
 /**
- * @api {post} /users/changeEmail Changing an Users Email
+ * @api {put} /users/changeEmail Changing an Users Email
  * @apiName changeEmail
  * @apiGroup Users
  * @apiPermission Logged
@@ -332,7 +332,7 @@ router.post('/changePassword', function(req, res, next) {
  *
  */
 
-router.post('/changeEmail', function(req, res, next) {
+router.put('/changeEmail', function(req, res, next) {
 		var idUser  = req.body.idUser;
 		var password = req.body.password;
 		var newEmail = req.body.newEmail;
