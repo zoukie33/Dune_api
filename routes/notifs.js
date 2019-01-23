@@ -29,7 +29,7 @@ var router = express.Router();
 
 router.get('/', function(req, res, next) {
   var idUser = req.currUser.idUser;
-  var query = "SELECT * FROM d_notifications WHERE idUser = " + idUser + " AND isRead = 0";
+  var query = "SELECT * FROM d_notifications WHERE idUser = " + idUser;
 
   req.mysql.query(query, function (error, results, fields) {
   	 if(error){
@@ -40,7 +40,43 @@ router.get('/', function(req, res, next) {
   });
 });
 
+/**
+ * @api {get} /notifs/popUpMenu Get all notifications unRead for the popup
+ * @apiName popUpMenu
+ * @apiGroup Notifications
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiDescription Route permettant la récupération des notifications.
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "nbNotifs": 1,
+ *     "response": [
+ *        {
+ *            "idNotif": 1,
+ *            "idUser": 1,
+ *            "idToNotify": 1,
+ *            "typeNotif": 1,
+ *            "isRead": 0,
+ *            "textNotif": "Vous avez un nouvel achat à valider."
+ *        }
+ *    ]
+ * }
+ */
 
+router.get('/popUpMenu', function(req, res, next) {
+  var idUser = req.currUser.idUser;
+  var query = "SELECT * FROM d_notifications WHERE idUser = " + idUser + " AND isRead = 0";
+
+  req.mysql.query(query, function (error, results, fields) {
+  	 if(error){
+  	  res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+  	 } else {
+    	res.send(JSON.stringify({"status": 200, "nbNotifs": results.length, "response": results}));
+  	 }
+  });
+});
 
 /**
  * @api {get} /notifs/getNbNotifs/ Getting the number of notifications

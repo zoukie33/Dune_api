@@ -155,7 +155,7 @@ router.get('/getAppsEcole', function(req, res, next) {
  *     "appStatus": "1"
  * }
  */
-router.get('/getAppStatus', function(req, res, next) {
+router.get('/getAppStatus/:idApp', function(req, res, next) {
   var idEcole = req.currUser.idEcole;
   var idApp = req.params.idApp;
   if (idEcole && idApp) {
@@ -207,10 +207,10 @@ router.get('/getAppStatus', function(req, res, next) {
 
 router.post('/buyApp', function(req, res, next) {
   var idApp = req.body.idApp;
-  var idProf = req.currUser.idProf;
+  var idProf = req.currUser.idUser;
   var idEcole = req.currUser.idEcole;
   var commentaire = req.body.commentaire;
-
+  console.log("idApp: " + idApp + ", idProf: " + idProf + ", idEcole: " + idEcole);
   if (idApp && idProf && idEcole) {
     if (commentaire) {
       var query = 'INSERT INTO d_demandeAchatGame (idProf, idGame, idEcole, commentaire) VALUES ("' + idProf + '", "' + idApp + '", "' + idEcole + '", "' + commentaire + '")';

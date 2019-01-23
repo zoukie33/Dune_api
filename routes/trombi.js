@@ -50,7 +50,6 @@ router.post('/', function(req, res, next) {
   var idUser = req.currUser.idUser;
   var typeUser = req.currUser.typeUser;
   var search = req.body.search;
-  console.log("req /trombi/ : " + req.body.idUser + " " + req.body.typeUser);
 
   if (typeUser && idUser) {
     if (search) {

@@ -42,6 +42,53 @@ router.get('/', function(req, res, next) {
 });
 
 /**
+ * @api {get} /eleves/nbEleves Get nb of Students by userId
+ * @apiName nbEleves
+ * @apiGroup Eleves
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiError 510 idEcole is missing.
+ * @apiError 500 SQL Error.
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ * 				 {
+ *             "nbEleves": 18
+ *        	}
+ *     ]
+ * }
+ */
+
+router.get('/nbEleves', function(req, res, next) {
+	var idUser = req.currUser.idUser;
+  var typeUser = req.currUser.typeUser;
+  console.log("sas");
+	if (idUser) {
+    if (typeUser == 2) {
+      var query = "SELECT COUNT(ce.idEleve) AS nbEleves FROM d_classeEleve AS ce, d_classe AS c, d_classeEcole as cse, d_profsAppEcole AS pe WHERE pe.idEcole = cse.idEcole AND cse.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND pe.idProf = " + idUser;
+    } else {
+      var query = "SELECT COUNT(ce.idEleve) AS nbEleves FROM d_classeEleve AS ce, d_classe AS c, d_profsAppClasse AS pc, d_users AS u WHERE u.idUser = pc.idProf AND pc.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEleve AND u.idUser = " + idUser;
+    }
+		req.mysql.query(query, function (error, results, fields) {
+		  	if(error){
+		  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+		  	} else {
+					if (results.length != 0) {
+						res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+					}
+		  	}
+	  	});
+	}
+	else {
+		res.send(JSON.stringify({"status": 510, "error": "idEcole is missing"}));
+	}
+});
+
+/**
  * @api {get} /eleves/:id Get student by id
  * @apiName getById
  * @apiGroup Eleves
