@@ -3,6 +3,48 @@ var mysql   = require("mysql");
 var router = express.Router();
 const fileUpload = require('express-fileupload');
 var filez = require('../../functions/files/files');
+var tools = require('../../functions/tools');
+
+/**
+ * @api {get} /games/nbGames Get nb of Gaes by idEcole
+ * @apiName nbGames
+ * @apiGroup Games
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiError 510 idEcole is missing.
+ * @apiError 500 SQL Error.
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": [
+ * 				 {
+ *             "nbGames": 3
+ *        	}
+ *     ]
+ * }
+ */
+
+router.get('/nbGames', function(req, res, next) {
+	var idEcole = req.currUser.idEcole;
+  console.log("sas");
+	if (idEcole) {
+    var query = "SELECT COUNT(*) AS nbGames FROM d_gamesAppEcole WHERE idEcole = " + idEcole;
+		req.mysql.query(query, function (error, results, fields) {
+		  	if(error){
+					tools.dSend(res, "NOK", "Games", "nbGames", 500, error, null);
+		  	} else {
+					if (results.length != 0) {
+						tools.dSend(res, "OK", "Games", "nbGames", 200, null, results);
+					}
+		  	}
+	  	});
+	} else {
+		tools.dSend(res, "OK", "Games", "nbGames", 510, "idEcole is missing", null);
+	}
+});
 
 /**
  * @api {get} /games/ Getting all the games
@@ -31,11 +73,9 @@ var filez = require('../../functions/files/files');
 router.get('/', function(req, res, next) {
 	req.mysql.query('SELECT * from d_games', function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
+        tools.dSend(res, "NOK", "Games", "games", 500, error, null);
 	  	} else {
-  			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  			//If there is no error, all is good and response is 200OK.
+        tools.dSend(res, "OK", "Games", "games", 200, null, results);
 	  	}
   	});
 });
@@ -66,11 +106,9 @@ router.get('/', function(req, res, next) {
 router.get('/:id?', function(req, res, next) {
 	req.mysql.query('SELECT * from d_games WHERE id = ' + req.params.id , function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
+        tools.dSend(res, "NOK", "Games", "gamesById", 500, error, null);
 	  	} else {
-  			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  			//If there is no error, all is good and response is 200OK.
+        tools.dSend(res, "OK", "Games", "gamesById", 200, null, results);
 	  	}
   	});
 });
@@ -94,10 +132,9 @@ router.post('/add', function(req, res, next) {
 
   req.mysql.query(query, function(error, results, fields) {
     if (error){
-      res.send(JSON.stringify({"status": 500, "error": error, "response": "Impossible d'ajouter ce jeu."}));
+      tools.dSend(res, "NOK", "Games", "addGame", 500, error, null);
     } else {
-      res.send(JSON.stringify({"status": 200, "response": "Game Added"}));
-      console.log("Un jeu a été ajouté : [" + name + " - by : " + creator + "]");
+      tools.dSend(res, "OK", "Games", "addGame", 200, null, "Game Added");
     }
     res.end(JSON.stringify(results));
   });
@@ -124,10 +161,9 @@ router.put('/update', function(req, res, next) {
 
   req.mysql.query(query, function(error, results, fields) {
     if (error){
-      res.send(JSON.stringify({"status": 500, "error": error, "response": "Impossible de mettre a jour ce jeu."}));
+      tools.dSend(res, "NOK", "Games", "updateGame", 500, error, null);
     } else {
-      res.send(JSON.stringify({"status": 200, "response": "Game Updated"}));
-      console.log("Un jeu a été mis a jour : [" + id + " - " + name + " - by : " + creator + "]");
+      tools.dSend(res, "OK", "Games", "updateGame", 200, null, "Game Updated");
     }
     res.end(JSON.stringify(results));
   });
@@ -155,18 +191,17 @@ router.put('/picGame', function(req, res, next) {
 			var query = "UPDATE d_games SET picPath = '" + fileName + "'  WHERE id = " + id;
 						req.mysql.query(query, function(error, results, fields) {
 							if (error){
-								res.send(JSON.stringify({"status": 500, "error": error, "response": "Impossible de mettre a jour cet utilisateur."}));
+                tools.dSend(res, "NOK", "Games", "picGame", 500, error, "Impossible de mettre a jour cet utilisateur.");
 							} else {
-								res.send(JSON.stringify({"status": 200, "response": "Game Updated"}));
-								console.log("Une photo Game a été mis a jour : [" + fileName + "]");
+                tools.dSend(res, "OK", "Games", "picGame", 200, null, "Game Updated");
 							}
 							res.end(JSON.stringify(results));
 						});
 		} else {
-			res.send(JSON.stringify({"status": 500, "error": "shut"}));
+      tools.dSend(res, "NOK", "Games", "picGame", 500, "Directory error", null);
 		}
 	} else {
-		res.send(JSON.stringify({"status": 500, "error": "Error uploading File"}));
+    tools.dSend(res, "NOK", "Games", "picGame", 500, "Error uploading File", null);
 	}
 });
 

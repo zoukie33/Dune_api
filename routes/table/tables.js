@@ -2,16 +2,15 @@ var express = require('express');
 var mysql   = require("mysql");
 var router = express.Router();
 var serial = require("generate-serial-key");
+var tools = require('../../functions/tools');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
 	req.mysql.query('SELECT * from d_tables', function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
+        tools.dSend(res, "NOK", "Table", "/", 500, error, null);
 	  	} else {
-  			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  			//If there is no error, all is good and response is 200OK.
+        tools.dSend(res, "OK", "Table", "/", 200, null, results);
 	  	}
   	});
 });
@@ -43,7 +42,7 @@ router.post('/genLicence', function(req, res, next) {
 	if (nbLicences == 0) {
 		res.send(JSON.stringify({"status": 500, "error": error, "response": "nbLicences doit être supérieur à 0."}));
 	} else if (nbLicences > 50) {
-		res.send(JSON.stringify({"status": 500, "error": error, "response": "nbLicences doit être inférieur o égal à 50."}));
+		res.send(JSON.stringify({"status": 500, "error": error, "response": "nbLicences doit être inférieur ou égal à 50."}));
 	} else if (idEcole == "") {
 		res.send(JSON.stringify({"status": 500, "error": error, "response": "idEcole manquant."}));
 	} else {

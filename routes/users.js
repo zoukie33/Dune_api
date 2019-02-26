@@ -7,6 +7,7 @@ var manageAccount = require('../functions/mails/manageAccount');
 var filez = require('../functions/files/files');
 var jwtDecode = require('../functions/tokens');
 const fileUpload = require('express-fileupload');
+var tools = require('../functions/tools');
 
 /**
  * @api {get} /users/ Request All Users
@@ -49,13 +50,10 @@ const fileUpload = require('express-fileupload');
 router.get('/', function(req, res, next) {
 	req.mysql.query('SELECT * from d_users', function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
+        tools.dSend(res, "NOK", "Users", "GetUsers", 500, error, null);
 	  	} else {
-  			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  			//If there is no error, all is good and response is 200OK.
+        tools.dSend(res, "OK", "Users", "GetUsers", 200, null, results);
 	  	}
-      console.log("user");
   	});
 });
 
@@ -102,13 +100,10 @@ router.get('/', function(req, res, next) {
 router.get('/infos/:idUser', function(req, res, next) {
 	req.mysql.query('SELECT * from d_users WHERE idUser = ' + req.params.idUser , function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
+        tools.dSend(res, "NOK", "Users", "infos/:idUser", 500, error, null);
 	  	} else {
-  			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  			//If there is no error, all is good and response is 200OK.
+        tools.dSend(res, "OK", "Users", "infos/:idUser", 200, null, results);
 	  	}
-      console.log("user id");
   	});
 });
 
@@ -155,13 +150,10 @@ router.get('/infos/:idUser', function(req, res, next) {
 router.get('/infos', function(req, res, next) {
 	req.mysql.query('SELECT * from d_users WHERE idUser = ' + req.currUser.idUser , function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
+        tools.dSend(res, "NOK", "Users", "infos", 500, error, null);
 	  	} else {
-  			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  			//If there is no error, all is good and response is 200OK.
+        tools.dSend(res, "OK", "Users", "infos", 200, null, results);
 	  	}
-      console.log("user id");
   	});
 });
 
@@ -190,7 +182,7 @@ router.post('/add', function(req, res, next) {
 
 	  req.mysql.query(query,function(err,rows){
 	  if(err) {
-	    res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+      tools.dSend(res, "NOK", "Users", "add", 500, err, null);
 	  }
 	  else {
 	    if(rows.length==0){
@@ -208,31 +200,29 @@ router.post('/add', function(req, res, next) {
 	        access_token:"n/a",
 	        device_type:"web"
 	      }
-	    	console.log(postData);
-
 	      var query = "INSERT INTO ?? SET ?";
 	      var table = ["d_users"];
 	      query = mysql.format(query,table);
 
 	    	req.mysql.query(query, postData, function(error, results, fields) {
 	    		if (error){
-	    			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+            tools.dSend(res, "NOK", "Users", "add", 500, error, null);
 	    		} else {
 						manageAccount.sendCreateAccount(req.body.email, password);
 	    			res.send(JSON.stringify({"status": 200, "error": null, "pass": password}));
-	          console.log("Un User a été ajouté: " + postData);
+            tools.dLog("OK", "Store", "add", 200, null, postData);
 	    		}
 	    	  res.end(JSON.stringify(results));
 	    	});
 	    }
 	    else {
-	      res.send(JSON.stringify({"status": 501, "error": err, "response": "Un utilisateur est déja inscrit avec cet Email."}));
+        tools.dSend(res, "NOK", "Users", "add", 501, err, "Un utilisateur est déja inscrit avec cet Email.");
 	    }
 	  }
 	  });
 	}
 	else {
-		res.send(JSON.stringify({"status": 500, "response": "Access denied."}));
+    tools.dSend(res, "NOK", "Users", "add", 500, "Access denied.", null);
 	}
 });
 
@@ -253,17 +243,20 @@ router.post('/add', function(req, res, next) {
  */
 
 router.put('/update', function(req, res, next) {
-  var id  = req.body.idUser;
+  if (!req.body.idUser) {
+    var id = req.currUser.idUser;
+  } else {
+    var id = req.body.idUser;
+  }
+
   var nom  = req.body.nomUser;
   var prenom  = req.body.prenomUser;
-  console.log(id + " - " + nom + " - " + prenom);
 			var query = "UPDATE d_users SET nomUser = '"+ nom +"', prenomUser = '"+ prenom +"' WHERE idUser = " + id;
 				req.mysql.query(query, function(error, results, fields) {
 					if (error){
-						res.send(JSON.stringify({"status": 500, "error": error, "response": "Impossible de mettre a jour cet utilisateur."}));
+            tools.dSend(res, "NOK", "Users", "/users/update", 500, error, "Impossible de mettre a jour cet utilisateur.");
 					} else {
-						res.send(JSON.stringify({"status": 200, "response": "User Updated"}));
-						console.log("Un User a été mis a jour : [" + id + " - " + nom + " - " + prenom + "]");
+            tools.dSend(res, "OK", "Users", "/users/update", 200, null, "User Updated [" + id + " - " + nom + " - " + prenom + "]");
 					}
 					res.end(JSON.stringify(results));
 				});
@@ -276,7 +269,6 @@ router.put('/update', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Int} idUser Id de l'utilisateur.
  * @apiParam {File} picProf Image de l'utilisateur a uploader.
  *
  *
@@ -286,28 +278,26 @@ router.put('/update', function(req, res, next) {
 
 router.put('/picProf', function(req, res, next) {
 	if (Object.keys(req.files).length != 0) {
-		var id  = req.body.idUser;
+		var id  = req.currUser.idUser;
 		let file;
 
 		file = req.files.picProf;
 		var fileName = id + "-prof.png";
 		if (filez.filesGest(file, "profs/", fileName)) {
-			console.log("idProf pour photo: " + id);
 			var query = "UPDATE d_users SET picPath = '" + fileName + "'  WHERE idUser = " + id;
 						req.mysql.query(query, function(error, results, fields) {
 							if (error){
-								res.send(JSON.stringify({"status": 500, "error": error, "response": "Impossible de mettre a jour cet utilisateur."}));
+                tools.dSend(res, "NOK", "Users", "picProf", 500, error, "Impossible de mettre a jour cet utilisateur.");
 							} else {
-								res.send(JSON.stringify({"status": 200, "response": "User Updated"}));
-								console.log("Une photo User a été mis a jour : [" + fileName + "]");
+                tools.dSend(res, "OK", "Users", "picProf", 200, null, "User Picture Updated");
 							}
 							res.end(JSON.stringify(results));
 						});
 		} else {
-			res.send(JSON.stringify({"status": 500, "error": "shut"}));
+      tools.dSend(res, "NOK", "Users", "picProf", 500, "Dir Problem", null);
 		}
 	} else {
-		res.send(JSON.stringify({"status": 500, "error": "Error uploading File"}));
+    tools.dSend(res, "NOK", "Users", "picProf", 500, "Error uploading File", null);
 	}
 });
 
@@ -336,28 +326,28 @@ router.put('/changePassword', function(req, res, next) {
         var query = "SELECT pass FROM d_users WHERE idUser = " + idUser;
   			req.mysql.query(query,function(err,rows) {
   				if(err) {
-  					res.json({"Error" : true, "Message" : err});
+            tools.dSend(res, "NOK", "Users", "changePassword", 500, err, null);
   				} else {
   					if (rows[0].pass == md5(oldPassword)) {
   						var query = "UPDATE d_users SET pass = '"+ md5(newPassword) +"' WHERE idUser = " + idUser;
   						req.mysql.query(query,function(err,rows) {
   							if(err) {
-  								res.json({"Error" : true, "Message" : err});
+                  tools.dSend(res, "NOK", "Users", "changePassword", 500, err, null);
   							} else {
                   manageAccount.sendChangePassword(req.currUser.emailUser);
-  								res.send(JSON.stringify({"status": 200, "response": "Password changed."}));
+                  tools.dSend(res, "OK", "Users", "changePassword", 200, null, "Password changed.");
   							}
   						});
   					} else {
-  						res.send(JSON.stringify({"status": 500, "error": "Invalid old password."}));
+              tools.dSend(res, "NOK", "Users", "changePassword", 500, "Invalid old password.", null);
   					}
   				}
   			});
       } else {
-        res.send(JSON.stringify({"status": 500, "error": "Votre mot de passe doit être supérieur ou égal à 8 caractères."}));
+        tools.dSend(res, "NOK", "Users", "changePassword", 500, "Votre mot de passe doit être supérieur ou égal à 8 caractères.", null);
       }
 		} else {
-			res.send(JSON.stringify({"status": 500, "error": "Un de ces paramètres manquent dans le body: idUser, oldPassword, newPassword."}));
+      tools.dSend(res, "NOK", "Users", "changePassword", 500, "Un de ces paramètres manquent dans le body: idUser, oldPassword, newPassword.", null);
 		}
 });
 
@@ -385,36 +375,36 @@ router.put('/changeEmail', function(req, res, next) {
 			var query = "SELECT pass FROM d_users WHERE idUser = " + idUser;
 			req.mysql.query(query,function(err,rows) {
 				if(err) {
-					res.json({"Error" : true, "Message" : err});
+          tools.dSend(res, "NOK", "Users", "changeEmail", 500, err, null);
 				} else {
 					if (rows[0].pass == md5(password)) {
 						var query2 = "SELECT idUser FROM d_users WHERE emailUser = '" + newEmail + "'";
 						req.mysql.query(query2,function(err,rows) {
 							if(err) {
-								res.json({"Error" : true, "Message" : err});
+                tools.dSend(res, "NOK", "Users", "changeEmail", 500, err, null);
 							} else {
 								if (rows.length == 0) {
 									var query3 = "UPDATE d_users SET emailUser = '"+ newEmail +"' WHERE idUser = " + idUser;
 									req.mysql.query(query3,function(err,rows) {
 										if(err) {
-											res.json({"Error" : true, "Message" : err});
+                      tools.dSend(res, "NOK", "Users", "changeEmail", 500, err, null);
 										} else {
           						manageAccount.sendChangeEmail(newEmail);
-											res.send(JSON.stringify({"status": 200, "response": "Email changed."}));
+                      tools.dSend(res, "OK", "Users", "changeEmail", 200, "Email changed.", null);
 										}
 									});
 								} else {
-									res.send(JSON.stringify({"status": 500, "error": "This Email already exist."}));
+                  tools.dSend(res, "NOK", "Users", "changeEmail", 500, "This Email already exist.", null);
 								}
 							}
 						});
 					} else {
-						res.send(JSON.stringify({"status": 500, "error": "Invalid password."}));
+            tools.dSend(res, "NOK", "Users", "changeEmail", 500, "Invalid password.", null);
 					}
 				}
 			});
 		} else {
-			res.send(JSON.stringify({"status": 500, "error": "Un de ces paramètres manquent dans le body: idUser, oldPassword, newPassword."}));
+      tools.dSend(res, "NOK", "Users", "changeEmail", 500, "Un de ces paramètres manquent dans le body: idUser, oldPassword, newPassword.", null);
 		}
 });
 module.exports = router;

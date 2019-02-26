@@ -1,6 +1,7 @@
 var express = require('express');
 var mysql   = require("mysql");
 var router = express.Router();
+var tools = require('../functions/tools');
 
 /**
  * @api {post} /trombi/ Get all students trombi
@@ -68,13 +69,13 @@ router.post('/', function(req, res, next) {
 
     req.mysql.query(myQuery, function (error, results, fields) {
   	  	if(error){
-  	  		res.send(JSON.stringify({"status": 500, "error": error}));
+          tools.dSend(res, "NOK", "Trombi", "getAllStudents", 500, error, null);
   	  	} else {
-    			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+          tools.dSend(res, "OK", "Trombi", "getAllStudents", 200, null, results);
   	  	}
     	});
   } else {
-    res.send(JSON.stringify({"status": 510, "error": "idUser ou typeUser manquants."}));
+    tools.dSend(res, "NOK", "Trombi", "getAllStudents", 510, "idUser ou typeUser manquants.", null);
   }
 });
 
@@ -122,13 +123,13 @@ router.get('/classes', function(req, res, next) {
     }
     req.mysql.query(myQuery, function (error, results, fields) {
   	  	if(error){
-  	  		res.send(JSON.stringify({"status": 500, "error": error}));
+          tools.dSend(res, "NOK", "Trombi", "classes", 500, error, null);
   	  	} else {
-    			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+          tools.dSend(res, "OK", "Trombi", "classes", 200, null, results);
   	  	}
     	});
   } else {
-    res.send(JSON.stringify({"status": 510, "error": "idUser ou typeUser manquants."}));
+    tools.dSend(res, "NOK", "Trombi", "classes", 500, "idUser ou typeUser manquants.", null);
   }
 });
 
@@ -200,13 +201,13 @@ router.post('/byClasse', function(req, res, next) {
 
     req.mysql.query(myQuery, function (error, results, fields) {
   	  	if(error){
-  	  		res.send(JSON.stringify({"status": 500, "error": error}));
+          tools.dSend(res, "NOK", "Trombi", "byClasse", 500, error, null);
   	  	} else {
-    			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+          tools.dSend(res, "OK", "Trombi", "byClasse", 200, null, results);
   	  	}
     	});
   } else {
-    res.send(JSON.stringify({"status": 510, "error": "idUser ou typeUser ou idClasse manquants."}));
+    tools.dSend(res, "NOK", "Trombi", "byClasse", 500, "idUser ou typeUser ou idClasse manquants.", null);
   }
 });
 module.exports = router;

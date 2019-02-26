@@ -2,6 +2,7 @@ var express = require('express');
 var mysql   = require("mysql");
 var router = express.Router();
 var doNotif = require('../../functions/notifications');
+var tools = require('../../functions/tools');
 
 /**
  * @api {post} /store/ Getting all items in store
@@ -46,12 +47,9 @@ var doNotif = require('../../functions/notifications');
 
 	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
+        tools.dSend(res, "NOK", "Store", "Store", 500, error, null);
 	  	} else {
-  			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-        console.log("search : " + search + " - idType : " + idType);
-  			//If there is no error, all is good and response is 200OK.
+        tools.dSend(res, "OK", "Store", "Store", 200, null, results);
 	  	}
   	});
 });
@@ -86,15 +84,13 @@ router.post('/getApp', function(req, res, next) {
   if (idApp) {
     req.mysql.query('SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND g.id = ' + idApp, function (error, results, fields) {
   	  	if(error){
-  	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-  	  		//If there is error, we send the error in the error section with 500 status
+          tools.dSend(res, "NOK", "Store", "getApp", 500, error, null);
   	  	} else {
-    			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-    			//If there is no error, all is good and response is 200OK.
+          tools.dSend(res, "OK", "Store", "getApp", 200, null, results);
   	  	}
     	});
   } else {
-    res.send(JSON.stringify({"status": 500, "response": "Parametre manquant : idApp"}));
+    tools.dSend(res, "NOK", "Store", "getApp", 500, "Parametre manquant : idApp", null);
   }
 });
 
@@ -127,15 +123,13 @@ router.get('/getAppsEcole', function(req, res, next) {
   if (idEcole) {
     req.mysql.query('SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path FROM d_games AS g, d_gamesAppEcole AS ga, d_creator as c WHERE g.id = ga.idGame AND g.creator = c.idCreator AND ga.idEcole = ' + idEcole, function (error, results, fields) {
   	  	if(error){
-  	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-  	  		//If there is error, we send the error in the error section with 500 status
+          tools.dSend(res, "NOK", "Store", "getAppsEcole", 500, error, null);
   	  	} else {
-    			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-    			//If there is no error, all is good and response is 200OK.
+          tools.dSend(res, "OK", "Store", "getAppsEcole", 200, null, results);
   	  	}
     	});
   } else {
-    res.send(JSON.stringify({"status": 500, "response": "Parametre manquant : idEcole"}));
+    tools.dSend(res, "NOK", "Store", "getAppsEcole", 500, "Parametre manquant : idEcole", null);
   }
 });
 
@@ -161,18 +155,19 @@ router.get('/getAppStatus/:idApp', function(req, res, next) {
   if (idEcole && idApp) {
     req.mysql.query('SELECT * FROM d_gamesAppEcole AS ga WHERE ga.idGame = '+ idApp +' AND ga.idEcole = ' + idEcole, function (error, results, fields) {
   	  	if(error){
-  	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-  	  		//If there is error, we send the error in the error section with 500 status
+          tools.dSend(res, "NOK", "Store", "getAppStatus", 500, error, null);
   	  	} else {
           if (results.length==1) {
+            tools.dLog("OK", "Store", "getAppStatus", 200, null, '"appStatus": "1"');
             res.send(JSON.stringify({"status": 200, "error": null, "appStatus": "1"}));
           } else {
+            tools.dLog("OK", "Store", "getAppStatus", 200, null, '"appStatus": "0"');
             res.send(JSON.stringify({"status": 200, "error": null, "appStatus": "0"}));
           }
   	  	}
     	});
   } else {
-    res.send(JSON.stringify({"status": 500, "response": "Parametre manquant : idEcole"}));
+    tools.dSend(res, "NOK", "Store", "getAppStatus", 500, "Parametre manquant : idEcole", null);
   }
 });
 
@@ -210,23 +205,48 @@ router.post('/buyApp', function(req, res, next) {
   var idProf = req.currUser.idUser;
   var idEcole = req.currUser.idEcole;
   var commentaire = req.body.commentaire;
-  console.log("idApp: " + idApp + ", idProf: " + idProf + ", idEcole: " + idEcole);
+  var quer = "SELECT da.idDemande FROM d_demandeAchatGame AS da WHERE da.idGame = " + idApp + " AND da.idEcole = " + idEcole + " AND da.isAccepted = 0";
   if (idApp && idProf && idEcole) {
-    if (commentaire) {
-      var query = 'INSERT INTO d_demandeAchatGame (idProf, idGame, idEcole, commentaire) VALUES ("' + idProf + '", "' + idApp + '", "' + idEcole + '", "' + commentaire + '")';
-    } else {
-      var query = "INSERT INTO d_demandeAchatGame (idProf, idGame, idEcole) VALUES ('" + idProf + "', '" + idApp + "', '" + idEcole + "')";
-    }
-    req.mysql.query(query, function (error, results, fields) {
-  	  	if(error){
-  	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-  	  	} else {
-          doNotif.createNotifDirecteur(req, idEcole, results.insertId, 1, "Une demande d'achat d'application a été faite.");
-    			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  	  	}
-    	});
+    req.mysql.query(quer, function (error, results, fields) {
+      if (results.length == 1) {
+        if (commentaire) {
+          var query2 = "INSERT INTO d_partDemandeAchat(idDemande, idProf, commentaire) VALUES ("+ results[0].idDemande +","+ idProf +","+ commentaire +")";
+        } else {
+          var query2 = "INSERT INTO d_partDemandeAchat(idDemande, idProf) VALUES ("+ results[0].idDemande +","+ idProf +")";
+        }
+        req.mysql.query(query2, function (error, results2, fields) {
+          if(error){
+            tools.dSend(res, "NOK", "Store", "buyApp", 500, error, 1);
+          } else {
+            //doNotif.createNotifDirecteur(req, idEcole, results[0].idDemande, 1, "Une demande d'achat d'application a été faite.1");
+            tools.dSend(res, "OK", "Store", "buyApp", 200, null, results2);
+          }
+        });
+      } else {
+        var query = "INSERT INTO d_demandeAchatGame (idGame, idEcole) VALUES ('" + idApp + "', '" + idEcole + "')";
+        req.mysql.query(query, function (error, results, fields) {
+      	  	if(error){
+              tools.dSend(res, "NOK", "Store", "buyApp", 500, error, 2);
+      	  	} else {
+              if (commentaire) {
+                var query2 = "INSERT INTO d_partDemandeAchat(idDemande, idProf, commentaire) VALUES ("+ results.insertId +","+ idProf +","+ commentaire +")";
+              } else {
+                var query2 = "INSERT INTO d_partDemandeAchat(idDemande, idProf) VALUES ("+ results.insertId +","+ idProf +")";
+              }
+              doNotif.createNotifDirecteur(req, idEcole, results.insertId, 1, "Une demande d'achat d'application a été faite.2");
+              req.mysql.query(query2, function (error, results2, fields) {
+                if(error){
+                  tools.dSend(res, "NOK", "Store", "buyApp", 500, error, 2);
+          	  	} else {
+                  tools.dSend(res, "OK", "Store", "buyApp", 200, null, results2);
+                }
+              });
+      	  	}
+        	});
+      }
+    });
   } else {
-    res.send(JSON.stringify({"status": 500, "response": "Parametres necessaires: idApp, idProf, idEcole"}));
+    tools.dSend(res, "NOK", "Store", "buyApp", 500, "Parametres necessaires: idApp, idProf, idEcole", null);
   }
 
 });
@@ -268,17 +288,17 @@ router.post('/buyAppDirecteur', function(req, res, next) {
   	  	if(results.length == 0){
           req.mysql.query(query2, function (error, results, fields) {
             if(error){
-              res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+              tools.dSend(res, "NOK", "Store", "buyAppDirecteur", 500, error, null);
             } else {
-              res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+              tools.dSend(res, "OK", "Store", "buyAppDirecteur", 200, null, results);
             }
           });
   	  	} else {
-          res.send(JSON.stringify({"status": 500, "response": "Application déjà achetée"}));
+          tools.dSend(res, "NOK", "Store", "buyAppDirecteur", 500, "Application déjà achetée", null);
   	  	}
     	});
   } else {
-    res.send(JSON.stringify({"status": 500, "response": "Parametres necessaires: idApp, idEcole"}));
+    tools.dSend(res, "NOK", "Store", "buyAppDirecteur", 500, "Parametres necessaires: idApp, idEcole", null);
   }
 
 });
@@ -307,9 +327,9 @@ router.get('/typesGames', function(req, res, next) {
 	var query = "SELECT * FROM d_typeGames";
     req.mysql.query(query, function (error, results, fields) {
   	  	if(error){
-  	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+          tools.dSend(res, "NOK", "Store", "typesGames", 500, error, null);
   	  	} else {
-    			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+          tools.dSend(res, "OK", "Store", "typesGames", 200, null, results);
   	  	}
     	});
 });
@@ -346,26 +366,26 @@ router.post('/validating', function(req, res, next) {
     if (typeUser == 2) {
       var query = "SELECT idGame, idEcole, idProf FROM d_demandeAchatGame WHERE idDemande = " + idDemande;
     } else {
-      res.send(JSON.stringify({"status": 500, "response": "Seulement un directeur peut utiliser cette fonction."}));
+      tools.dSend(res, "NOK", "Store", "Validating", 500, "Seulement un directeur peut utiliser cette fonction.", null);
     }
 
     req.mysql.query(query, function (error, results1, fields) {
   	  	if(error){
-  	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+          tools.dSend(res, "NOK", "Store", "Validating", 500, error, null);
   	  	} else {
           if (validate == 1) {
             var query = "INSERT INTO d_gamesAppEcole (idGame, idEcole) VALUES ('" + results1[0].idGame + "', '" + results1[0].idEcole + "')";
             var query2 = "UPDATE d_demandeAchatGame SET isAccepted = '1' WHERE idDemande = " + idDemande;
             req.mysql.query(query, function (error, results, fields) {
               if(error){
-        	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+                tools.dSend(res, "NOK", "Store", "Validating", 500, error, null);
         	  	} else {
                 req.mysql.query(query2, function (error, results2, fields) {
                   if(error){
-            	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+                    tools.dSend(res, "NOK", "Store", "Validating", 500, error, null);
             	  	} else {
                     doNotif.createNotif(req, results1[0].idProf, idDemande, 1, "Votre demande d'achat a été validée par le directeur.");
-          			    res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+                    tools.dSend(res, "OK", "Store", "Validating", 200, null, results);
                   }
                 });
               }
@@ -374,17 +394,18 @@ router.post('/validating', function(req, res, next) {
             var query2 = "UPDATE d_demandeAchatGame SET isAccepted = '0' WHERE idDemande = " + idDemande;
             req.mysql.query(query2, function (error, results2, fields) {
               if(error){
+                tools.dSend(res, "NOK", "Store", "Validating", 500, error, null);
             	  res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
             	 } else {
                  doNotif.createNotif(req, results1[0].idProf, idDemande, 1, "Votre demande d'achat n'a pas été validée par le directeur.");
-          			  res.send(JSON.stringify({"status": 200, "error": null, "response": results1}));
+                 tools.dSend(res, "OK", "Store", "Validating", 200, null, results1);
               }
             });
           }
   	  	}
     	});
   } else {
-    res.send(JSON.stringify({"status": 500, "response": "Parametres demandées : typeUser, idDemande"}));
+    tools.dSend(res, "NOK", "Store", "Validating", 500, "Parametres demandées : typeUser, idDemande", null);
   }
 });
 module.exports = router;

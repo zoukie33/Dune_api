@@ -1,15 +1,14 @@
 var express = require('express');
 var router = express.Router();
+var tools = require('../functions/tools');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
 	req.mysql.query('SELECT * from d_ecole', function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
+				tools.dSend(res, "NOK", "Ecole", "Ecole", 500, error, null);
 	  	} else {
-  			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  			//If there is no error, all is good and response is 200OK.
+				tools.dSend(res, "OK", "Ecole", "Ecole", 200, null, results);
 	  	}
   	});
 });
@@ -17,11 +16,9 @@ router.get('/', function(req, res, next) {
 router.get('/:id?', function(req, res, next) {
 	req.mysql.query('SELECT * from d_ecole WHERE id = ' + req.params.id , function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
+				tools.dSend(res, "NOK", "Ecole", ":id", 500, error, null);
 	  	} else {
-  			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  			//If there is no error, all is good and response is 200OK.
+				tools.dSend(res, "OK", "Ecole", ":id", 200, null, results);
 	  	}
   	});
 });
@@ -31,9 +28,9 @@ router.post('/', function(req, res, next) {
 	console.log(postData);
 	req.mysql.query('INSERT INTO d_ecole SET ?',  postData, function(error, results, fields) {
 		if (error){
-			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+			tools.dSend(res, "NOK", "Ecole", "add", 500, error, null);
 		} else {
-			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+			tools.dSend(res, "OK", "Ecole", "add", 200, null, results);
 		}
 	  res.end(JSON.stringify(results));
 	});

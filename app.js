@@ -22,6 +22,7 @@ var notifsRouter = require('./routes/notifs');
 var gamesRouter = require('./routes/games/games');
 var tablesRouter = require('./routes/table/tables');
 var cnxTableRouter = require('./routes/table/cnxTable');
+var cnxTableRouter2 = require('./routes/table/cnxTable2');
 var cProfsRouter = require('./routes/classe/classeProfs');
 var classeRouter = require('./routes/classe/classe');
 var cEcoleRouter = require('./routes/classe/classeEcole');
@@ -66,8 +67,6 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('development'));
-
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(function (req, res, next) {
@@ -81,6 +80,7 @@ app.use('/api/v1/logout', logoutRouter);
 app.use('/api/v1/cnxTable', cnxTableRouter);
 app.use('/api/v1/tokens', tokensRouter);
 app.use(verifyToken);
+app.use('/api/v1/cnxTable2', cnxTableRouter2);
 app.use('/api/v1/games', gamesRouter);
 app.use('/api/v1/store', storeRouter);
 app.use('/api/v1/notifs', notifsRouter);

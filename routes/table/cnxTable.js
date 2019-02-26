@@ -4,6 +4,7 @@ var router = express.Router();
 var md5 = require("MD5");
 var jwt = require('jsonwebtoken');
 var config = require('../../config');
+var tools = require('../../functions/tools');
 
 /**
  * @api {post} /cnxTable/genToken Generating a token Table
@@ -18,14 +19,12 @@ var config = require('../../config');
 router.post('/genToken', function(req, res, next) {
 	var idTable = req.body.idTable;
 	var tokenTable = md5(Date.now());
-	console.log(tokenTable);
 	req.mysql.query('INSERT INTO d_tableProf (tokenTable, idTable) VALUES ("' + tokenTable + '", "' + idTable + '")', function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
+        tools.dSend(res, "NOK", "Table", "/cnxTable/genToken", 500, error, null);
 	  	} else {
+				tools.dLog("OK", "Table", "/cnxTable/genToken", 200, null, '"tokenTable": tokenTable');
   			res.send(JSON.stringify({"status": 200, "error": null, "tokenTable": tokenTable}));
-	      console.log("Un token a été généré : [" + tokenTable + " - " + idTable + "]");
 	  	}
   	});
 });
@@ -44,11 +43,9 @@ router.post('/delToken', function(req, res, next) {
   var token = req.body.tokenTable;
 	req.mysql.query('DELETE FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
+        tools.dSend(res, "NOK", "Table", "/cnxTable/delToken", 500, error, null);
 	  	} else {
-  			res.send(JSON.stringify({"status": 200, "response": "Token deleted."}));
-	      console.log("Un token a été supprimé : [" + token + "]");
+        tools.dSend(res, "OK", "Table", "/cnxTable/delToken", 200, null, "Token deleted : " + token);
 	  	}
   	});
 });
@@ -67,17 +64,21 @@ router.post('/verifToken', function(req, res, next) {
 	var token = req.body.tokenTable;
 	req.mysql.query('SELECT idProf FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-				console.log("token null");
+        tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 500, error, null);
 	  	} else {
 				if (results.length > 0) {
 					var idProf = results[0].idProf
 					if (idProf == 0) {
-						res.send(JSON.stringify({"status": 510, "error": "Token pas utilisé"}));
-						console.log("nope");
+		        tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 510, "Token pas encore utilisé : " + token, null);
 					} else if (idProf > 0) {
+						req.mysql.query('SELECT * FROM d_users WHERE idUser = "' + idProf + '"', function (error, results, fields) { });
+
+
+					var token = jwt.sign({ idUser: idProf, typeUser: typeUser, emailUser: emailUser, idEcole: idEcole, idTable: nomTable, perm: 4  }, config.secret, {
+						expiresIn: '7d'
+					});
 						res.send(JSON.stringify({"status": 200, "idProf": idProf}));
-						console.log("Token utilisé, avec l'idProf : " + idProf);
+						tools.dLog("OK", "Table", "/cnxTable/verifToken", 200, null, '"idProf":' + idProf);
 					}
 				}
 	  	}
@@ -101,19 +102,18 @@ router.post('/install', function(req, res, next) {
 	var token = jwt.sign({ id: nomTable, perm: 4 }, config.secret, {
 		expiresIn: '3650d'
 	});
-	console.log("Install demandée : [" + nomTable + " - " + licenceEcole + "]");
 	if (licenceEcole === "123") {
 		req.mysql.query("INSERT INTO d_tables (nomTable, access_token) VALUES ('" + nomTable + "', '" + token + "')", function(error, results, fields) {
 			if (error){
-				res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+        tools.dSend(res, "NOK", "Table", "/cnxTable/install", 500, error, null);
 			} else {
 				res.send(JSON.stringify({"status": 200, "error": null, "token": token}));
-	      console.log("Une Table a été ajoutée : [" + nomTable + " - " + licenceEcole + "]");
+				tools.dLog("OK", "Table", "/cnxTable/install", 200, null, '"token":' + token);
 			}
 		  res.end(JSON.stringify(results));
 		});
 	} else {
-		res.send(JSON.stringify({"status": 500, "response": "Licence Not found."}));
+		tools.dSend(res, "NOK", "Table", "/cnxTable/install", 500, "Licence Not found.", null);
 	}
 
 });
@@ -131,18 +131,16 @@ router.post('/install', function(req, res, next) {
 
 router.post('/useToken', function(req, res, next) {
   var token = req.body.tokenTable;
-	var idProf = req.body.idProf;
+	var idProf = req.currUser.idUser;
 	if (token && token.length === 32 && idProf) {
 		req.mysql.query('SELECT * FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
 				if(error){
-					res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-					//If there is error, we send the error in the error section with 500 status
+	        tools.dSend(res, "NOK", "Table", "/cnxTable/useToken", 500, error, null);
 				} else {
 					if (results.length > 0 && results[0].tokenTable == token){
 						req.mysql.query('UPDATE d_tableProf SET idProf = ' + idProf + ' WHERE tokenTable = "' + token + '"', function (error, results, fields) {
 							if(error){
-								res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-								//If there is error, we send the error in the error section with 500 status
+				        tools.dSend(res, "NOK", "Table", "/cnxTable/useToken", 500, error, null);
 							} else {
 								res.send(JSON.stringify({"status": 200, "response": "User linked !"}));
 								//If there is no error, all is good and response is 200OK.
@@ -150,12 +148,12 @@ router.post('/useToken', function(req, res, next) {
 					});
 				}
 				else {
-					res.send(JSON.stringify({"status": 510, "response": "ERREUR"}));
+	        tools.dSend(res, "NOK", "Table", "/cnxTable/useToken", 500, "Le token n'existe pas.", null);
 				}
 			}
 		});
 	} else {
-		res.send(JSON.stringify({"status": 500, "response": "ERREUR"}));
+		tools.dSend(res, "NOK", "Table", "/cnxTable/useToken", 500, "idprof : " + idProf + "Le token est invalide : " + token, null);
 	}
 
 });
