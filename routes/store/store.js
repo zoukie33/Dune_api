@@ -205,7 +205,7 @@ router.post('/buyApp', function(req, res, next) {
   var idProf = req.currUser.idUser;
   var idEcole = req.currUser.idEcole;
   var commentaire = req.body.commentaire;
-  var quer = "SELECT da.idDemande FROM d_demandeAchatGame AS da WHERE da.idGame = " + idApp + " AND da.idEcole = " + idEcole + " AND da.isAccepted = 0";
+  var quer = "SELECT da.idDemande FROM d_demandeAchatGame AS da WHERE da.idGame = " + idApp + " AND da.idEcole = " + idEcole + " AND da.isAccepted = 2";
   if (idApp && idProf && idEcole) {
     req.mysql.query(quer, function (error, results, fields) {
       if (results.length == 1) {
@@ -364,7 +364,7 @@ router.post('/validating', function(req, res, next) {
 
   if (typeUser && idDemande && validate) {
     if (typeUser == 2) {
-      var query = "SELECT idGame, idEcole, idProf FROM d_demandeAchatGame WHERE idDemande = " + idDemande;
+      var query = "SELECT idGame, idEcole FROM d_demandeAchatGame WHERE idDemande = " + idDemande;
     } else {
       tools.dSend(res, "NOK", "Store", "Validating", 500, "Seulement un directeur peut utiliser cette fonction.", null);
     }

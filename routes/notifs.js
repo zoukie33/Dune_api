@@ -100,12 +100,16 @@ router.get('/popUpMenu', function(req, res, next) {
  *     "nbProfsDemande": 2,
  *     "response": [
  *        {
- *          "idprof": 33,
+ *          "idUser": 33,
+ *          "picPath": "pic.png",
+ *          "nomPrenom": "Diane Gadrat",
  *          "commentaire": "Mes étudiants en ont besoins !",
  *          "dateDemande": "27/07/25"
  *        },
  *        {
- *          "idprof": 34,
+ *          "idUser": 34,
+ *          "picPath": "pic.png",
+ *          "nomPrenom": "Romain Gadrat",
  *          "commentaire": "Mes étudiants n'en ont pas besoins !",
  *          "dateDemande": "29/07/25"
  *        }
@@ -116,7 +120,7 @@ router.get('/popUpMenu', function(req, res, next) {
 router.get('/getArrayProf/:idDemande', function(req, res, next) {
 
   var idDemande = req.params.idDemande;
-  var query = "SELECT idProf, commentaire, dateDemande FROM d_partDemandeAchat WHERE idDemande = " + idDemande;
+  var query = "SELECT u.idUser, u.picPath, CONCAT(u.prenomUser,' ',u.nomUser) AS nomPrenom, p.commentaire, p.dateDemande FROM d_partDemandeAchat AS p, d_users AS u WHERE p.idProf = u.idUser AND p.idDemande = " + idDemande;
 
   req.mysql.query(query, function (error, results, fields) {
   	 if(error){
