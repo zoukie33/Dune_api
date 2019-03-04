@@ -65,7 +65,12 @@ router.get('/nbEleves', function(req, res, next) {
 router.get('/nbClasses', function(req, res, next) {
 	var idUser = req.currUser.idUser;
 	if (idUser) {
-    var query = "SELECT COUNT(idClasse) AS nbClasses FROM d_profsAppClasse WHERE idProf = " + idUser;
+    if (req.currUser.typeUser == 2) {
+      var query = "SELECT COUNT(idClasse) AS nbClasses FROM d_classeEcole AS ce, d_profsAppEcole AS pe WHERE ce.idEcole = pe.idEcole AND pe.idProf = " + idUser;
+    } else {
+      var query = "SELECT COUNT(idClasse) AS nbClasses FROM d_profsAppClasse WHERE idProf = " + idUser;
+    }
+
 		req.mysql.query(query, function (error, results, fields) {
 		  	if(error){
           tools.dSend(res, "NOK", "Dashboard", "nbClasses", 500, error, null);

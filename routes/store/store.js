@@ -210,7 +210,7 @@ router.post('/buyApp', function(req, res, next) {
     req.mysql.query(quer, function (error, results, fields) {
       if (results.length == 1) {
         if (commentaire) {
-          var query2 = "INSERT INTO d_partDemandeAchat(idDemande, idProf, commentaire) VALUES ("+ results[0].idDemande +","+ idProf +","+ commentaire +")";
+          var query2 = 'INSERT INTO d_partDemandeAchat(idDemande, idProf, commentaire) VALUES ('+ results[0].idDemande +','+ idProf +',"'+ commentaire +'")';
         } else {
           var query2 = "INSERT INTO d_partDemandeAchat(idDemande, idProf) VALUES ("+ results[0].idDemande +","+ idProf +")";
         }
@@ -229,11 +229,11 @@ router.post('/buyApp', function(req, res, next) {
               tools.dSend(res, "NOK", "Store", "buyApp", 500, error, 2);
       	  	} else {
               if (commentaire) {
-                var query2 = "INSERT INTO d_partDemandeAchat(idDemande, idProf, commentaire) VALUES ("+ results.insertId +","+ idProf +","+ commentaire +")";
+                var query2 = 'INSERT INTO d_partDemandeAchat(idDemande, idProf, commentaire) VALUES ('+ results.insertId +','+ idProf +',"'+ commentaire +'")';
               } else {
                 var query2 = "INSERT INTO d_partDemandeAchat(idDemande, idProf) VALUES ("+ results.insertId +","+ idProf +")";
               }
-              doNotif.createNotifDirecteur(req, idEcole, results.insertId, 1, "Une demande d'achat d'application a été faite.2");
+              doNotif.createNotifDirecteur(req, idEcole, results.insertId, 1, "Une demande d'achat d'application a été faite.");
               req.mysql.query(query2, function (error, results2, fields) {
                 if(error){
                   tools.dSend(res, "NOK", "Store", "buyApp", 500, error, 2);
