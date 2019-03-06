@@ -62,27 +62,28 @@ router.post('/delToken', function(req, res, next) {
 
 router.post('/verifToken', function(req, res, next) {
 	var token = req.body.tokenTable;
-	req.mysql.query('SELECT idProf FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
+	req.mysql.query('SELECT idProf, idTable FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
 	  	if(error){
         tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 500, error, null);
-	  	} else {
+	  		} else {
 				if (results.length > 0) {
-					var idProf = results[0].idProf
+					var idProf = results[0].idProf;
 					if (idProf == 0) {
-		        tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 510, "Token pas encore utilisé : " + token, null);
+						tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 510, "Token pas encore utilisé : " + token, null);
 					} else if (idProf > 0) {
-						req.mysql.query('SELECT * FROM d_users WHERE idUser = "' + idProf + '"', function (error, results, fields) { });
-
-
-					var token = jwt.sign({ idUser: idProf, typeUser: typeUser, emailUser: emailUser, idEcole: idEcole, idTable: nomTable, perm: 4  }, config.secret, {
-						expiresIn: '7d'
+						var iTable = results[0].idTable;
+						req.mysql.query('SELECT * FROM d_users WHERE idUser = "' + idProf + '"', function (error, prof, fields) {
+						if (error) {
+							tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 500, error, "Récupération des informations du prof");
+						} else {
+								var authToken = jwt.sign({ idUser: idProf, typeUser: prof[0].typeUser, emailUser: prof[0].emailUser, idEcole: prof[0].idEcole, idTable: idTable, perm: 4  }, config.secret, { expiresIn: '7d' });
+								res.send(JSON.stringify({"status": 200, "idProf": idProf}));
+								tools.dLog("OK", "Table", "/cnxTable/verifToken", 200, null, '"idProf":' + idProf);
+							}
 					});
-						res.send(JSON.stringify({"status": 200, "idProf": idProf}));
-						tools.dLog("OK", "Table", "/cnxTable/verifToken", 200, null, '"idProf":' + idProf);
-					}
 				}
 	  	}
-  	});
+  	}
 });
 
 /**
@@ -129,6 +130,7 @@ router.post('/install', function(req, res, next) {
  * @apiParam {Int} idProf
  */
 
+
 router.post('/useToken', function(req, res, next) {
   var token = req.body.tokenTable;
 	var idProf = req.currUser.idUser;
@@ -143,7 +145,6 @@ router.post('/useToken', function(req, res, next) {
 				        tools.dSend(res, "NOK", "Table", "/cnxTable/useToken", 500, error, null);
 							} else {
 								res.send(JSON.stringify({"status": 200, "response": "User linked !"}));
-								//If there is no error, all is good and response is 200OK.
 							}
 					});
 				}
