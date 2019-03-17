@@ -2,8 +2,8 @@ var express = require('express');
 var mysql   = require("mysql");
 var router = express.Router();
 const fileUpload = require('express-fileupload');
-var filez = require('../functions/files/files');
-var tools = require('../functions/tools');
+var filez = require('../../functions/files/files');
+var tools = require('../../functions/tools');
 
 /**
  * @api {get} /eleves/ Get all students

@@ -1,42 +1,56 @@
 var express = require('express');
+var mysql   = require("mysql");
+var config = require('../../config');
+var tools = require('../../functions/tools');
 var router = express.Router();
 
-/* GET users listing. */
+/**
+ * @api {get} /classes/profs Get Classes for an User
+ * @apiName getClasses
+ * @apiGroup ClassesProfs
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {String} token
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "idProf": 1,
+ *     "response": [
+ *      {
+ *          "idClasse": 3,
+ *          "level": 5,
+ *          "num": 1,
+ *          "annee": "2017/2018",
+ *          "effectif": 3
+ *      },
+ *      {
+ *          "idClasse": 5,
+ *          "level": 7,
+ *          "num": 1,
+ *          "annee": "2017/2018",
+ *          "effectif": 2
+ *      }
+ *  ]
+ * }
+ */
+
 router.get('/', function(req, res, next) {
-	req.mysql.query('SELECT * from d_profsAppClasse', function (error, results, fields) {
+	var idProf = req.currUser.idUser;
+
+	if (req.currUser.typeUser == 2) {
+		var query = 'SELECT c.idClasse, c.level, c.num, c.annee, COUNT(ce.idEleve) AS effectif FROM d_profsAppEcole AS ape, d_classeEcole AS cee, d_classe AS c, d_classeEleve AS ce WHERE ape.idEcole = cee.idEcole AND cee.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ape.idProf = ' + idProf + ' GROUP BY c.idClasse ORDER BY c.level, c.num ASC';
+	} else {
+		var query = 'SELECT c.idClasse, c.level, c.num, c.annee, COUNT(ce.idEleve) AS effectif from d_profsAppClasse AS apc, d_classe AS c, d_classeEleve AS ce WHERE apc.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND apc.idProf = ' + idProf + ' GROUP BY c.idClasse ORDER BY c.level, c.num ASC';
+	}
+
+	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
+        tools.dSend(res, "NOK", "ClasseProfs", "/classes/profs", 500, error, null);
 	  	} else {
-  			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  			//If there is no error, all is good and response is 200OK.
+        tools.dSend(res, "OK", "ClasseProfs", "/classes/profs", 200, null, results);
 	  	}
   	});
-});
-
-router.get('/:id?', function(req, res, next) {
-	req.mysql.query('SELECT p.nomUser, p.prenomUser, p.emailUser FROM d_users as p, d_profsAppClasse as pac WHERE p.idUser = pac.idUser AND pac.idClasse = ' + req.params.id , function (error, results, fields) {
-	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
-	  	} else {
-  			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  			//If there is no error, all is good and response is 200OK.
-	  	}
-  	});
-});
-
-router.post('/add', function(req, res, next) {
-	var postData = req.body;
-	console.log(postData);
-	req.mysql.query('INSERT INTO d_profsAppClasse SET ?',  postData, function(error, results, fields) {
-		if (error){
-			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-		} else {
-			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-		}
-	  res.end(JSON.stringify(results));
-	});
 });
 
 module.exports = router;

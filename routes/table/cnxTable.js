@@ -51,13 +51,19 @@ router.post('/delToken', function(req, res, next) {
 });
 
 /**
- * @api {post} /cnxTable/verifToken Virifying a token Table
+ * @api {post} /cnxTable/verifToken Verifying a token Table
  * @apiName verifToken
  * @apiGroup Table
  * @apiPermission notLogged
  * @apiVersion 1.0.0
  *
  * @apiParam {String} tokenTable
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "idProf": 1,
+ *     "token": letoken
+ * }
  */
 
 router.post('/verifToken', function(req, res, next) {
@@ -71,19 +77,20 @@ router.post('/verifToken', function(req, res, next) {
 					if (idProf == 0) {
 						tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 510, "Token pas encore utilisé : " + token, null);
 					} else if (idProf > 0) {
-						var iTable = results[0].idTable;
+						var idTable = results[0].idTable;
 						req.mysql.query('SELECT * FROM d_users WHERE idUser = "' + idProf + '"', function (error, prof, fields) {
 						if (error) {
 							tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 500, error, "Récupération des informations du prof");
 						} else {
 								var authToken = jwt.sign({ idUser: idProf, typeUser: prof[0].typeUser, emailUser: prof[0].emailUser, idEcole: prof[0].idEcole, idTable: idTable, perm: 4  }, config.secret, { expiresIn: '7d' });
-								res.send(JSON.stringify({"status": 200, "idProf": idProf}));
-								tools.dLog("OK", "Table", "/cnxTable/verifToken", 200, null, '"idProf":' + idProf);
+								res.send(JSON.stringify({"status": 200, "idProf": idProf, "token": authToken}));
+								tools.dLog("OK", "Table", "/cnxTable/verifToken", 200, null, '"idProf":' + idProf + '"token": ' + authToken);
 							}
 					});
 				}
 	  	}
   	}
+	});
 });
 
 /**
