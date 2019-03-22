@@ -73,7 +73,11 @@ var tools = require('../../functions/tools');
  *            "nomApp": "testApp",
  *            "nomCreator": "test",
  *            "picPath": "1-app.png",
- *            "path": "NULL"
+ *            "path": "NULL",
+ *            "prix": "400euros",
+ *            "nb_joueurs": 4,
+ *            "current_version": "1.0",
+ *            "niveau": 2
  *        }
  *    ]
  * }
@@ -82,7 +86,7 @@ var tools = require('../../functions/tools');
 router.post('/getApp', function(req, res, next) {
   var idApp = req.body.idApp;
   if (idApp) {
-    req.mysql.query('SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND g.id = ' + idApp, function (error, results, fields) {
+    req.mysql.query('SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path, g.prix, g.nb_joueurs, g.current_version, g.niveau, g.description FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND g.id = ' + idApp, function (error, results, fields) {
   	  	if(error){
           tools.dSend(res, "NOK", "Store", "getApp", 500, error, null);
   	  	} else {
@@ -408,4 +412,85 @@ router.post('/validating', function(req, res, next) {
     tools.dSend(res, "NOK", "Store", "Validating", 500, "Parametres demandées : typeUser, idDemande", null);
   }
 });
+
+
+
+/**
+ * @api {post} /store/addAvis Add a view to a game in the store
+ * @apiName addAvis
+ * @apiGroup Store
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idGame Id du jeu sur lequel poster un avis.
+ * @apiParam {Int} note int correspondant a la note attribuee au jeu.
+ * @apiParam {Text} commentaire texte correspondant au commentaire attribuee au jeu.
+ * @apiDescription Route permettant l'ajout d'un avis sur un jeu disponible sur le store.
+ */
+
+router.post('/addAvis', function(req, res, next) {
+    var idProf = req.currUser.idUser;
+    var postData = {
+        note:req.body.note,
+        commentaire:req.body.commentaire,
+        idUser: idProf,
+        idGame: req.body.idGame
+    }
+
+    let idAvis;
+    var query = "INSERT INTO ?? SET ?";
+    var table = ["d_gamesAvis"];
+    query = mysql.format(query,table);
+
+    req.mysql.query(query, postData, function(error, results, fields) {
+        if (error){
+            tools.dSend(res, "NOK", "Avis", "add", 500, error, null);
+        } else {
+            idAvis = results.insertId;
+            tools.dSend(res, "OK", "Avis", "add", 200, null, results);
+        }
+        res.end(JSON.stringify(results));
+    });
+});
+
+/**
+ * @api {get} /store/avis/:idApp Getting view of app
+ * @apiName getAppView
+ * @apiGroup Store
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idApp Id de l'application demandée.
+ * @apiDescription Route permettant de voir les avis concernant une application
+ * @apiSuccessExample Success-Response:
+ * {
+    "status": 200,
+    "error": null,
+    "response": [
+        {
+            "commentaire": "formidable!!",
+            "note": 5,
+            "nomProf": "Berthaud",
+            "prenomProf": "Elodie",
+            "photo": "1-prof.png"
+        }
+    ]
+}
+ */
+
+router.get('/avis/:idApp', function(req, res, next) {
+
+    var idApp = req.params.idApp;
+
+    var query = "SELECT avis.commentaire, avis.note, user.nomUser as nomProf, user.prenomUser as prenomProf, user.picPath as photo FROM d_gamesAvis AS avis INNER JOIN d_users AS user ON user.idUser=avis.idUser WHERE avis.idGame=" + idApp;
+    req.mysql.query(query, function (error, results, fields) {
+        if(error){
+            tools.dSend(res, "NOK", "Store", "typesGames", 500, error, null);
+        } else {
+            tools.dSend(res, "OK", "Store", "typesGames", 200, null, results);
+        }
+    });
+});
+
 module.exports = router;
+
