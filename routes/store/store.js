@@ -454,13 +454,15 @@ router.post('/addAvis', function(req, res, next) {
 });
 
 /**
- * @api {get} /store/avis/:idApp Getting view of app
+ * @api {post} /store/avis Getting view of app
  * @apiName getAppView
  * @apiGroup Store
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
  * @apiParam {Int} idApp Id de l'application demandée.
+ * @apiParam {Int} valeur1 pour le LIMIT.
+ * @apiParam {Int} valeur2 pour le LIMIT.
  * @apiDescription Route permettant de voir les avis concernant une application
  * @apiSuccessExample Success-Response:
  * {
@@ -468,6 +470,7 @@ router.post('/addAvis', function(req, res, next) {
     "error": null,
     "response": [
         {
+            "date": "2019-03-23T17:05:13.000Z",
             "commentaire": "formidable!!",
             "note": 5,
             "nomProf": "Berthaud",
@@ -478,11 +481,55 @@ router.post('/addAvis', function(req, res, next) {
 }
  */
 
-router.get('/avis/:idApp', function(req, res, next) {
+router.post('/avis', function(req, res, next) {
+
+    var idApp = req.body.idApp;
+    var depart = req.body.depart;
+    var nbRes = req.body.nbRes
+
+    var query = "SELECT avis.dateAvis as date, avis.commentaire, avis.note, user.nomUser as nomProf, user.prenomUser as prenomProf, user.picPath as photo " +
+        "FROM d_gamesAvis AS avis " +
+        "INNER JOIN d_users AS user ON user.idUser=avis.idUser " +
+        "WHERE avis.idGame=" + idApp + " " +
+        "ORDER BY avis.dateAvis DESC" + " " +
+        "LIMIT " + depart + ", " + nbRes;
+
+    req.mysql.query(query, function (error, results, fields) {
+        if(error){
+            tools.dSend(res, "NOK", "Store", "typesGames", 500, error, null);
+        } else {
+            tools.dSend(res, "OK", "Store", "typesGames", 200, null, results);
+        }
+    });
+});
+
+/**
+ * @api {get} /store/nbAvis/:idApp Getting number of app views
+ * @apiName getNbAppView
+ * @apiGroup Store
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idApp Id de l'application demandée.
+ * @apiDescription Route permettant d'avoir le nombre d'avis concernant une application
+ * @apiSuccessExample Success-Response:
+ * {
+    "status": 200,
+    "error": null,
+    "response": [
+        {
+            "nbAvis": 59,
+            "moyenne": 3.5
+        }
+    ]
+}
+ */
+
+router.get('/nbAvis/:idApp', function(req, res, next) {
 
     var idApp = req.params.idApp;
 
-    var query = "SELECT avis.commentaire, avis.note, user.nomUser as nomProf, user.prenomUser as prenomProf, user.picPath as photo FROM d_gamesAvis AS avis INNER JOIN d_users AS user ON user.idUser=avis.idUser WHERE avis.idGame=" + idApp;
+    var query = "SELECT COUNT(avis.idAvis) as nbAvis, AVG(avis.note) as moyenne FROM d_gamesAvis AS avis INNER JOIN d_users AS user ON user.idUser=avis.idUser WHERE avis.idGame=" + idApp + " ORDER BY avis.dateAvis DESC";
     req.mysql.query(query, function (error, results, fields) {
         if(error){
             tools.dSend(res, "NOK", "Store", "typesGames", 500, error, null);
