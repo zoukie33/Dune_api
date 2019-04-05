@@ -18,7 +18,7 @@ var verifyToken=function (req, res, next) {
 	}
 	 else {
 		res.status(401).send("Invalid Access");
-		console.log("User rejeté");
+		//console.log("User rejeté");
 	}
 };
 module.exports=verifyToken;

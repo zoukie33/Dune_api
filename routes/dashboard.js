@@ -115,4 +115,34 @@ router.get('/nbNotifsNonL', function(req, res, next) {
   	 }
   });
 });
+
+/**
+ * @api {get} /dashboard/nbAppsStarted Get the number of appStarted
+ * @apiName nbAppsStarted
+ * @apiGroup Dashboard
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiDescription Route permettant la récupération du nombre d'applications lancées.
+ * @apiParam {Token} token
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "nbAppsStarted": 1
+ * }
+ */
+
+router.get('/nbAppsStarted', function(req, res, next) {
+  var idUser = req.currUser.idUser;
+  var query = "SELECT COUNT(gp.idGP) AS nbAppsStarted FROM d_gamesPlayed AS gp WHERE gp.isPlayed = 1 AND idProf = " + idUser;
+
+  req.mysql.query(query, function (error, results, fields) {
+  	 if(error){
+       tools.dSend(res, "NOK", "Dashboard", "nbAppsStarted", 500, error, null);
+  	 } else {
+       tools.dLog("OK", "Dashboard", "nbAppsStarted", 200, null, "nbAppsStarted:" + results[0].nbAppsStarted);
+    	 res.send(JSON.stringify({"status": 200, "nbAppsStarted": results[0].nbAppsStarted}));
+  	 }
+  });
+});
 module.exports = router;

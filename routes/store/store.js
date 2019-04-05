@@ -388,7 +388,8 @@ router.post('/validating', function(req, res, next) {
                   if(error){
                     tools.dSend(res, "NOK", "Store", "Validating", 500, error, null);
             	  	} else {
-                    doNotif.createNotif(req, results1[0].idProf, idDemande, 1, "Votre demande d'achat a été validée par le directeur.");
+                      console.log("FAIS TA NOTIF");
+                    doNotif.createPoolNotif(req, idDemande, 1, "Votre demande d'achat a été validée par le directeur.");
                     tools.dSend(res, "OK", "Store", "Validating", 200, null, results);
                   }
                 });
@@ -401,7 +402,7 @@ router.post('/validating', function(req, res, next) {
                 tools.dSend(res, "NOK", "Store", "Validating", 500, error, null);
             	  res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
             	 } else {
-                 doNotif.createNotif(req, results1[0].idProf, idDemande, 1, "Votre demande d'achat n'a pas été validée par le directeur.");
+                 doNotif.createPoolNotif(req, idDemande, 1, "Votre demande d'achat n'a pas été validée par le directeur.");
                  tools.dSend(res, "OK", "Store", "Validating", 200, null, results1);
               }
             });
@@ -540,4 +541,3 @@ router.get('/nbAvis/:idApp', function(req, res, next) {
 });
 
 module.exports = router;
-

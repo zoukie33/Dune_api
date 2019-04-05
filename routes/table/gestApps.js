@@ -57,13 +57,14 @@ router.get('/appsOnTable', function(req, res, next) {
  *             "idGame": 2,
  *             "idType": 1,
  *             "name": "Invacouleur",
+ *             "creator": 1,
  *             "picPath": null
  *         }
  *     ]
  * }
  */
 router.get('/appsNotOnTable', function(req, res, next) {
-  var query = 'SELECT g.id AS "idGame", g.idType, g.name, g.picPath FROM d_games as g WHERE g.id NOT IN (SELECT idGame FROM d_tableGames WHERE idTable =' + req.currUser.idTable + ')';
+  var query = 'SELECT g.id AS "idGame", g.idType, g.name, g.creator, g.picPath FROM d_games as g WHERE g.id NOT IN (SELECT idGame FROM d_tableGames WHERE idTable =' + req.currUser.idTable + ')';
 
 	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
