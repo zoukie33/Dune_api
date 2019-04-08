@@ -462,8 +462,8 @@ router.post('/addAvis', function(req, res, next) {
  * @apiVersion 1.0.0
  *
  * @apiParam {Int} idApp Id de l'application demandée.
- * @apiParam {Int} valeur1 pour le LIMIT.
- * @apiParam {Int} valeur2 pour le LIMIT.
+ * @apiParam {Int} depart pour le LIMIT.
+ * @apiParam {Int} nbRes pour le LIMIT.
  * @apiDescription Route permettant de voir les avis concernant une application
  * @apiSuccessExample Success-Response:
  * {

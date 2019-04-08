@@ -15,6 +15,7 @@ const fileUpload = require('express-fileupload');
  *
  * @apiParam {Token} token
  * @apiParam {String} fileName
+ * @apiParam {String} fileType
  * @apiParam {String} description
  * @apiParam {String} private
  * @apiParam {File} fileUser
@@ -37,6 +38,7 @@ router.post('/uploadFile', function(req, res, next) {
     var idEcole = req.currUser.idEcole;
 		var fileName = req.body.fileName;
 		var description = req.body.description;
+		var fileType = req.body.fileType;
 		var private = req.body.private;
 		let file = req.files.fileUser;
 		var fileRName = req.files.fileUser.name;
@@ -49,7 +51,7 @@ router.post('/uploadFile', function(req, res, next) {
       description = "n/a";
     }
 		if (filez.filesManagerUpload(file, "fm/", fileRName)) {
-			var query = "INSERT INTO d_files(nom, path, type, description, private) VALUES ('"+ fileName +"', '"+ fileRName +"', 'IMG', '"+ description +"', '"+ private +"')";
+			var query = "INSERT INTO d_files(nom, path, type, description, private) VALUES ('"+ fileName +"', '"+ fileRName +"', '"+ fileType +"', '"+ description +"', '"+ private +"')";
 						req.mysql.query(query, function(error, results, fields) {
 							if (error){
                 tools.dSend(res, "NOK", "FileManager", "uploadFile", 500, error, "SQL Error 1");
