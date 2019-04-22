@@ -29,3 +29,12 @@ WHERE gp.idGP = gs.idGP ) AS moyenne
 
 INSERT INTO d_gamesPlayed (idGame, idTypeGame, idProf, idClasse) VALUES ('"+ name +"', '"+ creator +"', 'NULL')
 INSERT INTO d_gamesScored (idGP, idEleve) VALUES ('"+ name +"', '"+ creator +"')
+
+SELECT gp.idTypeGame, tg.labelType FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_typeGames AS tg WHERE gp.idGP = gs.idGP AND gp.idTypeGame = tg.idType AND gs.idEleve = 1 GROUP BY gp.idTypeGame
+
+SELECT gp.idGP, g.name AS nameGame, tg.labelType AS matiere, gs.score AS note, gp.TimeStamp AS date, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp2.idGP = gp.idGP) AS moyenne FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_games AS g, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idGame = g.id AND gp.idTypeGame = tg.idType AND gs.idEleve = 1
+
+ + ' AND gp.idTypeGame = ' + idMat
+
+
+SELECT u.idUser AS idProf, u.nomUser AS nom, u.prenomUser AS prenom, u.emailUser AS email, u.picPath FROM d_profsAppEcole AS pae, d_users AS u WHERE u.idUser = pae.idProf AND pae.idEcole = 

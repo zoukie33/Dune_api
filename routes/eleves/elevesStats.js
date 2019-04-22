@@ -217,4 +217,89 @@ router.get('/bulletin/:idEleve', function(req, res, next) {
 	  	}
   	});
 });
+
+/**
+ * @api {get} /eleves/stats/getMat/:idEleve Get games type played by a student
+ * @apiName getMat
+ * @apiGroup ElevesStats
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Token} token
+ * @apiParam {int} idEleve
+ * @apiError 500 SQL Error.
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *    "status": 200,
+ *    "error": null,
+ *    "response": [
+ *        {
+ *            "idTypeGame": 1,
+ *            "labelType": "Logique"
+ *        },
+ *        {
+ *            "idTypeGame": 2,
+ *            "labelType": "Mathématiques"
+ *        }
+ *    ]
+ * }
+ */
+
+router.get('/getMat/:idEleve', function(req, res, next) {
+  var idEleve = req.params.idEleve;
+  var query = "SELECT gp.idTypeGame, tg.labelType FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_typeGames AS tg WHERE gp.idGP = gs.idGP AND gp.idTypeGame = tg.idType AND gs.idEleve = " + idEleve + " GROUP BY gp.idTypeGame";
+
+  req.mysql.query(query, function (error, results, fields) {
+    if(error){
+      tools.dSend(res, "NOK", "ElevesStats", "getMat", 500, error, null);
+    } else {
+      tools.dSend(res, "OK", "ElevesStats", "getMat", 200, null, results);
+    }
+  });
+});
+
+
+/**
+ * @api {get} /eleves/stats/getGamesByMatEleve/:idEleve/:idMat Get games played by a student for one gametype
+ * @apiName getGamesByMatEleve
+ * @apiGroup ElevesStats
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Token} token
+ * @apiParam {int} idEleve
+ * @apiParam {int} idMat
+ * @apiError 500 SQL Error.
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *    "status": 200,
+ *    "error": null,
+ *    "response": [
+ *        {
+ *            "idGP": 1,
+ *            "nameGame": "Compteclasse",
+ *            "matiere": "Maths",
+ *            "note": 100,
+ *            "date": "2019-03-14T18:04:51.000Z",
+ *            "moyenne": 67.5
+ *        }
+ *    ]
+ * }
+ */
+
+router.get('/getGamesByMatEleve/:idEleve/:idMat', function(req, res, next) {
+  var idEleve = req.params.idEleve;
+  var idMat = req.params.idMat;
+  var query = 'SELECT gp.idGP, g.name AS nameGame, tg.labelType AS matiere, gs.score AS note, gp.TimeStamp AS date, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp2.idGP = gp.idGP) AS moyenne FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_games AS g, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idGame = g.id AND gp.idTypeGame = tg.idType AND gs.idEleve =' + idEleve + ' AND gp.idTypeGame = ' + idMat;
+
+  req.mysql.query(query, function (error, results, fields) {
+    if(error){
+      tools.dSend(res, "NOK", "ElevesStats", "getGamesByMatEleve", 500, error, null);
+    } else {
+      tools.dSend(res, "OK", "ElevesStats", "getGamesByMatEleve", 200, null, results);
+    }
+  });
+});
 module.exports = router;

@@ -33,5 +33,33 @@ router.post('/verifyToken', function(req, res, next) {
   }
 });
 
+/**
+ * @api {post} /tokens/verifyTokenAdmin Verifying an Admin jwt token
+ * @apiName verifyTokenAdmin
+ * @apiGroup Auth
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiError 401 Invalid Access
+ * @apiParam {String} token Token d'authentification
+ * @apiDescription Route permettant la vérification d'un JWT Token.
+ */
+
+router.post('/verifyTokenAdmin', function(req, res, next) {
+  var token = req.body.token || req.query.token || req.headers['token'];
+   if (token) {
+    jwt.verify(token, config.secret, function (err, currUser) {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(JSON.stringify({"status": 200, "response": "Token valid"}));
+        req.currUser = currUser;
+      }
+    });
+  }
+   else {
+     res.send(JSON.stringify({"status": 401, "response": "Invalid Access"}));
+  }
+});
 
 module.exports = router;

@@ -157,6 +157,9 @@ router.put('/editFile', function(req, res, next){
  *
  * @apiParam {Token} token
  * @apiParam {int} private 0 non - 1 oui
+ * @apiParam {String} type IMG / PDF / MP4
+ * @apiParam {String} titre
+ * @apiParam {int} classement
  *
  * @apiError 500 SQL Error.
  *
@@ -189,11 +192,35 @@ router.post('/getAll', function(req, res, next){
   var private = req.body.private;
   var idUser = req.currUser.idUser;
   var idEcole = req.currUser.idEcole;
+  var title = req.body.title;
+  var type = req.body.type;
+  var classement = req.body.classement;
+
   if (private == 1) {
-    var query = "SELECT f.* FROM d_files AS f, d_filesAppsUser AS fau WHERE f.idFile = fau.idFile AND fau.idEcole = " + idEcole + " AND fau.idUser = " + idUser + " AND f.private = 1";
+    var query = "SELECT f.* FROM d_files AS f, d_filesAppsUser AS fau " +
+        "WHERE f.idFile = fau.idFile AND fau.idEcole = " + idEcole + " " +
+        "AND fau.idUser = " + idUser + " " +
+        "AND f.private = 1";
+    if (title !== ''){
+      query += " AND f.nom LIKE '%" + title + "%'";
+    }
+    if (type != 0){
+      query += " AND f.type='" + type + "'";
+    }
   } else {
     var query = "SELECT f.* FROM d_files AS f, d_filesAppsUser AS fau WHERE f.idFile = fau.idFile AND fau.idEcole = " + idEcole;
+    if (title !== ''){
+      query += " AND f.nom LIKE '%" + title + "%'";
+    }
+    if (type != 0){
+      query += " AND f.type='" + type + "'";
+    }
   }
+
+  if (classement == 1)
+    query += " ORDER BY f.type";
+  else if (classement == 2)
+    query += ' ORDER BY f.nom';
 
   req.mysql.query(query, function(error, results, fields) {
     if (error){

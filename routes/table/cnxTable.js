@@ -82,9 +82,20 @@ router.post('/verifToken', function(req, res, next) {
 						if (error) {
 							tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 500, error, "Récupération des informations du prof");
 						} else {
-								var authToken = jwt.sign({ idUser: idProf, typeUser: prof[0].typeUser, emailUser: prof[0].emailUser, idEcole: prof[0].idEcole, idTable: idTable, perm: 4  }, config.secret, { expiresIn: '7d' });
+								var query2 = "SELECT idEcole FROM d_profsAppEcole as a WHERE a.idProf = " + idProf;
+							req.mysql.query(query2,function(err,resu) {
+								idEcole = resu[0].idEcole;
+								var authToken = jwt.sign({
+									idUser: idProf,
+									typeUser: prof[0].typeUser,
+									emailUser: prof[0].emailUser,
+									idEcole: idEcole,
+									idTable: idTable,
+									perm: 4
+								}, config.secret, {expiresIn: '7d'});
 								res.send(JSON.stringify({"status": 200, "idProf": idProf, "token": authToken}));
 								tools.dLog("OK", "Table", "/cnxTable/verifToken", 200, null, '"idProf":' + idProf + '"token": ' + authToken);
+							});
 							}
 					});
 				}
@@ -107,9 +118,7 @@ router.post('/verifToken', function(req, res, next) {
 router.post('/install', function(req, res, next) {
 	var licenceEcole = req.body.licence;
 	var nomTable = req.body.nom;
-	var token = jwt.sign({ id: nomTable, perm: 4 }, config.secret, {
-		expiresIn: '3650d'
-	});
+	
 	if (licenceEcole === "123") {
 		req.mysql.query("INSERT INTO d_tables (nomTable, access_token) VALUES ('" + nomTable + "', '" + token + "')", function(error, results, fields) {
 			if (error){

@@ -23,17 +23,6 @@ router.get('/:id?', function(req, res, next) {
   	});
 });
 
-router.post('/', function(req, res, next) {
-	var postData = req.body;
-	console.log(postData);
-	req.mysql.query('INSERT INTO d_ecole SET ?',  postData, function(error, results, fields) {
-		if (error){
-			tools.dSend(res, "NOK", "Ecole", "add", 500, error, null);
-		} else {
-			tools.dSend(res, "OK", "Ecole", "add", 200, null, results);
-		}
-	  res.end(JSON.stringify(results));
-	});
-});
+
 
 module.exports = router;

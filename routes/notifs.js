@@ -285,6 +285,7 @@ router.get('/getNotif/:idNotif', function(req, res, next) {
     	}
   });
 });
+
 /**
  * @api {delete} /notifs/:idNotif Delete a notification
  * @apiName Delete a noitif

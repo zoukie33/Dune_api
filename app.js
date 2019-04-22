@@ -5,12 +5,15 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var verifyToken = require('./verify');
+var verifyTokenAdmin = require('./verifyAdmin');
 var mysql = require('mysql');
 var fileUpload = require('express-fileupload');
 
 // Routes
-var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/auth/login');
+var adminCreateRouter = require('./routes/adminPanel/create');
+var adminDashboardRouter = require('./routes/adminPanel/dashboard');
+var adminDeleteRouter = require('./routes/adminPanel/delete');
 var logoutRouter = require('./routes/auth/logout');
 var tokensRouter = require('./routes/auth/tokens');
 var usersRouter = require('./routes/users');
@@ -23,6 +26,7 @@ var filesManagerRouter = require('./routes/filesManager/filesManager');
 var storeRouter = require('./routes/store/store');
 var notifsRouter = require('./routes/notifs');
 var gamesRouter = require('./routes/games/games');
+var playRouter = require('./routes/table/play');
 var tablesRouter = require('./routes/table/tables');
 var gestAppsRouter = require('./routes/table/gestApps');
 var cnxTableRouter = require('./routes/table/cnxTable');
@@ -60,8 +64,8 @@ app.use(fileUpload({
   preserveExtension: 2
 }));
 
-app.use(express.static('public'));
-app.use('/files', express.static('files'));
+app.use('/', express.static(__dirname + '/public/apidoc'));
+app.use('/files', express.static(__dirname + '/files'));
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
@@ -77,8 +81,7 @@ app.use(function (req, res, next) {
     req.mysql = pool;
     next();
 });
-app.use('/', indexRouter);
-app.use('/api/v1/', indexRouter);
+
 app.use('/api/v1/login', loginRouter);
 app.use('/api/v1/logout', logoutRouter);
 app.use('/api/v1/cnxTable', cnxTableRouter);
@@ -92,6 +95,7 @@ app.use('/api/v1/notifs', notifsRouter);
 app.use('/api/v1/trombi', trombiRouter);
 app.use('/api/v1/tables', tablesRouter);
 app.use('/api/v1/table/gestApps', gestAppsRouter);
+app.use('/api/v1/play', playRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/dashBoard', dashRouter);
 app.use('/api/v1/eleves/stats', elevesStatsRouter);
@@ -101,6 +105,10 @@ app.use('/api/v1/classe', classeRouter);
 app.use('/api/v1/classes/profs', cProfsRouter);
 app.use('/api/v1/classes/eleve', cEleveRouter);
 app.use('/api/v1/classes/ecole', cEcoleRouter);
+app.use(verifyTokenAdmin);
+app.use('/api/v1/admin/create', adminCreateRouter);
+app.use('/api/v1/admin/dashboard', adminDashboardRouter);
+app.use('/api/v1/admin/delete', adminDeleteRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

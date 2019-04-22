@@ -175,7 +175,7 @@ router.get('/infos', function(req, res, next) {
 
 router.post('/add', function(req, res, next) {
 
-	if (jwtDecode.getPerms(req.body.token) == 2) {
+	if (req.currUser.typeUser == 2) {
 		var query = "SELECT * FROM ?? WHERE ??=?";
 	  var table = ["d_users", "emailUser", req.body.email];
 	  query = mysql.format(query,table);
