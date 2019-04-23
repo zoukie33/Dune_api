@@ -29,18 +29,18 @@ var tools = require('../../functions/tools');
 
 router.get('/nbGames', function(req, res, next) {
 	var idEcole = req.currUser.idEcole;
-  console.log("sas");
+	console.log("sas");
 	if (idEcole) {
-    var query = "SELECT COUNT(*) AS nbGames FROM d_gamesAppEcole WHERE idEcole = " + idEcole;
+		var query = "SELECT COUNT(*) AS nbGames FROM d_gamesAppEcole WHERE idEcole = " + idEcole;
 		req.mysql.query(query, function (error, results, fields) {
-		  	if(error){
-					tools.dSend(res, "NOK", "Games", "nbGames", 500, error, null);
-		  	} else {
-					if (results.length != 0) {
-						tools.dSend(res, "OK", "Games", "nbGames", 200, null, results);
-					}
-		  	}
-	  	});
+			if(error){
+				tools.dSend(res, "NOK", "Games", "nbGames", 500, error, null);
+			} else {
+				if (results.length != 0) {
+					tools.dSend(res, "OK", "Games", "nbGames", 200, null, results);
+				}
+			}
+		});
 	} else {
 		tools.dSend(res, "OK", "Games", "nbGames", 510, "idEcole is missing", null);
 	}
@@ -72,12 +72,12 @@ router.get('/nbGames', function(req, res, next) {
 
 router.get('/', function(req, res, next) {
 	req.mysql.query('SELECT * from d_games', function (error, results, fields) {
-	  	if(error){
-        tools.dSend(res, "NOK", "Games", "games", 500, error, null);
-	  	} else {
-        tools.dSend(res, "OK", "Games", "games", 200, null, results);
-	  	}
-  	});
+		if(error){
+			tools.dSend(res, "NOK", "Games", "games", 500, error, null);
+		} else {
+			tools.dSend(res, "OK", "Games", "games", 200, null, results);
+		}
+	});
 });
 
 /**
@@ -105,12 +105,12 @@ router.get('/', function(req, res, next) {
 
 router.get('/:id?', function(req, res, next) {
 	req.mysql.query('SELECT * from d_games WHERE id = ' + req.params.id , function (error, results, fields) {
-	  	if(error){
-        tools.dSend(res, "NOK", "Games", "gamesById", 500, error, null);
-	  	} else {
-        tools.dSend(res, "OK", "Games", "gamesById", 200, null, results);
-	  	}
-  	});
+		if(error){
+			tools.dSend(res, "NOK", "Games", "gamesById", 500, error, null);
+		} else {
+			tools.dSend(res, "OK", "Games", "gamesById", 200, null, results);
+		}
+	});
 });
 
 /**
@@ -125,19 +125,19 @@ router.get('/:id?', function(req, res, next) {
  */
 
 router.post('/add', function(req, res, next) {
-  var name  = req.body.name;
-  var creator  = req.body.creator;
+	var name  = req.body.name;
+	var creator  = req.body.creator;
 
-  var query = "INSER INTO d_games (name, creator, path) VALUES ('"+ name +"', '"+ creator +"', 'NULL')";
+	var query = "INSER INTO d_games (name, creator, path) VALUES ('"+ name +"', '"+ creator +"', 'NULL')";
 
-  req.mysql.query(query, function(error, results, fields) {
-    if (error){
-      tools.dSend(res, "NOK", "Games", "addGame", 500, error, null);
-    } else {
-      tools.dSend(res, "OK", "Games", "addGame", 200, null, "Game Added");
-    }
-    res.end(JSON.stringify(results));
-  });
+	req.mysql.query(query, function(error, results, fields) {
+		if (error){
+			tools.dSend(res, "NOK", "Games", "addGame", 500, error, null);
+		} else {
+			tools.dSend(res, "OK", "Games", "addGame", 200, null, "Game Added");
+		}
+		res.end(JSON.stringify(results));
+	});
 });
 
 /**
@@ -153,20 +153,20 @@ router.post('/add', function(req, res, next) {
  */
 
 router.put('/update', function(req, res, next) {
-  var id  = req.body.id;
-  var name  = req.body.name;
-  var creator  = req.body.creator;
+	var id  = req.body.id;
+	var name  = req.body.name;
+	var creator  = req.body.creator;
 
-  var query = "UPDATE d_games SET name = '"+ name +"', creator = '"+ creator +"' WHERE id = " + id;
+	var query = "UPDATE d_games SET name = '"+ name +"', creator = '"+ creator +"' WHERE id = " + id;
 
-  req.mysql.query(query, function(error, results, fields) {
-    if (error){
-      tools.dSend(res, "NOK", "Games", "updateGame", 500, error, null);
-    } else {
-      tools.dSend(res, "OK", "Games", "updateGame", 200, null, "Game Updated");
-    }
-    res.end(JSON.stringify(results));
-  });
+	req.mysql.query(query, function(error, results, fields) {
+		if (error){
+			tools.dSend(res, "NOK", "Games", "updateGame", 500, error, null);
+		} else {
+			tools.dSend(res, "OK", "Games", "updateGame", 200, null, "Game Updated");
+		}
+		res.end(JSON.stringify(results));
+	});
 });
 
 /**
@@ -189,19 +189,19 @@ router.put('/picGame', function(req, res, next) {
 		var fileName = id + "-app.png";
 		if (filez.filesGest(file, "apps/", fileName)) {
 			var query = "UPDATE d_games SET picPath = '" + fileName + "'  WHERE id = " + id;
-						req.mysql.query(query, function(error, results, fields) {
-							if (error){
-                tools.dSend(res, "NOK", "Games", "picGame", 500, error, "Impossible de mettre a jour cet utilisateur.");
-							} else {
-                tools.dSend(res, "OK", "Games", "picGame", 200, null, "Game Updated");
-							}
-							res.end(JSON.stringify(results));
-						});
+			req.mysql.query(query, function(error, results, fields) {
+				if (error){
+					tools.dSend(res, "NOK", "Games", "picGame", 500, error, "Impossible de mettre a jour cet utilisateur.");
+				} else {
+					tools.dSend(res, "OK", "Games", "picGame", 200, null, "Game Updated");
+				}
+				res.end(JSON.stringify(results));
+			});
 		} else {
-      tools.dSend(res, "NOK", "Games", "picGame", 500, "Directory error", null);
+			tools.dSend(res, "NOK", "Games", "picGame", 500, "Directory error", null);
 		}
 	} else {
-    tools.dSend(res, "NOK", "Games", "picGame", 500, "Error uploading File", null);
+		tools.dSend(res, "NOK", "Games", "picGame", 500, "Error uploading File", null);
 	}
 });
 
