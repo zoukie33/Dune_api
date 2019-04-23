@@ -5,7 +5,7 @@ var filez = require('../../functions/files/files');
 var tools = require('../../functions/tools');
 
 /**
- * @api {post} /createGame/ Create a game
+ * @api {post} /play/createGame/ Create a game
  * @apiName createGame
  * @apiGroup Play
  * @apiPermission Logged
@@ -62,12 +62,54 @@ router.post('/createGame', function(req, res, next) {
   } else {
     tools.dSend(res, "OK", "Play", "createGame", 500, "Bad token", null);
   }
+});
 
+/**
+ * @api {get} /play/myGame/:idGP Get game infos
+ * @apiName myGame
+ * @apiGroup Play
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Token} token
+ * @apiParam {int} idGP
+ *
+ * @apiError 500 SQL Error.
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *    "status": 200,
+ *    "error": null,
+ *    "response": [
+ *    {
+ *            "idGP": 1,
+ *            "idGame": 1,
+ *            "idTypeGame": 2,
+ *            "idProf": 33,
+ *            "idClasse": 1,
+ *            "isPlayed": 1,
+ *            "TimeStamp": "2019-03-14T18:04:51.000Z"
+ *        }
+ *   }
+ *      ]
+ * }
+ */
+
+router.get('/myGame/:idGP', function(req, res, next) {
+  var idGP = req.params.idGP;
+	var query = "SELECT * FROM d_gamesPlayed AS gp WHERE gp.idGP = " + idGP;
+    req.mysql.query(query, function (error, results, fields) {
+  	  	if(error){
+          tools.dSend(res, "NOK", "Play", "myGame", 500, error, null);
+  	  	} else {
+          tools.dSend(res, "OK", "Play", "myGame", 200, null, results);
+  	  	}
+    	});
 });
 
 
 /**
- * @api {post} /endGame/ Ending a game
+ * @api {post} /play/endGame/ Ending a game
  * @apiName endGame
  * @apiGroup Play
  * @apiPermission Logged

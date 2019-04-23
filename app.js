@@ -12,6 +12,7 @@ var fileUpload = require('express-fileupload');
 // Routes
 var loginRouter = require('./routes/auth/login');
 var adminCreateRouter = require('./routes/adminPanel/create');
+var adminUpdateRouter = require('./routes/adminPanel/update');
 var adminDashboardRouter = require('./routes/adminPanel/dashboard');
 var adminDeleteRouter = require('./routes/adminPanel/delete');
 var logoutRouter = require('./routes/auth/logout');
@@ -27,6 +28,7 @@ var storeRouter = require('./routes/store/store');
 var notifsRouter = require('./routes/notifs');
 var gamesRouter = require('./routes/games/games');
 var playRouter = require('./routes/table/play');
+var gestLicencesRouter = require('./routes/table/licences/lic');
 var tablesRouter = require('./routes/table/tables');
 var gestAppsRouter = require('./routes/table/gestApps');
 var cnxTableRouter = require('./routes/table/cnxTable');
@@ -100,6 +102,7 @@ app.use('/api/v1/notifs', notifsRouter);
 app.use('/api/v1/trombi', trombiRouter);
 app.use('/api/v1/tables', tablesRouter);
 app.use('/api/v1/table/gestApps', gestAppsRouter);
+app.use('/api/v1/table/licences', gestLicencesRouter);
 app.use('/api/v1/play', playRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/dashBoard', dashRouter);
@@ -113,6 +116,7 @@ app.use('/api/v1/classes/ecole', cEcoleRouter);
 app.use(verifyTokenAdmin);
 app.use('/api/v1/admin/create', adminCreateRouter);
 app.use('/api/v1/admin/dashboard', adminDashboardRouter);
+app.use('/api/v1/admin/update', adminUpdateRouter);
 app.use('/api/v1/admin/delete', adminDeleteRouter);
 
 // catch 404 and forward to error handler
