@@ -10,6 +10,7 @@ var tools = require('../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {String} [search] Affiner la recherche.
  * @apiDescription Route permettant la récupération du trombi des étudiants d'un professeur (ou directeur).
  *
@@ -86,6 +87,7 @@ router.post('/', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiDescription Route permettant de récupérer les classes de l'utilisateur connecté pour trier le trombi.
  *
  * @apiError 500 SQL Error
@@ -140,6 +142,7 @@ router.get('/classes', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth 
  * @apiParam {Int} idClasse Id de la classe voulue.
  * @apiParam {String} [search] Affiner la recherche.
  *

@@ -11,7 +11,7 @@ var tools = require('../../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth
  * @apiParam {int} idGP
  * @apiError 500 SQL Error.
  *
@@ -82,7 +82,7 @@ router.get('/bySession/:idGP', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth
  * @apiParam {int} idClasse
  * @apiError 500 SQL Error.
  *
@@ -125,7 +125,7 @@ router.get('/byClasse/:idClasse', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth
  * @apiParam {int} idEleve
  * @apiError 500 SQL Error.
  *
@@ -166,7 +166,7 @@ router.get('/gamesPlayed/:idEleve', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth
  * @apiParam {int} idEleve
  * @apiError 500 SQL Error.
  *
@@ -225,7 +225,7 @@ router.get('/bulletin/:idEleve', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth 
  * @apiParam {int} idEleve
  * @apiError 500 SQL Error.
  *
@@ -267,7 +267,7 @@ router.get('/getMat/:idEleve', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth
  * @apiParam {int} idEleve
  * @apiParam {int} idMat
  * @apiError 500 SQL Error.

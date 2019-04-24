@@ -11,7 +11,7 @@ var tools = require('../../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth
  * @apiParam {int} idClasse
  * @apiParam {int} idGame
  * @apiParam {int} idTypeGame
@@ -71,7 +71,7 @@ router.post('/createGame', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth
  * @apiParam {int} idGP
  *
  * @apiError 500 SQL Error.
@@ -115,7 +115,7 @@ router.get('/myGame/:idGP', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth 
  * @apiParam {int} idGP
  * @apiParam {int} player1
  * @apiParam {int} player2

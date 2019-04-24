@@ -12,6 +12,7 @@ var tools = require('../../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {Int} idGame Id de l'app/jeu.
  */
 

@@ -11,7 +11,7 @@ var tools = require('../../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,
@@ -47,7 +47,7 @@ router.get('/appsOnTable', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth 
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,

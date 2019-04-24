@@ -10,6 +10,7 @@ var tools = require('../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiError 510 idEcole is missing.
  * @apiError 500 SQL Error.
  *
@@ -52,6 +53,7 @@ router.get('/nbEleves', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiError 510 idEcole is missing.
  * @apiError 500 SQL Error.
  *
@@ -94,6 +96,7 @@ router.get('/nbClasses', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth 
  * @apiDescription Route permettant la récupération des notifications.
  * @apiSuccessExample Success-Response:
  * {

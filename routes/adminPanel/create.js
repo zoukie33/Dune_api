@@ -12,7 +12,7 @@ var tools = require('../../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} tokenAdmin
+ * @apiHeader {String} token AdminToken auth 
  * @apiParam {int} nomEcole
  * @apiParam {int} idDirecteur
  *
@@ -59,7 +59,7 @@ router.post('/createSchool', function(req, res, next) {
 
 /**
  * @api {post} /admin/create/genLicence Generating licences
- * @apiName useToken
+ * @apiName genLicence
  * @apiGroup AdminCreate
  * @apiPermission notLogged
  * @apiVersion 1.0.0
@@ -75,7 +75,7 @@ router.post('/createSchool', function(req, res, next) {
  *         "AQ7X-N9T2-XEEH-DX2X"
  *     ]
  * }
- * @apiParam {String} tokenAdmin
+* @apiHeader {String} token AdminToken auth
  * @apiParam {Int} nbLicences
  * @apiParam {Int} idEcole
  */
@@ -110,6 +110,58 @@ router.post('/createSchool', function(req, res, next) {
  		}
     tools.dSend(res, "OK", "Admin-Create", "genLicence", 200, null, tabLicence);
  	}
+ });
+
+ /**
+  * @api {post} /admin/create/createGame Creating a game
+  * @apiName createGame
+  * @apiGroup AdminCreate
+  * @apiPermission Logged
+  * @apiVersion 1.0.0
+  *
+  * @apiHeader {String} token AdminToken auth
+  * @apiParam {String} name Nom de l'application/jeu.
+  * @apiParam {Int} idCreator Id du créateur
+  * @apiParam {Int} idType Id du type de jeu
+  * @apiParam {String} description Description de l'application
+  * @apiParam {Int} nbJoueurs Nombre de joueurs possibles (2-4 ou encore 4-6).
+  * @apiParam {String} currVersion Version actuelle de l'app/jeu (1.0)
+  * @apiParam {Int} niveau Niveau de difficulté de l'app/jeu (1 ou 2)
+  * @apiParam {Int} prix Prix de l'app/jeu (0 = free)
+  * @apiError 500 SQL Error.
+  * @apiError 500 SQL Error.
+  * @apiSuccessExample {json} Success-Response:
+  * {
+  *    "Game Added"
+  * }
+  * @apiErrorExample {json} Error-Response:
+  * {
+  *    "un des champs est manquant"
+  * }
+  */
+
+ router.post('/add', function(req, res, next) {
+ 	var name  = req.body.name;
+  var idType = req.body.idType;
+ 	var idCreator = req.body.idCreator;
+  var description = req.body.description;
+  var nbJoueurs = req.body.nbJoueurs;
+  var currVersion = req.body.currVersion;
+  var niveau = req.body.niveau;
+  var prix = req.body.prix;
+
+ 	var query = "INSER INTO d_games (idType, name, creator, path, picPath, prix, nb_joueurs, current_version, niveau, description) VALUES ('"+ idType +"', '"+ name +"', '"+ idCreator +"', 'NULL', 'NULL', '" + prix + "', " + nbJoueurs + ", '"+ currVersion +"', " + niveau + ",  '" + description + "')";
+  if (name && idType && idCreator && description && nbJoueurs && currVersion && niveau && prix) {
+    req.mysql.query(query, function(error, results, fields) {
+   		if (error){
+   			tools.dSend(res, "NOK", "Admin-Create", "createGame", 500, error, null);
+   		} else {
+   			tools.dSend(res, "OK", "Admin-Create", "createGame", 200, null, "Game Added");
+   		}
+   	});
+  } else {
+      tools.dSend(res, "NOK", "Admin-Create", "createGame", 500, "un des champs est manquant", null);
+  }
  });
 
 module.exports = router;

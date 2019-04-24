@@ -12,6 +12,7 @@ var tools = require('../../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token AdminToken auth 
  * @apiParam {String} licence 7CCK-METF-SSFW-7RZ8
  * @apiParam {int} used 0 ou 1
  * @apiParam {TimeStamp} dateExpire 2020-04-23 15:16:20

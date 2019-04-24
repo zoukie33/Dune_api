@@ -13,7 +13,7 @@ const fileUpload = require('express-fileupload');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth
  * @apiParam {String} fileName
  * @apiParam {String} fileType
  * @apiParam {String} description
@@ -81,7 +81,7 @@ router.post('/uploadFile', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth
  * @apiParam {int} idFile
  *
  * @apiError 500 SQL Error.
@@ -115,7 +115,7 @@ router.delete('/deleteFile', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth
  * @apiParam {int} idFile
  * @apiParam {String} nom
  * @apiParam {String} description
@@ -155,7 +155,7 @@ router.put('/editFile', function(req, res, next){
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth
  * @apiParam {int} private 0 non - 1 oui
  * @apiParam {String} type IMG / PDF / MP4
  * @apiParam {String} titre
@@ -238,7 +238,7 @@ router.post('/getAll', function(req, res, next){
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth 
  * @apiParam {int} idFile
  *
  * @apiError 500 SQL Error.

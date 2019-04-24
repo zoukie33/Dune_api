@@ -36,7 +36,7 @@ router.post('/genToken', function(req, res, next) {
  * @apiPermission notLogged
  * @apiVersion 1.0.0
  *
- * @apiParam {String} tokenTable
+ * @apiHeader {String} token TokenTable auth
  */
 
 router.post('/delToken', function(req, res, next) {
@@ -57,7 +57,7 @@ router.post('/delToken', function(req, res, next) {
  * @apiPermission notLogged
  * @apiVersion 1.0.0
  *
- * @apiParam {String} tokenTable
+ * @apiHeader {String} token TokenTable auth 
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,
@@ -118,7 +118,7 @@ router.post('/verifToken', function(req, res, next) {
 router.post('/install', function(req, res, next) {
 	var licenceEcole = req.body.licence;
 	var nomTable = req.body.nom;
-	
+
 	if (licenceEcole === "123") {
 		req.mysql.query("INSERT INTO d_tables (nomTable, access_token) VALUES ('" + nomTable + "', '" + token + "')", function(error, results, fields) {
 			if (error){
@@ -142,7 +142,7 @@ router.post('/install', function(req, res, next) {
  * @apiPermission notLogged
  * @apiVersion 1.0.0
  *
- * @apiParam {String} tokenTable
+ * @apiHeader {String} token TokenTable auth
  * @apiParam {Int} idProf
  */
 

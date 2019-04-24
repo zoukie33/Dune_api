@@ -16,6 +16,7 @@ var tools = require('../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  *
  * @apiSuccess {Int} idUser Id de l'utilisateur.
  * @apiSuccess {String} nomUser Nom de l'utilisateur.
@@ -65,6 +66,7 @@ router.get('/', function(req, res, next) {
  * @apiVersion 1.0.0
  *
  *
+ * @apiHeader {String} token Token auth
  * @apiSuccess {Int} idUser Id de l'utilisateur.
  * @apiSuccess {String} nomUser Nom de l'utilisateur.
  * @apiSuccess {String} prenomUser Prénom de l'utilisateur.
@@ -115,6 +117,7 @@ router.get('/infos/:idUser', function(req, res, next) {
  * @apiVersion 1.0.0
  *
  *
+ * @apiHeader {String} token Token auth
  * @apiSuccess {Int} idUser Id de l'utilisateur.
  * @apiSuccess {String} nomUser Nom de l'utilisateur.
  * @apiSuccess {String} prenomUser Prénom de l'utilisateur.
@@ -164,6 +167,7 @@ router.get('/infos', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {String} nom Nome de l'utilisateur.
  * @apiParam {String} prenom Prénom de l'utilisateur.
  * @apiParam {String} email Email de l'utilisateur
@@ -233,6 +237,7 @@ router.post('/add', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {Int} idUser Id de l'utilisateur.
  * @apiParam {String} nomUser Nom de l'utilisateur.
  * @apiParam {String} prenomUser Prénom de l'utilisateur.
@@ -269,6 +274,7 @@ router.put('/update', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {File} picProf Image de l'utilisateur a uploader.
  *
  *
@@ -308,6 +314,7 @@ router.put('/picProf', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {String} oldPassword Ancien mot de passe.
  * @apiParam {String} newPassword Nouveau mot de passe.
  *
@@ -358,6 +365,7 @@ router.put('/changePassword', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth 
  * @apiParam {String} password Mot de passe de l'utilisateur.
  * @apiParam {String} newEmail Nouvel Emai lde l'utilisateur.
  *

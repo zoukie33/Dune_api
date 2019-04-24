@@ -15,6 +15,7 @@ var tools = require('../../functions/tools');
  * @apiError 510 idEcole is missing.
  * @apiError 500 SQL Error.
  *
+ * @apiHeader {String} token Token auth
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,
@@ -52,6 +53,8 @@ router.get('/nbGames', function(req, res, next) {
  * @apiGroup Games
  * @apiPermission Logged
  * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token Token auth
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,
@@ -86,6 +89,8 @@ router.get('/', function(req, res, next) {
  * @apiGroup Games
  * @apiPermission Logged
  * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token Token auth
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,
@@ -120,6 +125,7 @@ router.get('/:id?', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {String} name Nom de l'application/jeu.
  * @apiParam {String} creator Nom du créateur.
  */
@@ -147,6 +153,7 @@ router.post('/add', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {Int} id Id de l'app/jeu.
  * @apiParam {String} name Nom de l'application.
  * @apiParam {String} creator Nom du créateur.
@@ -176,6 +183,7 @@ router.put('/update', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {Int} idGame Id de l'app/jeu.
  * @apiParam {File} picGame Image.
  */

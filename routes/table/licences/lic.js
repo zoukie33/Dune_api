@@ -13,7 +13,7 @@ var tools = require('../../../functions/tools');
  * @apiPermission notLogged
  * @apiVersion 1.0.0
  *
- * @apiParam {String} tokenTable
+ * @apiHeader {String} token TokenTable auth 
  * @apiParam {String} licence
  * @apiSuccessExample Success-Response:
  * {
@@ -55,7 +55,7 @@ var tools = require('../../../functions/tools');
   * @apiPermission notLogged
   * @apiVersion 1.0.0
   *
-  * @apiParam {String} tokenTable
+  * @apiHeader {String} token TokenTable auth
   * @apiParam {String} licence
   * @apiSuccessExample Success-Response:
   * {

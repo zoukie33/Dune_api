@@ -12,6 +12,7 @@ var tools = require('../../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiError 500 SQL Error.
  *
  * @apiSuccessExample Success-Response:
@@ -47,6 +48,7 @@ router.get('/', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiSuccess {Int} idEleve de l'élève.
  * @apiSuccess {String} nomEleve de l'élève.
  * @apiSuccess {String} prenomEleve de l'élève.
@@ -89,6 +91,7 @@ router.get('/:id?', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {Int} idClasse IdClasse des élèves à récupérer.
  * @apiError 510 idClasse is missing.
  * @apiError 500 SQL Error.
@@ -134,6 +137,7 @@ router.post('/byClasse', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiError 510 idProf is missing.
  * @apiError 500 SQL Error.
  *
@@ -185,6 +189,7 @@ router.get('/byProf', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {Int} directorId L'id du directeur.
  * @apiParam {String} nom Nom de l'élève a ajouter.
  * @apiParam {Int} prenom Prénom de l'élève a ajouter.
@@ -244,6 +249,7 @@ router.post('/add', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {Int} idEleve Id de l'élève a mettre a jour.
  * @apiParam {String} nomEleve Nom de l'élève a mettre a jour.
  * @apiParam {String} prenomEleve Prénom de l'élève a mettre a jour.
@@ -274,6 +280,7 @@ router.put('/update', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {Int} idEleve Id de l'élève en question.
  * @apiParam {File} picEleve Image de l'élève à uploader.
  *

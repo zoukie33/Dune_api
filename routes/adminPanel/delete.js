@@ -13,6 +13,7 @@ var tools = require('../../functions/tools');
  * @apiVersion 1.0.0
  *
  * @apiParam {Int} idLicence Id licence
+ * @apiHeader {String} token AdminToken auth 
  * @apiDescription Route permettant de supprimer une licence.
  * @apiSuccessExample Success-Response:
  * {

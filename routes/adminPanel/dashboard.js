@@ -29,7 +29,7 @@ var tools = require('../../functions/tools');
  *        }
  *     ]
  * }
- * @apiParam {String} tokenAdmin
+ * @apiHeader {String} token AdminToken auth 
  */
 
 router.get('/getAllSchools', function(req, res, next) {
@@ -71,7 +71,7 @@ router.get('/getAllSchools', function(req, res, next) {
  *        }
  *     ]
  * }
- * @apiParam {String} tokenAdmin
+ * @apiHeader {String} token AdminToken auth
  * @apiParam {Int} idEcole
  */
 
@@ -114,7 +114,7 @@ router.get('/getProfsBySchool/:idEcole', function(req, res, next) {
  *   }
  *     ]
  * }
- * @apiParam {String} tokenAdmin
+ * @apiHeader {String} token AdminToken auth
  * @apiParam {Int} idEcole
  */
 
@@ -144,7 +144,7 @@ router.get('/getLicencesBySchool/:idEcole', function(req, res, next) {
  *    "error": null,
  *     "nbSchool": 2
  * }
- * @apiParam {String} tokenAdmin
+ * @apiHeader {String} token AdminToken auth
  */
 
 router.get('/getNbSchools', function(req, res, next) {

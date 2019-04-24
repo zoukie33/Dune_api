@@ -11,7 +11,7 @@ var router = express.Router();
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiParam {String} token
+ * @apiHeader {String} token Token auth 
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,

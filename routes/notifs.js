@@ -10,6 +10,7 @@ var tools = require('../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiDescription Route permettant la récupération des notifications.
  * @apiSuccessExample Success-Response:
  * {
@@ -51,6 +52,7 @@ router.get('/', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiDescription Route permettant la récupération des notifications.
  * @apiSuccessExample Success-Response:
  * {
@@ -92,6 +94,7 @@ router.get('/popUpMenu', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {Int} idDemande Id de la demande d'achat de jeu en question.
  * @apiDescription Route permettant la récupération des professeurs ayant fait la demande d'un jeu.
  * @apiSuccessExample Success-Response:
@@ -139,6 +142,7 @@ router.get('/getArrayProf/:idDemande', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiDescription Route permettant la récupération du nombre de notifications d'un utilisateur.
  * @apiSuccessExample Success-Response:
  * {
@@ -170,6 +174,7 @@ router.get('/getNbNotifs/', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {Int} idNotif Id de la notification.
  * @apiDescription Route permettant de rendre une notification 'lue'.
  * @apiSuccessExample Success-Response:
@@ -209,6 +214,7 @@ router.put('/read/:idNotif', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {Int} idNotif Id de la notification.
  * @apiDescription Route permettant de rendre une notification 'non-lue'.
  * @apiSuccessExample Success-Response:
@@ -248,6 +254,7 @@ router.put('/unRead/:idNotif', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth
  * @apiParam {Int} idNotif Id de la notification.
  * @apiDescription Route permettant de récupérer toutes les informations d'une notification.
  * @apiSuccessExample Success-Response:
@@ -293,6 +300,7 @@ router.get('/getNotif/:idNotif', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
+ * @apiHeader {String} token Token auth 
  * @apiParam {Int} idNotif Id de la notification.
  * @apiDescription Route permettant de supprimer une notification.
  * @apiSuccessExample Success-Response:
