@@ -95,6 +95,7 @@ router.get('/bySession/:idGP', function(req, res, next) {
  *        {
  *            "idGP": 1,
  *            "nameGame": "Compteclasse",
+ *            "idMatiere": 1,
  *            "matiere": "Maths",
  *            "moyenne": 67.5,
  *            "nbJoueurs": 4,
@@ -106,7 +107,7 @@ router.get('/bySession/:idGP', function(req, res, next) {
 router.get('/byClasse/:idClasse', function(req, res, next) {
   var idProf = req.currUser.idUser;
   var idClasse = req.params.idClasse;
-	var query = 'SELECT gp.idGP AS idGP, g.name AS nameGame, tg.labelType AS matiere, AVG(gs.score) AS moyenne, COUNT(gs.idEleve) AS nbJoueurs, gp.TimeStamp AS date FROM d_gamesPlayed AS gp, d_typeGames AS tg, d_games AS g, d_gamesScored AS gs WHERE g.id = gp.idGame AND gp.idGP = gs.idGP AND g.idType = tg.idType AND gp.idClasse = ' + idClasse + ' GROUP BY gp.idGP ORDER BY gp.TimeStamp';
+	var query = 'SELECT gp.idGP AS idGP, g.name AS nameGame, tg.idType AS idMatiere, tg.labelType AS matiere, AVG(gs.score) AS moyenne, COUNT(gs.idEleve) AS nbJoueurs, gp.TimeStamp AS date FROM d_gamesPlayed AS gp, d_typeGames AS tg, d_games AS g, d_gamesScored AS gs WHERE g.id = gp.idGame AND gp.idGP = gs.idGP AND g.idType = tg.idType AND gp.idClasse = ' + idClasse + ' AND gp.isPlayed = 1 GROUP BY gp.idGP ORDER BY gp.TimeStamp';
 
 	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
@@ -195,7 +196,7 @@ router.get('/gamesPlayed/:idEleve', function(req, res, next) {
 
 router.get('/bulletin/:idEleve', function(req, res, next) {
   var idEleve = req.params.idEleve;
-	var query = 'SELECT tg.labeltype, AVG(gs.score) AS moyenne, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp.idTypeGame = gp2.idTypeGame) AS moyenneClasse, COUNT(gp.idGP) AS nbPlayed FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idTypeGame = tg.idType AND gp.isPlayed = 1 AND gs.idEleve = '+ idEleve +' GROUP BY gp.idTypeGame ORDER BY gp.idTypeGame ASC';
+	var query = 'SELECT tg.labeltype, AVG(gs.score) AS moyenne, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp.idTypeGame = gp2.idTypeGame AND gs2.score != -1 AND gp2.isPlayed = 1) AS moyenneClasse, COUNT(gp.idGP) AS nbPlayed FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idTypeGame = tg.idType AND gs.score != -1 AND gp.isPlayed = 1 AND gs.idEleve = '+ idEleve +' GROUP BY gp.idTypeGame ORDER BY gp.idTypeGame ASC';
 
 	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
@@ -225,7 +226,7 @@ router.get('/bulletin/:idEleve', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth 
+ * @apiHeader {String} token Token auth
  * @apiParam {int} idEleve
  * @apiError 500 SQL Error.
  *
@@ -248,7 +249,7 @@ router.get('/bulletin/:idEleve', function(req, res, next) {
 
 router.get('/getMat/:idEleve', function(req, res, next) {
   var idEleve = req.params.idEleve;
-  var query = "SELECT gp.idTypeGame, tg.labelType FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_typeGames AS tg WHERE gp.idGP = gs.idGP AND gp.idTypeGame = tg.idType AND gs.idEleve = " + idEleve + " GROUP BY gp.idTypeGame";
+  var query = "SELECT gp.idTypeGame, tg.labelType FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_typeGames AS tg WHERE gp.idGP = gs.idGP AND gp.idTypeGame = tg.idType AND gs.idEleve = " + idEleve + " AND gs.score != -1 GROUP BY gp.idTypeGame";
 
   req.mysql.query(query, function (error, results, fields) {
     if(error){
@@ -292,7 +293,7 @@ router.get('/getMat/:idEleve', function(req, res, next) {
 router.get('/getGamesByMatEleve/:idEleve/:idMat', function(req, res, next) {
   var idEleve = req.params.idEleve;
   var idMat = req.params.idMat;
-  var query = 'SELECT gp.idGP, g.name AS nameGame, tg.labelType AS matiere, gs.score AS note, gp.TimeStamp AS date, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp2.idGP = gp.idGP) AS moyenne FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_games AS g, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idGame = g.id AND gp.idTypeGame = tg.idType AND gs.idEleve =' + idEleve + ' AND gp.idTypeGame = ' + idMat;
+  var query = 'SELECT gp.idGP, g.name AS nameGame, tg.labelType AS matiere, gs.score AS note, gp.TimeStamp AS date, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp2.idGP = gp.idGP) AS moyenne FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_games AS g, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idGame = g.id AND gp.idTypeGame = tg.idType AND gs.idEleve =' + idEleve + ' AND gp.idTypeGame = ' + idMat + ' AND gs.score != -1 ORDER BY gp.TimeStamp DESC';
 
   req.mysql.query(query, function (error, results, fields) {
     if(error){

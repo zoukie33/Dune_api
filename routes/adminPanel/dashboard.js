@@ -29,7 +29,7 @@ var tools = require('../../functions/tools');
  *        }
  *     ]
  * }
- * @apiHeader {String} token AdminToken auth 
+ * @apiHeader {String} token AdminToken auth
  */
 
 router.get('/getAllSchools', function(req, res, next) {
@@ -126,6 +126,42 @@ router.get('/getLicencesBySchool/:idEcole', function(req, res, next) {
       tools.dSend(res, "NOK", "Admin-Dashboard", "getLicencesBySchool", 500, error, null);
     } else {
       tools.dSend(res, "OK", "Admin-Dashboard", "getLicencesBySchool", 200, null, results);
+    }
+  });
+});
+
+/**
+ * @api {get} /admin/dashboard/getCreators Getting creators
+ * @apiName getCreators
+ * @apiGroup AdminDashboard
+ * @apiPermission notLogged
+ * @apiVersion 1.0.0
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *    "status": 200,
+ *    "error": null,
+ *       "response": [
+ *   {
+ *       "idCreator": 1,
+ *       "nom": VictorH,
+ *   },
+ *   {
+ *       "idCreator": 2,
+ *       "nom": MvCaster,
+ *   }
+ *     ]
+ * }
+ * @apiHeader {String} token AdminToken auth
+ */
+
+router.get('/getCreators', function(req, res, next) {
+  var query = "SELECT * FROM d_creator";
+
+  req.mysql.query(query, function(error, results, fields) {
+    if (error){
+      tools.dSend(res, "NOK", "Admin-Dashboard", "getCreators", 500, error, null);
+    } else {
+      tools.dSend(res, "OK", "Admin-Dashboard", "getCreators", 200, null, results);
     }
   });
 });

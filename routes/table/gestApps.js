@@ -33,9 +33,9 @@ router.get('/appsOnTable', function(req, res, next) {
 
 	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
-        tools.dSend(res, "NOK", "Table-gestApps", "/", 500, error, null);
+        tools.dSend(res, "NOK", "Table-gestApps", "/appsOnTable", 500, error, null);
 	  	} else {
-        tools.dSend(res, "OK", "Table-gestApps", "/", 200, null, results);
+        tools.dSend(res, "OK", "Table-gestApps", "/appsOnTable", 200, null, results);
 	  	}
   	});
 });
@@ -47,7 +47,7 @@ router.get('/appsOnTable', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth 
+ * @apiHeader {String} token Token auth
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,
@@ -68,9 +68,9 @@ router.get('/appsNotOnTable', function(req, res, next) {
 
 	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
-        tools.dSend(res, "NOK", "Table-gestApps", "/", 500, error, null);
+        tools.dSend(res, "NOK", "Table-gestApps", "/appsNotOnTable", 500, error, null);
 	  	} else {
-        tools.dSend(res, "OK", "Table-gestApps", "/", 200, null, results);
+        tools.dSend(res, "OK", "Table-gestApps", "/appsNotOnTable", 200, null, results);
 	  	}
   	});
 });

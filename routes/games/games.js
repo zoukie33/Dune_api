@@ -134,43 +134,13 @@ router.post('/add', function(req, res, next) {
 	var name  = req.body.name;
 	var creator  = req.body.creator;
 
-	var query = "INSER INTO d_games (name, creator, path) VALUES ('"+ name +"', '"+ creator +"', 'NULL')";
+	var query = "INSERT INTO d_games (name, creator, path) VALUES ('"+ name +"', '"+ creator +"', 'NULL')";
 
 	req.mysql.query(query, function(error, results, fields) {
 		if (error){
 			tools.dSend(res, "NOK", "Games", "addGame", 500, error, null);
 		} else {
 			tools.dSend(res, "OK", "Games", "addGame", 200, null, "Game Added");
-		}
-		res.end(JSON.stringify(results));
-	});
-});
-
-/**
- * @api {put} /games/update Updating a game
- * @apiName updateGame
- * @apiGroup Games
- * @apiPermission Logged
- * @apiVersion 1.0.0
- *
- * @apiHeader {String} token Token auth
- * @apiParam {Int} id Id de l'app/jeu.
- * @apiParam {String} name Nom de l'application.
- * @apiParam {String} creator Nom du créateur.
- */
-
-router.put('/update', function(req, res, next) {
-	var id  = req.body.id;
-	var name  = req.body.name;
-	var creator  = req.body.creator;
-
-	var query = "UPDATE d_games SET name = '"+ name +"', creator = '"+ creator +"' WHERE id = " + id;
-
-	req.mysql.query(query, function(error, results, fields) {
-		if (error){
-			tools.dSend(res, "NOK", "Games", "updateGame", 500, error, null);
-		} else {
-			tools.dSend(res, "OK", "Games", "updateGame", 200, null, "Game Updated");
 		}
 		res.end(JSON.stringify(results));
 	});

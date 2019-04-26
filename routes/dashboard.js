@@ -96,7 +96,7 @@ router.get('/nbClasses', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth 
+ * @apiHeader {String} token Token auth
  * @apiDescription Route permettant la récupération des notifications.
  * @apiSuccessExample Success-Response:
  * {
@@ -127,7 +127,7 @@ router.get('/nbNotifsNonL', function(req, res, next) {
  * @apiVersion 1.0.0
  *
  * @apiDescription Route permettant la récupération du nombre d'applications lancées.
- * @apiParam {Token} token
+ * @apiHeader {String} token Token auth 
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,

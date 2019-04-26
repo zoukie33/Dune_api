@@ -12,7 +12,7 @@ var tools = require('../../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token AdminToken auth 
+ * @apiHeader {String} token AdminToken auth
  * @apiParam {int} nomEcole
  * @apiParam {int} idDirecteur
  *
@@ -140,7 +140,7 @@ router.post('/createSchool', function(req, res, next) {
   * }
   */
 
- router.post('/add', function(req, res, next) {
+ router.post('/createGame', function(req, res, next) {
  	var name  = req.body.name;
   var idType = req.body.idType;
  	var idCreator = req.body.idCreator;
@@ -150,7 +150,7 @@ router.post('/createSchool', function(req, res, next) {
   var niveau = req.body.niveau;
   var prix = req.body.prix;
 
- 	var query = "INSER INTO d_games (idType, name, creator, path, picPath, prix, nb_joueurs, current_version, niveau, description) VALUES ('"+ idType +"', '"+ name +"', '"+ idCreator +"', 'NULL', 'NULL', '" + prix + "', " + nbJoueurs + ", '"+ currVersion +"', " + niveau + ",  '" + description + "')";
+ 	var query = 'INSERT INTO d_games (idType, name, creator, path, picPath, prix, nb_joueurs, current_version, niveau, description) VALUES ("'+ idType +'", "'+ name +'", "'+ idCreator +'", "NULL", "NULL", "' + prix + '", ' + nbJoueurs + ', "'+ currVersion +'", ' + niveau + ',  "' + description + '")';
   if (name && idType && idCreator && description && nbJoueurs && currVersion && niveau && prix) {
     req.mysql.query(query, function(error, results, fields) {
    		if (error){

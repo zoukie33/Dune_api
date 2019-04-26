@@ -12,7 +12,6 @@ var tools = require('../../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idGame Id de l'app/jeu.
  */
 
@@ -26,7 +25,6 @@ router.get('/files/Games/:idGame', function(req, res, next) {
     var file = '/home/zoukie/ftp/dev/files/Games/Game-'+idGame+'.zip';
 
     req.mysql.query(query, function(error, results, fields) {
-        console.log(results.length);
         if (error){
             tools.dSend(res, "NOK", "Games", "Games", 500, error, null);
         } else {

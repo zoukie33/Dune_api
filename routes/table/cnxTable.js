@@ -57,7 +57,7 @@ router.post('/delToken', function(req, res, next) {
  * @apiPermission notLogged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token TokenTable auth 
+ * @apiHeader {String} token TokenTable auth
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,
@@ -83,18 +83,28 @@ router.post('/verifToken', function(req, res, next) {
 							tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 500, error, "Récupération des informations du prof");
 						} else {
 								var query2 = "SELECT idEcole FROM d_profsAppEcole as a WHERE a.idProf = " + idProf;
-							req.mysql.query(query2,function(err,resu) {
-								idEcole = resu[0].idEcole;
-								var authToken = jwt.sign({
-									idUser: idProf,
-									typeUser: prof[0].typeUser,
-									emailUser: prof[0].emailUser,
-									idEcole: idEcole,
-									idTable: idTable,
-									perm: 4
-								}, config.secret, {expiresIn: '7d'});
-								res.send(JSON.stringify({"status": 200, "idProf": idProf, "token": authToken}));
-								tools.dLog("OK", "Table", "/cnxTable/verifToken", 200, null, '"idProf":' + idProf + '"token": ' + authToken);
+							req.mysql.query(query2,function(error,resu) {
+								if (error) {
+									tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 500, error, "Récupération des informations du prof2");
+								} else {
+									idEcole = resu[0].idEcole;
+									var authToken = jwt.sign({
+										idUser: idProf,
+										typeUser: prof[0].typeUser,
+										emailUser: prof[0].emailUser,
+										idEcole: idEcole,
+										idTable: idTable,
+										perm: 4
+									}, config.secret, {expiresIn: '7d'});
+									req.mysql.query("UPDATE d_tables SET access_token = '" + authToken + "' WHERE idTable = " + idTable,function(error,resu) {
+										if (error) {
+											tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 500, error, "Envoi du token dans la bdd");
+										} else {
+											res.send(JSON.stringify({"status": 200, "idProf": idProf, "token": authToken}));
+											tools.dLog("OK", "Table", "/cnxTable/verifToken", 200, null, '"idProf":' + idProf + '"token": ' + authToken);
+										}
+									});
+								}
 							});
 							}
 					});
@@ -118,21 +128,32 @@ router.post('/verifToken', function(req, res, next) {
 router.post('/install', function(req, res, next) {
 	var licenceEcole = req.body.licence;
 	var nomTable = req.body.nom;
+	var query = "SELECT * FROM d_licencesTables AS l WHERE l.serial = '" + licenceEcole + "'";
+	var query2 = "UPDATE d_licencesTables SET used = 1 WHERE serial = '" + licenceEcole + "'";
 
-	if (licenceEcole === "123") {
-		req.mysql.query("INSERT INTO d_tables (nomTable, access_token) VALUES ('" + nomTable + "', '" + token + "')", function(error, results, fields) {
-			if (error){
-        tools.dSend(res, "NOK", "Table", "/cnxTable/install", 500, error, null);
+	req.mysql.query(query, function(error, results, fields) {
+		if (error){
+			tools.dSend(res, "NOK", "Table", "/cnxTable/install", 500, error, null);
+		} else {
+			if (results.length != 0) {
+				req.mysql.query("INSERT INTO d_tables (nomTable, access_token, idSerial) VALUES ('" + nomTable + "', 'NULL', " + results[0].idLicence + ")", function(error, results2, fields) {
+					if (error){
+		        tools.dSend(res, "NOK", "Table", "/cnxTable/install", 500, error, null);
+					} else {
+						req.mysql.query(query2, function(error, results, fields) {
+							if (error){
+				        tools.dSend(res, "NOK", "Table", "/cnxTable/install", 500, error, null);
+							} else {
+								tools.dSend(res, "OK", "Table", "/cnxTable/install", 200, null, "Table Installed");
+							}
+						});
+					}
+				});
 			} else {
-				res.send(JSON.stringify({"status": 200, "error": null, "token": token}));
-				tools.dLog("OK", "Table", "/cnxTable/install", 200, null, '"token":' + token);
+				tools.dSend(res, "NOK", "Table", "/cnxTable/install", 500, "Licence Not found.", null);
 			}
-		  res.end(JSON.stringify(results));
-		});
-	} else {
-		tools.dSend(res, "NOK", "Table", "/cnxTable/install", 500, "Licence Not found.", null);
-	}
-
+		}
+	});
 });
 
 /**
