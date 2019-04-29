@@ -1,7 +1,7 @@
-var express = require('express');
-var mysql   = require("mysql");
-var router = express.Router();
-var tools = require('../../functions/tools');
+let express = require('express');
+let mysql   = require("mysql");
+let router = express.Router();
+let tools = require('../../functions/tools');
 
 
 /**
@@ -29,7 +29,7 @@ var tools = require('../../functions/tools');
  */
 
 router.get('/appsOnTable', function(req, res, next) {
-  var query = 'SELECT tg.idGame, g.idType, g.name, g.creator, g.picPath FROM d_tableGames AS tg, d_games AS g WHERE tg.idGame = g.id AND tg.idTable = ' + req.currUser.idTable;
+  let query = 'SELECT tg.idGame, g.idType, g.name, g.creator, g.picPath FROM d_tableGames AS tg, d_games AS g WHERE tg.idGame = g.id AND tg.idTable = ' + req.currUser.idTable;
 
 	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
@@ -64,7 +64,7 @@ router.get('/appsOnTable', function(req, res, next) {
  * }
  */
 router.get('/appsNotOnTable', function(req, res, next) {
-  var query = 'SELECT g.id AS "idGame", g.idType, g.name, g.creator, g.picPath FROM d_games as g WHERE g.id NOT IN (SELECT idGame FROM d_tableGames WHERE idTable =' + req.currUser.idTable + ')';
+  let query = 'SELECT g.id AS "idGame", g.idType, g.name, g.creator, g.picPath FROM d_games as g WHERE g.id NOT IN (SELECT idGame FROM d_tableGames WHERE idTable = ' + req.currUser.idTable + ' ) AND g.id IN (SELECT idGame FROM d_gamesAppEcole WHERE idEcole = ' + req.currUser.idEcole + ' )';
 
 	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){

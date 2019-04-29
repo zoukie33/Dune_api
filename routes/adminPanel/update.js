@@ -87,4 +87,41 @@ router.put('/updateGame', function(req, res, next) {
 	});
 });
 
+/**
+ * @api {put} /admin/update/picGame Uploading a picture for the game
+ * @apiName picGame
+ * @apiGroup AdminUpdate
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token Token auth
+ * @apiParam {Int} idGame Id de l'app/jeu.
+ * @apiParam {File} picGame Image.
+ */
+
+router.put('/picGame', function(req, res, next) {
+	if (Object.keys(req.files).length != 0) {
+		var id  = req.body.idGame;
+		let file;
+
+		file = req.files.picGame;
+		var fileName = id + "-app.png";
+		if (filez.filesGest(file, "apps/", fileName)) {
+			var query = "UPDATE d_games SET picPath = '" + fileName + "'  WHERE id = " + id;
+			req.mysql.query(query, function(error, results, fields) {
+				if (error){
+					tools.dSend(res, "NOK", "Games", "picGame", 500, error, "Impossible de mettre a jour cet utilisateur.");
+				} else {
+					tools.dSend(res, "OK", "Games", "picGame", 200, null, "Game Updated");
+				}
+				res.end(JSON.stringify(results));
+			});
+		} else {
+			tools.dSend(res, "NOK", "Games", "picGame", 500, "Directory error", null);
+		}
+	} else {
+		tools.dSend(res, "NOK", "Games", "picGame", 500, "Error uploading File", null);
+	}
+});
+
 module.exports = router;
