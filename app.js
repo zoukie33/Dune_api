@@ -12,9 +12,9 @@ var fileUpload = require('express-fileupload');
 // Routes
 var loginRouter = require('./routes/auth/login');
 var adminCreateRouter = require('./routes/adminPanel/create');
-var adminUpdateRouter = require('./routes/adminPanel/update');
 var adminDashboardRouter = require('./routes/adminPanel/dashboard');
 var adminDeleteRouter = require('./routes/adminPanel/delete');
+var adminUpdateRouter = require('./routes/adminPanel/update');
 var logoutRouter = require('./routes/auth/logout');
 var tokensRouter = require('./routes/auth/tokens');
 var usersRouter = require('./routes/users');
@@ -71,6 +71,7 @@ app.use('/', express.static(__dirname + '/public/apidoc'));
 app.use('/files/apps', express.static(__dirname + '/files/apps'));
 app.use('/files/eleves', express.static(__dirname + '/files/eleves'));
 app.use('/files/profs', express.static(__dirname + '/files/profs'));
+app.use('/files/fm', express.static(__dirname + '/files/fm'));
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -116,8 +117,8 @@ app.use('/api/v1/classes/ecole', cEcoleRouter);
 app.use(verifyTokenAdmin);
 app.use('/api/v1/admin/create', adminCreateRouter);
 app.use('/api/v1/admin/dashboard', adminDashboardRouter);
-app.use('/api/v1/admin/update', adminUpdateRouter);
 app.use('/api/v1/admin/delete', adminDeleteRouter);
+app.use('/api/v1/admin/update', adminUpdateRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

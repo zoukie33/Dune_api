@@ -208,7 +208,7 @@ router.post('/getAll', function(req, res, next){
       query += " AND f.type='" + type + "'";
     }
   } else {
-    var query = "SELECT DISTINCT(f.idFile), f.nom, f.path, f.type, f.description, f.private, fau.idUser FROM d_files AS f, d_filesAppsUser AS fau WHERE f.idFile = fau.idFile AND (fau.idEcole = " + idEcole + " AND f.private = 0) OR (fau.idEcole = 1 AND fau.idUser = " + idUser + ")";
+    var query = "SELECT DISTINCT(f.idFile), f.nom, f.path, f.type, f.description, f.private, fau.idUser FROM d_files AS f, d_filesAppsUser AS fau WHERE (f.idFile = fau.idFile AND (fau.idEcole = " + idEcole + " AND f.private = 0) OR (fau.idEcole = 1 AND fau.idUser = " + idUser + "))";
     if (title !== ''){
       query += " AND f.nom LIKE '%" + title + "%'";
     }
@@ -220,8 +220,6 @@ router.post('/getAll', function(req, res, next){
         cond += i + 1 === tmp.length ? '' : ', ';
       }
       query += " AND f.type IN (" + cond + ")";
-
-      console.log(query);
     }
   }
 

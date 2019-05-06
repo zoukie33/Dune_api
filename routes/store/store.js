@@ -11,7 +11,6 @@ var tools = require('../../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idType Id du type d'application voulue.
  * @apiDescription Route permettant de récupérer toutes les applications par rapport à un Type d'application.
  * @apiSuccessExample Success-Response:
@@ -62,7 +61,6 @@ var tools = require('../../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idApp Id de l'application voulue.
  * @apiDescription Route permettant de récupérer les informations d'une application.
  * @apiSuccessExample Success-Response:
@@ -107,7 +105,6 @@ router.post('/getApp', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiDescription Route permettant de récupérer les applications déjà achetées pour une école.
  * @apiSuccessExample Success-Response:
  * {
@@ -147,7 +144,6 @@ router.get('/getAppsEcole', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idApp Id de l'application demandée.
  * @apiDescription Route permettant de savoir si l'application est détenue par l'école ou non.
  * @apiSuccessExample Success-Response:
@@ -186,7 +182,6 @@ router.get('/getAppStatus/:idApp', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idApp Id de l'application à acheter.
  * @apiParam {String} commentaire Commantaide de demande d'achat.
  * @apiDescription Route permettant de faire une demande d'achat d'application.
@@ -267,7 +262,6 @@ router.post('/buyApp', function(req, res, next) {
  * @apiPermission Logged + Director
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idApp Id de l'application a acheter.
  * @apiDescription Route permettant l'achat d'une application sans vérification nécessaire.
  * @apiSuccessExample Success-Response:
@@ -319,8 +313,6 @@ router.post('/buyAppDirecteur', function(req, res, next) {
  * @apiGroup Store
  * @apiPermission Logged + Director
  * @apiVersion 1.0.0
- *
- * @apiHeader {String} token Token auth
  * @apiDescription Route permettant de récupérer tous les types de jeux disponibles.
  * @apiSuccessExample Success-Response:
  * {
@@ -353,7 +345,6 @@ router.get('/typesGames', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idDemande Id de la demande d'achat.
  * @apiParam {Int} validate Bool (0 ou 1) signifiant si l'achat d'application est validé ou non.
  * @apiDescription Route permettant la validation d'un achat demandé par un professeur.
@@ -432,7 +423,6 @@ router.post('/validating', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idGame Id du jeu sur lequel poster un avis.
  * @apiParam {Int} note int correspondant a la note attribuee au jeu.
  * @apiParam {Text} commentaire texte correspondant au commentaire attribuee au jeu.
@@ -471,7 +461,6 @@ router.post('/addAvis', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idApp Id de l'application demandée.
  * @apiParam {Int} depart pour le LIMIT.
  * @apiParam {Int} nbRes pour le LIMIT.
@@ -522,7 +511,6 @@ router.post('/avis', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idApp Id de l'application demandée.
  * @apiDescription Route permettant d'avoir le nombre d'avis concernant une application
  * @apiSuccessExample Success-Response:

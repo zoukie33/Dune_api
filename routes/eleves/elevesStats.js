@@ -56,8 +56,8 @@ router.get('/bySession/:idGP', function(req, res, next) {
 		var query1 = 'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_profsAppEcole AS pae, d_classeEcole AS ce, d_classe AS c, d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND gp.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEcole = pae.idEcole AND e.idEleve = gs.idEleve AND pae.idProf = ' + idProf + ' AND gp.idGP = ' + idGP + ' ORDER BY e.nomEleve ASC';
   	var query2 = 'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_profsAppEcole AS pae, d_classeEcole AS ce, d_classe AS c, d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND gp.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEcole = pae.idEcole AND e.idEleve = gs.idEleve AND pae.idProf = ' + idProf + ' AND gp.idGP = ' + idGP + ' ORDER BY gs.score DESC';
 	} else {
-		var query1 = 'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND e.idEleve = gs.idEleve AND gp.idProf = ' + idProf + ' AND gp.idGP = ' + idGP + ' ORDER BY e.nomEleve ASC';
-  	var query2 = 'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND e.idEleve = gs.idEleve AND gp.idProf = ' + idProf + ' AND gp.idGP = ' + idGP + ' ORDER BY gs.score DESC';
+		var query1 = 'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND e.idEleve = gs.idEleve AND gp.idGP = ' + idGP + ' ORDER BY e.nomEleve ASC';
+  	var query2 = 'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND e.idEleve = gs.idEleve AND gp.idGP = ' + idGP + ' ORDER BY gs.score DESC';
 	}
 	req.mysql.query(query1, function (error, results1, fields) {
 	  	if(error){
@@ -303,4 +303,128 @@ router.get('/getGamesByMatEleve/:idEleve/:idMat', function(req, res, next) {
     }
   });
 });
+
+
+/**
+ * @api {get} /eleves/stats/getElevesRank Get the rank of the 10 best student of the current user
+ * @apiName getElevesRank
+ * @apiGroup ElevesStats
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token Token auth
+ *
+ * @apiSuccessExample Success-Response:
+ * {"status":200,
+ * "error":null,
+ * "response":[
+     *      {
+     *          "score":70.3333,"idEleve":2
+     *      },
+     *      {
+     *          "score":67.6667,"idEleve":4
+     *      },
+     *      {
+     *          "score":57.4286,"idEleve":3
+     *      },
+     *      {
+     *          "score":34,"idEleve":1
+     *      }
+ *      ]
+ * }
+ */
+
+router.get('/getElevesRank', function(req, res, next) {
+    var idEleve = req.params.idEleve;
+    var idMat = req.params.idMat;
+
+    if (req.currUser.typeUser === 1) {
+
+        var query = 'SELECT AVG(score) score, s.idEleve, e.nomEleve, e.prenomEleve FROM d_gamesScored s ' +
+            'INNER JOIN d_eleves e ON e.idEleve=s.idEleve ' +
+            'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
+            'INNER JOIN d_profsAppClasse pc ON pc.idClasse=ce.idClasse ' +
+            'WHERE pc.idProf=' + req.currUser.idUser + ' ' +
+            'GROUP BY ce.idEleve ' +
+            'ORDER BY score DESC';
+    }else if (req.currUser.typeUser === 2){
+        var query = 'SELECT AVG(score) score, s.idEleve, el.nomEleve, el.prenomEleve FROM d_gamesScored s ' +
+                    'INNER JOIN d_eleves el ON el.idEleve=s.idEleve ' +
+                    'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
+                    'INNER JOIN d_classeEcole e ON e.idClasse=ce.idClasse ' +
+                    'WHERE e.idEcole= ' + req.currUser.idEcole + ' ' +
+                    'GROUP BY ce.idEleve ' +
+                    'ORDER BY score DESC ' +
+                     'LIMIT 10';
+    }
+
+    req.mysql.query(query, function (error, results, fields) {
+        if(error){
+            tools.dSend(res, "NOK", "ElevesStats", "getElevesRank", 500, error, null);
+        } else {
+            tools.dSend(res, "OK", "ElevesStats", "getElevesRank", 200, null, results);
+        }
+    });
+});
+
+/**
+ * @api {get} /eleves/stats/getClassesAvg Get the average of all classes of the professor
+ * @apiName getClassesAvg
+ * @apiGroup ElevesStats
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token Token auth
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *      "status":200,
+ *      "error":null,
+ *      "response":[
+ *          {
+     *          "moyenne":59.3913,
+     *          "level":4,
+ *              "num":1
+ *          },
+ *          {
+ *              "moyenne":100,
+ *              "level":5,
+ *              "num":1
+ *          }
+ *     ]
+ * }
+ */
+
+router.get('/getClassesAvg', function(req, res, next) {
+    var idEleve = req.params.idEleve;
+    var idMat = req.params.idMat;
+
+    if (req.currUser.typeUser === 1) {
+
+        var query = 'SELECT AVG(s.score) as moyenne, cl.level, cl.num FROM d_gamesScored s '+
+                    'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
+                    'INNER JOIN d_classe cl ON cl.idClasse=ce.idClasse ' +
+                    'INNER JOIN d_profsAppClasse ap ON ap.idClasse=cl.idClasse ' +
+                    'WHERE ap.idProf=' + req.currUser.idUser + ' ' +
+                    'GROUP BY cl.idClasse';
+
+    }else if (req.currUser.typeUser === 2){
+        var query = 'SELECT AVG(s.score) as moyenne, cl.level, cl.num FROM d_gamesScored s ' +
+                    'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
+                    'INNER JOIN d_classe cl ON cl.idClasse=ce.idClasse ' +
+                    'INNER JOIN d_classeEcole ceo ON ceo.idClasse=cl.idClasse ' +
+                    'WHERE ceo.idEcole=' + req.currUser.idEcole + ' ' +
+                    'GROUP BY cl.idClasse';
+    }
+
+    req.mysql.query(query, function (error, results, fields) {
+        if(error){
+            tools.dSend(res, "NOK", "ElevesStats", "getElevesRank", 500, error, null);
+        } else {
+            tools.dSend(res, "OK", "ElevesStats", "getElevesRank", 200, null, results);
+        }
+    });
+});
+
+
 module.exports = router;

@@ -10,7 +10,6 @@ var tools = require('../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiDescription Route permettant la récupération des notifications.
  * @apiSuccessExample Success-Response:
  * {
@@ -52,7 +51,6 @@ router.get('/', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiDescription Route permettant la récupération des notifications.
  * @apiSuccessExample Success-Response:
  * {
@@ -75,13 +73,13 @@ router.get('/', function(req, res, next) {
 
 router.get('/popUpMenu', function(req, res, next) {
   var idUser = req.currUser.idUser;
-  var query = "SELECT n.idNotif, n.idUser, n.idToNotify, n.typeNotif, n.isRead, n.textNotif, da.idGame AS 'idApp', g.name AS 'nomApp' FROM d_notifications  AS n, d_demandeAchatGame AS da, d_games AS g WHERE n.idToNotify = da.idDemande AND da.idGame = g.id AND n.idUser = " + idUser + " AND isRead = 0";
+  var query = "SELECT n.idNotif, n.idUser, n.idToNotify, n.typeNotif, n.isRead, n.textNotif, da.idGame AS 'idApp', g.name AS 'nomApp', g.picPath AS game_image FROM d_notifications  AS n, d_demandeAchatGame AS da, d_games AS g WHERE n.idToNotify = da.idDemande AND da.idGame = g.id AND n.idUser = " + idUser + " AND isRead = 0";
 
   req.mysql.query(query, function (error, results, fields) {
   	 if(error){
        tools.dSend(res, "NOK", "Notifications", "popUpMenu", 500, error, null);
   	 } else {
-       tools.dLog("OK", "Notifications", "popUpMenu", 200, null, "nbNotifs:" + results.length + " response:" + results);
+       tools.dLog("OK", "Notifications", "popUpMenu", 200, null, "nbNotifs:" + results.length + " response:" + JSON.stringify(results));
     	 res.send(JSON.stringify({"status": 200, "nbNotifs": results.length, "response": results}));
   	 }
   });
@@ -94,7 +92,6 @@ router.get('/popUpMenu', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idDemande Id de la demande d'achat de jeu en question.
  * @apiDescription Route permettant la récupération des professeurs ayant fait la demande d'un jeu.
  * @apiSuccessExample Success-Response:
@@ -142,7 +139,6 @@ router.get('/getArrayProf/:idDemande', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiDescription Route permettant la récupération du nombre de notifications d'un utilisateur.
  * @apiSuccessExample Success-Response:
  * {
@@ -174,7 +170,6 @@ router.get('/getNbNotifs/', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idNotif Id de la notification.
  * @apiDescription Route permettant de rendre une notification 'lue'.
  * @apiSuccessExample Success-Response:
@@ -214,7 +209,6 @@ router.put('/read/:idNotif', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idNotif Id de la notification.
  * @apiDescription Route permettant de rendre une notification 'non-lue'.
  * @apiSuccessExample Success-Response:
@@ -254,7 +248,6 @@ router.put('/unRead/:idNotif', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiParam {Int} idNotif Id de la notification.
  * @apiDescription Route permettant de récupérer toutes les informations d'une notification.
  * @apiSuccessExample Success-Response:
@@ -292,7 +285,6 @@ router.get('/getNotif/:idNotif', function(req, res, next) {
     	}
   });
 });
-
 /**
  * @api {delete} /notifs/:idNotif Delete a notification
  * @apiName Delete a noitif
@@ -300,7 +292,6 @@ router.get('/getNotif/:idNotif', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth 
  * @apiParam {Int} idNotif Id de la notification.
  * @apiDescription Route permettant de supprimer une notification.
  * @apiSuccessExample Success-Response:

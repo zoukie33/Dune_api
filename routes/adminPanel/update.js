@@ -64,17 +64,18 @@ router.put('/updateLicence', function(req, res, next) {
  * @apiParam {String} currVersion Version actuelle de l'app/jeu (1.0)
  * @apiParam {Int} niveau Niveau de difficulté de l'app/jeu (1 ou 2)
  * @apiParam {Int} prix Prix de l'app/jeu (0 = free)
+ * @apiParam {Int} Creator Id du createur du jeu
  */
 
 router.put('/updateGame', function(req, res, next) {
-	var id  = req.body.id;
-	var name  = req.body.name;
-	var creator  = req.body.creator;
-  var description = req.body.description;
-  var nbJoueurs = req.body.nbJoueurs;
-  var currVersion = req.body.currVersion;
-  var niveau = req.body.niveau;
-  var prix = req.body.prix;
+		var id  = req.body.id;
+		var name  = req.body.name;
+		var creator  = req.body.creator;
+	  var description = req.body.description;
+	  var nbJoueurs = req.body.nbJoueurs;
+	  var currVersion = req.body.currVersion;
+	  var niveau = req.body.niveau;
+	  var prix = req.body.prix;
 	var query = "UPDATE d_games SET name = '"+ name +"', creator = '"+ creator +"', description = '" + description + "', nb_joueurs = " + nbJoueurs + ", current_version = '" + currVersion + "', niveau = " + niveau + ", prix = '" + prix + "' WHERE id = " + id;
 
 	req.mysql.query(query, function(error, results, fields) {

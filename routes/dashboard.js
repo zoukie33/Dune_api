@@ -10,7 +10,6 @@ var tools = require('../functions/tools');
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiError 510 idEcole is missing.
  * @apiError 500 SQL Error.
  *
@@ -53,7 +52,6 @@ router.get('/nbEleves', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiError 510 idEcole is missing.
  * @apiError 500 SQL Error.
  *
@@ -96,7 +94,6 @@ router.get('/nbClasses', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth
  * @apiDescription Route permettant la récupération des notifications.
  * @apiSuccessExample Success-Response:
  * {
@@ -127,7 +124,7 @@ router.get('/nbNotifsNonL', function(req, res, next) {
  * @apiVersion 1.0.0
  *
  * @apiDescription Route permettant la récupération du nombre d'applications lancées.
- * @apiHeader {String} token Token auth 
+ * @apiParam {Token} token
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,
@@ -136,16 +133,53 @@ router.get('/nbNotifsNonL', function(req, res, next) {
  */
 
 router.get('/nbAppsStarted', function(req, res, next) {
-  var idUser = req.currUser.idUser;
-  var query = "SELECT COUNT(gp.idGP) AS nbAppsStarted FROM d_gamesPlayed AS gp WHERE gp.isPlayed = 1 AND idProf = " + idUser;
+	var idUser = req.currUser.idUser;
+	var query = "SELECT COUNT(gp.idGP) AS nbAppsStarted FROM d_gamesPlayed AS gp WHERE gp.isPlayed = 1 AND idProf = " + idUser;
 
-  req.mysql.query(query, function (error, results, fields) {
-  	 if(error){
-       tools.dSend(res, "NOK", "Dashboard", "nbAppsStarted", 500, error, null);
-  	 } else {
-       tools.dLog("OK", "Dashboard", "nbAppsStarted", 200, null, "nbAppsStarted:" + results[0].nbAppsStarted);
-    	 res.send(JSON.stringify({"status": 200, "nbAppsStarted": results[0].nbAppsStarted}));
-  	 }
-  });
+	req.mysql.query(query, function (error, results, fields) {
+		if(error){
+			tools.dSend(res, "NOK", "Dashboard", "nbAppsStarted", 500, error, null);
+		} else {
+			tools.dLog("OK", "Dashboard", "nbAppsStarted", 200, null, "nbAppsStarted:" + results[0].nbAppsStarted);
+			res.send(JSON.stringify({"status": 200, "nbAppsStarted": results[0].nbAppsStarted}));
+		}
+	});
 });
+
+/**
+ * @api {get} /dashboard/nbGamesPlayed Get the number of Played games for the current month
+ * @apiName nbGamesPlayed
+ * @apiGroup Dashboard
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiDescription Route permettant la récupération du nombre de parties effectuées sur le mois en cours par un idProf (ou directeur)
+ * @apiParam {Token} token
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "nbGamesPlayed": 16
+ * }
+ */
+
+router.get('/nbGamesPlayed', function(req, res, next) {
+
+	var idUser = req.currUser.idUser;
+	var date = new Date();
+	var time = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+	var query = "SELECT COUNT(gp.idGP) AS nbGamesPlayed FROM d_gamesPlayed AS gp WHERE MONTH(gp.Timestamp)=MONTH('" + time + "')";
+	if (req.currUser.typeUser !== 2){
+		query += " AND gp.idProf=" + idUser;
+	}
+
+	req.mysql.query(query, function (error, results, fields) {
+		if(error){
+			tools.dSend(res, "NOK", "Dashboard", "nbGamesPlayed", 500, error, null);
+		} else {
+			tools.dLog("OK", "Dashboard", "nbGamesPlayed", 200, null, "nbGamesPlayed:" + results[0].nbGamesPlayed);
+			res.send(JSON.stringify({"status": 200, "nbGamesPlayed": results[0].nbGamesPlayed}));
+		}
+	});
+});
+
 module.exports = router;

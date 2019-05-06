@@ -67,7 +67,8 @@ router.post('/', function(req, res, next) {
 								success: true,
 								message: 'Token generated',
 								token: token,
-								typeUser: typeUser
+								typeUser: typeUser,
+								currUser: user_id
 							});
 	          }
 	        });
