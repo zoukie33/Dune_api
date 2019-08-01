@@ -14,6 +14,16 @@ router.get('/', function(req, res, next) {
   	});
 });
 
+router.get('/getTableBySchool/:idEcole', function(req, res, next) {
+	req.mysql.query('SELECT * from d_tables', function (error, results, fields) {
+	  	if(error){
+        tools.dSend(res, "NOK", "Table", "/", 500, error, null);
+	  	} else {
+        tools.dSend(res, "OK", "Table", "/", 200, null, results);
+	  	}
+  	});
+});
+
 router.post('/update', function(req, res, next) {
 	// var id  = req.body.idEleve;
   // var nom  = req.body.nomEleve;

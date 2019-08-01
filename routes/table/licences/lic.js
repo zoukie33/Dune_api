@@ -13,7 +13,7 @@ var tools = require('../../../functions/tools');
  * @apiPermission notLogged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token TokenTable auth 
+ * @apiHeader {String} token TokenTable auth
  * @apiParam {String} licence
  * @apiSuccessExample Success-Response:
  * {
@@ -32,8 +32,9 @@ var tools = require('../../../functions/tools');
  */
 
  router.get('/verif/:licence', function(req, res, next) {
- 	var lic = req.params.licence;
-  var query = "SELECT * FROM d_licencesTables AS lt WHERE lt.serial = '" + lic + "' AND lt.dateExpire > NOW()";
+  var query = "SELECT * FROM ?? AS lt WHERE lt.serial = ? AND lt.dateExpire > NOW()";
+  var data = ["d_licencesTables", req.params.licence];
+  query = mysql.format(query, data);
 
   req.mysql.query(query, function (error, results, fields) {
     if(error){

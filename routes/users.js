@@ -100,7 +100,15 @@ router.get('/', function(req, res, next) {
  */
 
 router.get('/infos/:idUser', function(req, res, next) {
-	req.mysql.query('SELECT * from d_users WHERE idUser = ' + req.params.idUser , function (error, results, fields) {
+
+  var query = "SELECT * from ?? WHERE idUser = ?";
+  var table = ["d_users"];
+  query = mysql.format(query, table);
+  var data = {
+    idUser: req.params.idUser,
+  }
+
+	req.mysql.query(query, data, function (error, results, fields) {
 	  	if(error){
         tools.dSend(res, "NOK", "Users", "infos/:idUser", 500, error, null);
 	  	} else {
@@ -254,17 +262,18 @@ router.put('/update', function(req, res, next) {
     var id = req.body.idUser;
   }
 
-  var nom  = req.body.nomUser;
-  var prenom  = req.body.prenomUser;
-			var query = "UPDATE d_users SET nomUser = '"+ nom +"', prenomUser = '"+ prenom +"' WHERE idUser = " + id;
-				req.mysql.query(query, function(error, results, fields) {
-					if (error){
-            tools.dSend(res, "NOK", "Users", "/users/update", 500, error, "Impossible de mettre a jour cet utilisateur.");
-					} else {
-            tools.dSend(res, "OK", "Users", "/users/update", 200, null, "User Updated [" + id + " - " + nom + " - " + prenom + "]");
-					}
-					res.end(JSON.stringify(results));
-				});
+  var query = "UPDATE ?? SET nomUser = ?, prenomUser = ? WHERE idUser = ?";
+  var data = ['d_users', req.body.nomUser, req.body.prenomUser, id];
+  query = mysql.format(query, data);
+
+  req.mysql.query(query, function(error, results, fields) {
+  	if (error){
+      tools.dSend(res, "NOK", "Users", "/users/update", 500, error, "Impossible de mettre a jour cet utilisateur.");
+  	} else {
+      tools.dSend(res, "OK", "Users", "/users/update", 200, null, "User Updated");
+  	}
+  	res.end(JSON.stringify(results));
+  });
 });
 
 /**
@@ -290,7 +299,11 @@ router.put('/picProf', function(req, res, next) {
 		file = req.files.picProf;
 		var fileName = id + "-prof.png";
 		if (filez.filesGest(file, "profs/", fileName)) {
-			var query = "UPDATE d_users SET picPath = '" + fileName + "'  WHERE idUser = " + id;
+
+      var query = "UPDATE ?? SET picPath = ? WHERE idUser = ?";
+      var data = ['d_users', fileName, id];
+      query = mysql.format(query, data);
+
 						req.mysql.query(query, function(error, results, fields) {
 							if (error){
                 tools.dSend(res, "NOK", "Users", "picProf", 500, error, "Impossible de mettre a jour cet utilisateur.");
@@ -330,13 +343,17 @@ router.put('/changePassword', function(req, res, next) {
 
 		if (idUser && oldPassword && newPassword) {
       if (newPassword.length >= 8) {
-        var query = "SELECT pass FROM d_users WHERE idUser = " + idUser;
+        var query = "SELECT ?? FROM ?? WHERE idUser = ?";
+        var data = ['pass', 'd_users', idUser];
+        query = mysql.format(query, data);
   			req.mysql.query(query,function(err,rows) {
   				if(err) {
             tools.dSend(res, "NOK", "Users", "changePassword", 500, err, null);
   				} else {
   					if (rows[0].pass == md5(oldPassword)) {
-  						var query = "UPDATE d_users SET pass = '"+ md5(newPassword) +"' WHERE idUser = " + idUser;
+              var query = "UPDATE ?? SET pass = ?? WHERE idUser = ?";
+              var data = ['d_users', md5(newPassword), idUser];
+              query = mysql.format(query, data);
   						req.mysql.query(query,function(err,rows) {
   							if(err) {
                   tools.dSend(res, "NOK", "Users", "changePassword", 500, err, null);
@@ -365,7 +382,7 @@ router.put('/changePassword', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth 
+ * @apiHeader {String} token Token auth
  * @apiParam {String} password Mot de passe de l'utilisateur.
  * @apiParam {String} newEmail Nouvel Emai lde l'utilisateur.
  *
@@ -380,19 +397,25 @@ router.put('/changeEmail', function(req, res, next) {
 		var newEmail = req.body.newEmail;
 
 		if (idUser && password && newEmail) {
-			var query = "SELECT pass FROM d_users WHERE idUser = " + idUser;
+      var query = "SELECT ?? FROM ?? WHERE idUser = ?";
+  	  var data = ["pass", "d_users", idUser];
+  	  query = mysql.format(query,data);
 			req.mysql.query(query,function(err,rows) {
 				if(err) {
           tools.dSend(res, "NOK", "Users", "changeEmail", 500, err, null);
 				} else {
 					if (rows[0].pass == md5(password)) {
-						var query2 = "SELECT idUser FROM d_users WHERE emailUser = '" + newEmail + "'";
+            var query2 = "SELECT ?? FROM ?? WHERE emailUser = ?";
+        	  var data = ["pass", "d_users", newEmail];
+        	  query2 = mysql.format(query2,data);
 						req.mysql.query(query2,function(err,rows) {
 							if(err) {
                 tools.dSend(res, "NOK", "Users", "changeEmail", 500, err, null);
 							} else {
 								if (rows.length == 0) {
-									var query3 = "UPDATE d_users SET emailUser = '"+ newEmail +"' WHERE idUser = " + idUser;
+                  var query3 = "UPDATE ?? SET emailUser = ? WHERE idUser = ?";
+              	  var data = ["d_users", newEmail, idUser];
+              	  query3 = mysql.format(query3,data);
 									req.mysql.query(query3,function(err,rows) {
 										if(err) {
                       tools.dSend(res, "NOK", "Users", "changeEmail", 500, err, null);

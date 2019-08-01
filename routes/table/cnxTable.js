@@ -17,9 +17,10 @@ var tools = require('../../functions/tools');
  */
 
 router.post('/genToken', function(req, res, next) {
-	var idTable = req.body.idTable;
-	var tokenTable = md5(Date.now());
-	req.mysql.query('INSERT INTO d_tableProf (tokenTable, idTable) VALUES ("' + tokenTable + '", "' + idTable + '")', function (error, results, fields) {
+  var query = "INSERT INTO ?? (tokenTable, idTable) VALUES (?, ?)";
+  var data = ["d_tableProf", md5(Date.now()), req.body.idTable];
+  query = mysql.format(query, data);
+	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
         tools.dSend(res, "NOK", "Table", "/cnxTable/genToken", 500, error, null);
 	  	} else {
@@ -40,12 +41,14 @@ router.post('/genToken', function(req, res, next) {
  */
 
 router.post('/delToken', function(req, res, next) {
-  var token = req.body.tokenTable;
-	req.mysql.query('DELETE FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
+  var query = "DELETE FROM ?? WHERE tokenTable = ?";
+  var data = ["d_tableProf", req.body.tokenTable];
+  query = mysql.format(query, data);
+	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
         tools.dSend(res, "NOK", "Table", "/cnxTable/delToken", 500, error, null);
 	  	} else {
-        tools.dSend(res, "OK", "Table", "/cnxTable/delToken", 200, null, "Token deleted : " + token);
+        tools.dSend(res, "OK", "Table", "/cnxTable/delToken", 200, null, "Token deleted : " + req.body.tokenTable);
 	  	}
   	});
 });
@@ -68,7 +71,10 @@ router.post('/delToken', function(req, res, next) {
 
 router.post('/verifToken', function(req, res, next) {
 	var token = req.body.tokenTable;
-	req.mysql.query('SELECT idProf, idTable FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
+  var query = "SELECT idProf, idTable FROM ?? WHERE tokenTable = ?";
+  var data = ["d_tableProf", token];
+  query = mysql.format(query, data);
+	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
         tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 500, error, null);
 	  		} else {
@@ -77,13 +83,18 @@ router.post('/verifToken', function(req, res, next) {
 					if (idProf == 0) {
 						tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 510, "Token pas encore utilisé : " + token, null);
 					} else if (idProf > 0) {
+						var query2 = "SELECT * FROM ?? WHERE idUser = ?";
+					  var data = ["d_users", idProf];
+					  query2 = mysql.format(query2, data);
 						var idTable = results[0].idTable;
-						req.mysql.query('SELECT * FROM d_users WHERE idUser = "' + idProf + '"', function (error, prof, fields) {
+						req.mysql.query(query2, function (error, prof, fields) {
 						if (error) {
 							tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 500, error, "Récupération des informations du prof");
 						} else {
-								var query2 = "SELECT idEcole FROM d_profsAppEcole as a WHERE a.idProf = " + idProf;
-							req.mysql.query(query2,function(error,resu) {
+							var query3 = "SELECT idEcole FROM ?? as a WHERE a.idProf = ?";
+						  var data = ["d_profsAppEcole", idProf];
+						  query3 = mysql.format(query3, data);
+							req.mysql.query(query3,function(error,resu) {
 								if (error) {
 									tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 500, error, "Récupération des informations du prof2");
 								} else {
@@ -96,7 +107,10 @@ router.post('/verifToken', function(req, res, next) {
 										idTable: idTable,
 										perm: 4
 									}, config.secret, {expiresIn: '7d'});
-									req.mysql.query("UPDATE d_tables SET access_token = '" + authToken + "' WHERE idTable = " + idTable,function(error,resu) {
+									var query4 = "UPDATE ?? SET access_token = ? WHERE idTable = ?";
+								  var data = ["d_tables", authToken, idTable];
+								  query4 = mysql.format(query4, data);
+									req.mysql.query(query4,function(error,resu) {
 										if (error) {
 											tools.dSend(res, "NOK", "Table", "/cnxTable/verifToken", 500, error, "Envoi du token dans la bdd");
 										} else {
@@ -128,8 +142,11 @@ router.post('/verifToken', function(req, res, next) {
 router.post('/install', function(req, res, next) {
 	var licenceEcole = req.body.licence;
 	var nomTable = req.body.nom;
-	var query = "SELECT * FROM d_licencesTables AS l WHERE l.serial = '" + licenceEcole + "'";
-	var query2 = "UPDATE d_licencesTables SET used = 1 WHERE serial = '" + licenceEcole + "'";
+	var query = "SELECT * FROM ?? AS l WHERE l.serial = ?";
+	var query2 = "UPDATE ?? SET used = 1 WHERE serial = ?";
+	var data = ["d_licencesTables", licenceEcole];
+	query = mysql.format(query, data);
+	query2 = mysql.format(query2, data);
 
 	req.mysql.query(query, function(error, results, fields) {
 		if (error){
@@ -172,12 +189,20 @@ router.post('/useToken', function(req, res, next) {
   var token = req.body.tokenTable;
 	var idProf = req.currUser.idUser;
 	if (token && token.length === 32 && idProf) {
-		req.mysql.query('SELECT * FROM d_tableProf WHERE tokenTable = "' + token + '"', function (error, results, fields) {
+
+		var query = "SELECT * FROM d_tableProf WHERE tokenTable = ?";
+		var query2 = "UPDATE ?? SET idProf = ? WHERE tokenTable = ?";
+		var data = ["d_tableProf", token];
+		var data2 = ["d_tableProf", idProf, token];
+		query = mysql.format(query, data);
+		query2 = mysql.format(query2, data2);
+
+		req.mysql.query(query, function (error, results, fields) {
 				if(error){
 	        tools.dSend(res, "NOK", "Table", "/cnxTable/useToken", 500, error, null);
 				} else {
 					if (results.length > 0 && results[0].tokenTable == token){
-						req.mysql.query('UPDATE d_tableProf SET idProf = ' + idProf + ' WHERE tokenTable = "' + token + '"', function (error, results, fields) {
+						req.mysql.query(query2, function (error, results, fields) {
 							if(error){
 				        tools.dSend(res, "NOK", "Table", "/cnxTable/useToken", 500, error, null);
 							} else {

@@ -21,14 +21,16 @@ var tools = require('../functions/tools');
  */
 
 router.get('/nbEleves', function(req, res, next) {
-	var idUser = req.currUser.idUser;
-  var typeUser = req.currUser.typeUser;
 	if (idUser) {
-    if (typeUser == 2) {
-      var query = "SELECT COUNT(ce.idEleve) AS nbEleves FROM d_classeEleve AS ce, d_classe AS c, d_classeEcole as cse, d_profsAppEcole AS pe WHERE pe.idEcole = cse.idEcole AND cse.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND pe.idProf = " + idUser;
+    if (req.currUser.typeUser == 2) {
+      var query = "SELECT COUNT(ce.idEleve) AS nbEleves FROM ?? AS ce, d_classe AS c, d_classeEcole as cse, d_profsAppEcole AS pe WHERE pe.idEcole = cse.idEcole AND cse.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND pe.idProf = ?";
     } else {
-      var query = "SELECT COUNT(ce.idEleve) AS nbEleves FROM d_classeEleve AS ce, d_classe AS c, d_profsAppClasse AS pc, d_users AS u WHERE u.idUser = pc.idProf AND pc.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEleve AND u.idUser = " + idUser;
+      var query = "SELECT COUNT(ce.idEleve) AS nbEleves FROM ?? AS ce, d_classe AS c, d_profsAppClasse AS pc, d_users AS u WHERE u.idUser = pc.idProf AND pc.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEleve AND u.idUser = ?";
     }
+
+    var data = ["d_classeEleve", req.currUser.idUser];
+    query = mysql.format(query, data);
+
 		req.mysql.query(query, function (error, results, fields) {
 		  	if(error){
           tools.dSend(res, "NOK", "Dashboard", "nbEleves", 500, error, null);
@@ -63,14 +65,15 @@ router.get('/nbEleves', function(req, res, next) {
  */
 
 router.get('/nbClasses', function(req, res, next) {
-	var idUser = req.currUser.idUser;
 	if (idUser) {
     if (req.currUser.typeUser == 2) {
-      var query = "SELECT COUNT(idClasse) AS nbClasses FROM d_classeEcole AS ce, d_profsAppEcole AS pe WHERE ce.idEcole = pe.idEcole AND pe.idProf = " + idUser;
+      var query = "SELECT COUNT(idClasse) AS nbClasses FROM ?? AS ce, d_profsAppEcole AS pe WHERE ce.idEcole = pe.idEcole AND pe.idProf = ?";
+      var data = ["d_classeEcole", req.currUser.idUser];
     } else {
-      var query = "SELECT COUNT(idClasse) AS nbClasses FROM d_profsAppClasse WHERE idProf = " + idUser;
+      var query = "SELECT COUNT(idClasse) AS nbClasses FROM ?? WHERE idProf = ?";
+      var data = ["d_profsAppClasse", req.currUser.idUser];
     }
-
+    query = mysql.format(query, data);
 		req.mysql.query(query, function (error, results, fields) {
 		  	if(error){
           tools.dSend(res, "NOK", "Dashboard", "nbClasses", 500, error, null);

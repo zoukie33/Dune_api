@@ -38,6 +38,7 @@ var classeRouter = require('./routes/classe/classe');
 var cEcoleRouter = require('./routes/classe/classeEcole');
 var cEleveRouter = require('./routes/classe/classeEleve');
 var gameDownload = require('./routes/gameDownload/gameDownload');
+var abonnementRouteur = require('./routes/abonnement');
 
 var app = express();
 
@@ -56,7 +57,7 @@ var pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: 'fnbxfzmxfn33',
-    database: 'dune_api_prod',
+    database: 'dune_api',
     insecureAuth: true,
     queueLimit : 0,
     connectionLimit : 0,
@@ -96,6 +97,7 @@ app.use('/api/v1/tokens', tokensRouter);
 app.use(verifyToken);
 app.use('/', gameDownload);
 app.use('/api/v1/cnxTable2', cnxTableRouter2);
+app.use('/api/v1/abonnement', abonnementRouteur);
 app.use('/api/v1/games', gamesRouter);
 app.use('/api/v1/filesManager', filesManagerRouter);
 app.use('/api/v1/store', storeRouter);

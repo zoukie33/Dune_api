@@ -42,14 +42,14 @@ var tools = require('../../functions/tools');
  */
 
 router.post('/createGame', function(req, res, next) {
-  var idProf = req.currUser.idUser;
-  var idClasse = req.body.idClasse;
-  var idGame = req.body.idGame;
-  var idTypeGame = req.body.idTypeGame;
-	var query1 = "INSERT INTO d_gamesPlayed (idGame, idTypeGame, idProf, idClasse) VALUES ('"+ idGame +"', '"+ idTypeGame +"', '"+ idProf +"', '"+ idClasse +"')";
+
+  var query = "INSERT INTO ?? (idGame, idTypeGame, idProf, idClasse) VALUES (?, ?, ?, ?)";
+  var data = ["d_gamesPlayed", req.body.idGame, req.body.idTypeGame, req.currUser.idUser, req.body.idClasse];
+  query = mysql.format(query, data);
+
   var good = 0;
-  if (idProf) {
-    req.mysql.query(query1, function (error, results, fields) {
+  if (req.currUser.idUser) {
+    req.mysql.query(query, function (error, results, fields) {
   	  	if(error){
           tools.dSend(res, "NOK", "Play", "createGame", 500, error, null);
   	  	} else {
@@ -96,15 +96,17 @@ router.post('/createGame', function(req, res, next) {
  */
 
 router.get('/myGame/:idGP', function(req, res, next) {
-  var idGP = req.params.idGP;
-	var query = "SELECT * FROM d_gamesPlayed AS gp WHERE gp.idGP = " + idGP;
-    req.mysql.query(query, function (error, results, fields) {
-  	  	if(error){
-          tools.dSend(res, "NOK", "Play", "myGame", 500, error, null);
-  	  	} else {
-          tools.dSend(res, "OK", "Play", "myGame", 200, null, results);
-  	  	}
-    	});
+  var query = "SELECT * FROM ?? AS gp WHERE gp.idGP = ?";
+  var data = ["d_gamesPlayed", req.params.idGP];
+  query = mysql.format(query, data);
+
+  req.mysql.query(query, function (error, results, fields) {
+    	if(error){
+        tools.dSend(res, "NOK", "Play", "myGame", 500, error, null);
+    	} else {
+        tools.dSend(res, "OK", "Play", "myGame", 200, null, results);
+    	}
+  	});
 });
 
 
@@ -115,7 +117,7 @@ router.get('/myGame/:idGP', function(req, res, next) {
  * @apiPermission Logged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token Token auth 
+ * @apiHeader {String} token Token auth
  * @apiParam {int} idGP
  * @apiParam {int} player1
  * @apiParam {int} player2

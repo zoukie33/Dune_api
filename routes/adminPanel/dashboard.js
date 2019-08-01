@@ -195,4 +195,47 @@ router.get('/getNbSchools', function(req, res, next) {
     }
   });
 });
+
+/**
+ * @api {get} /admin/dashboard/getTableBySchool/:idEcole Getting Tables by school
+ * @apiName getTableBySchool
+ * @apiGroup AdminDashboard
+ * @apiPermission notLogged
+ * @apiVersion 1.0.0
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *    "status": 200,
+ *    "error": null,
+ *       "response": [
+ *         {
+ *            "idProf": 1,
+ *            "nom": "Berthaud",
+ *            "prenom": "Elodie",
+ *            "email": "elodie.berthaud1@gmail.com",
+ *            "picPath": "1-prof.png"
+ *        },
+ *        {
+ *            "idProf": 2,
+ *            "nom": "gadrat",
+ *            "prenom": "Romain",
+ *            "email": "romain.gasdrat@epitech.eu",
+ *            "picPath": "2-prof.png"
+ *        }
+ *     ]
+ * }
+ * @apiHeader {String} token AdminToken auth
+ * @apiParam {Int} idEcole
+ */
+
+router.get('/getTableBySchool/:idEcole', function(req, res, next) {
+  var query = "SELECT u.idUser AS idProf, u.nomUser AS nom, u.prenomUser AS prenom, u.emailUser AS email, u.picPath FROM d_tables AS pae, d_users AS u WHERE u.idUser = pae.idProf AND pae.idEcole = " + req.params.idEcole;
+
+  req.mysql.query(query, function(error, results, fields) {
+    if (error){
+      tools.dSend(res, "NOK", "Admin-Dashboard", "getProfsBySchool", 500, error, null);
+    } else {
+      tools.dSend(res, "OK", "Admin-Dashboard", "getProfsBySchool", 200, null, results);
+    }
+  });
+});
 module.exports = router;

@@ -1,5 +1,5 @@
 module.exports={
   secret:'DuneCLeFeu',
-  sender: 'dune.epitech.contact%40gmail.com',
+  sender: 'dune.epitech.contact@gmail.com',
   emailPass: 'fnbxfzmxfn33',
 };
