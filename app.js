@@ -11,8 +11,10 @@ var fileUpload = require('express-fileupload');
 
 // Routes
 var loginRouter = require('./routes/auth/login');
+var helpRouter = require('./routes/help');
 var adminCreateRouter = require('./routes/adminPanel/create');
 var adminDashboardRouter = require('./routes/adminPanel/dashboard');
+var adminStatistiquesRouter = require('./routes/adminPanel/statistiques');
 var adminDeleteRouter = require('./routes/adminPanel/delete');
 var adminUpdateRouter = require('./routes/adminPanel/update');
 var logoutRouter = require('./routes/auth/logout');
@@ -38,7 +40,8 @@ var classeRouter = require('./routes/classe/classe');
 var cEcoleRouter = require('./routes/classe/classeEcole');
 var cEleveRouter = require('./routes/classe/classeEleve');
 var gameDownload = require('./routes/gameDownload/gameDownload');
-var abonnementRouteur = require('./routes/abonnement');
+var abonnementRouter = require('./routes/abonnement');
+var secureRouter = require('./routes/facturation/secure');
 
 var app = express();
 
@@ -90,37 +93,42 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use('/api/v1/login', loginRouter);
-app.use('/api/v1/logout', logoutRouter);
-app.use('/api/v1/cnxTable', cnxTableRouter);
-app.use('/api/v1/tokens', tokensRouter);
+app.use('/login', loginRouter);
+app.use('/logout', logoutRouter);
+app.use('/cnxTable', cnxTableRouter);
+app.use('/tokens', tokensRouter);
 app.use(verifyToken);
 app.use('/', gameDownload);
-app.use('/api/v1/cnxTable2', cnxTableRouter2);
-app.use('/api/v1/abonnement', abonnementRouteur);
-app.use('/api/v1/games', gamesRouter);
-app.use('/api/v1/filesManager', filesManagerRouter);
-app.use('/api/v1/store', storeRouter);
-app.use('/api/v1/notifs', notifsRouter);
-app.use('/api/v1/trombi', trombiRouter);
-app.use('/api/v1/tables', tablesRouter);
-app.use('/api/v1/table/gestApps', gestAppsRouter);
-app.use('/api/v1/table/licences', gestLicencesRouter);
-app.use('/api/v1/play', playRouter);
-app.use('/api/v1/users', usersRouter);
-app.use('/api/v1/dashBoard', dashRouter);
-app.use('/api/v1/eleves/stats', elevesStatsRouter);
-app.use('/api/v1/eleves', elevesRouter);
-app.use('/api/v1/ecole', ecoleRouter);
-app.use('/api/v1/classe', classeRouter);
-app.use('/api/v1/classes/profs', cProfsRouter);
-app.use('/api/v1/classes/eleve', cEleveRouter);
-app.use('/api/v1/classes/ecole', cEcoleRouter);
+app.use('/help', helpRouter);
+app.use('/facturation/secure', secureRouter);
+app.use('/cnxTable2', cnxTableRouter2);
+app.use('/abonnement', abonnementRouter);
+app.use('/games', gamesRouter);
+app.use('/filesManager', filesManagerRouter);
+app.use('/store', storeRouter);
+app.use('/notifs', notifsRouter);
+app.use('/trombi', trombiRouter);
+app.use('/tables', tablesRouter);
+app.use('/table/gestApps', gestAppsRouter);
+app.use('/table/licences', gestLicencesRouter);
+app.use('/play', playRouter);
+app.use('/users', usersRouter);
+app.use('/dashBoard', dashRouter);
+app.use('/eleves/stats', elevesStatsRouter);
+app.use('/eleves', elevesRouter);
+app.use('/ecole', ecoleRouter);
+app.use('/classe', classeRouter);
+app.use('/classes/profs', cProfsRouter);
+app.use('/classes/eleve', cEleveRouter);
+app.use('/classes/ecole', cEcoleRouter);
 app.use(verifyTokenAdmin);
-app.use('/api/v1/admin/create', adminCreateRouter);
-app.use('/api/v1/admin/dashboard', adminDashboardRouter);
-app.use('/api/v1/admin/delete', adminDeleteRouter);
-app.use('/api/v1/admin/update', adminUpdateRouter);
+app.use('/admin/create', adminCreateRouter);
+app.use('/admin/dashboard', adminDashboardRouter);
+app.use('/admin/statistiques', adminStatistiquesRouter);
+app.use('/admin/delete', adminDeleteRouter);
+app.use('/admin/update', adminUpdateRouter);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

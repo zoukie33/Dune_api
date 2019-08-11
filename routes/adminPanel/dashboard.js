@@ -88,6 +88,92 @@ router.get('/getProfsBySchool/:idEcole', function(req, res, next) {
 });
 
 /**
+ * @api {get} /admin/dashboard/getClassesBySchool/:idEcole Getting classes by school
+ * @apiName getClassesBySchool
+ * @apiGroup AdminDashboard
+ * @apiPermission notLogged
+ * @apiVersion 1.0.0
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *  "status": 200,
+ *    "error": null,
+ *    "response": [
+ *        {
+ *            "idClasse": 1,
+ *            "level": 4,
+ *            "num": 1,
+ *            "annee": "2017/2018"
+ *        },
+ *        {
+ *            "idClasse": 2,
+ *            "level": 8,
+ *            "num": 1,
+ *            "annee": "2017/2018"
+ *        }
+ *    ]
+ * }
+ * @apiHeader {String} token AdminToken auth
+ * @apiParam {Int} idEcole
+ */
+
+router.get('/getClassesBySchool/:idEcole', function(req, res, next) {
+  var query = "SELECT c.idClasse, c.level, c.num, c.annee FROM d_classeEcole AS ce, d_classe AS c WHERE ce.idClasse = c.idClasse AND ce.idEcole = ?";
+  var data = [req.params.idEcole];
+  query = mysql.format(query, data);
+
+  req.mysql.query(query, function(error, results, fields) {
+    if (error){
+      tools.dSend(res, "NOK", "Admin-Dashboard", "getClassesBySchool", 500, error, null);
+    } else {
+      tools.dSend(res, "OK", "Admin-Dashboard", "getClassesBySchool", 200, null, results);
+    }
+  });
+});
+
+/**
+ * @api {get} /admin/dashboard/getStudentsByClasse/:idEcole Getting students by classe
+ * @apiName getStudentsByClasse
+ * @apiGroup AdminDashboard
+ * @apiPermission notLogged
+ * @apiVersion 1.0.0
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *  "status": 200,
+ *  "error": null,
+ *  "response": [
+ *      {
+ *          "idEleve": 1,
+ *          "nomEleve": "Merveillau",
+ *          "prenomEleve": "Denis",
+ *          "picPath": "1-eleve.png"
+ *      },
+ *      {
+ *          "idEleve": 2,
+ *          "nomEleve": "Senouci",
+ *          "prenomEleve": "Elies",
+ *          "picPath": "2-eleve.png"
+ *      }
+ *    ]
+ * }
+ * @apiHeader {String} token AdminToken auth
+ * @apiParam {Int} idClasse
+ */
+
+router.get('/getStudentsByClasse/:idClasse', function(req, res, next) {
+  var query = "SELECT e.idEleve, e.nomEleve, e.prenomEleve, e.picPath FROM d_classeEleve AS ce, d_eleves AS e WHERE ce.idEleve = e.idEleve AND ce.idClasse = ?";
+  var data = [req.params.idClasse];
+  query = mysql.format(query, data);
+
+  req.mysql.query(query, function(error, results, fields) {
+    if (error){
+      tools.dSend(res, "NOK", "Admin-Dashboard", "getStudentsByClasse", 500, error, null);
+    } else {
+      tools.dSend(res, "OK", "Admin-Dashboard", "getStudentsByClasse", 200, null, results);
+    }
+  });
+});
+
+/**
  * @api {get} /admin/dashboard/getLicencesBySchool/:idEcole Getting licences by school
  * @apiName getLicencesBySchool
  * @apiGroup AdminDashboard

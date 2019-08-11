@@ -21,7 +21,7 @@ var tools = require('../functions/tools');
  */
 
 router.get('/nbEleves', function(req, res, next) {
-	if (idUser) {
+	if (req.currUser.idUser) {
     if (req.currUser.typeUser == 2) {
       var query = "SELECT COUNT(ce.idEleve) AS nbEleves FROM ?? AS ce, d_classe AS c, d_classeEcole as cse, d_profsAppEcole AS pe WHERE pe.idEcole = cse.idEcole AND cse.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND pe.idProf = ?";
     } else {
@@ -65,7 +65,7 @@ router.get('/nbEleves', function(req, res, next) {
  */
 
 router.get('/nbClasses', function(req, res, next) {
-	if (idUser) {
+	if (req.currUser.idUser) {
     if (req.currUser.typeUser == 2) {
       var query = "SELECT COUNT(idClasse) AS nbClasses FROM ?? AS ce, d_profsAppEcole AS pe WHERE ce.idEcole = pe.idEcole AND pe.idProf = ?";
       var data = ["d_classeEcole", req.currUser.idUser];

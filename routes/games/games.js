@@ -6,7 +6,7 @@ var filez = require('../../functions/files/files');
 var tools = require('../../functions/tools');
 
 /**
- * @api {get} /games/nbGames Get nb of Gaes by idEcole
+ * @api {get} /games/nbGames Get nb of Games by idEcole
  * @apiName nbGames
  * @apiGroup Games
  * @apiPermission Logged
@@ -30,7 +30,6 @@ var tools = require('../../functions/tools');
 
 router.get('/nbGames', function(req, res, next) {
 	var idEcole = req.currUser.idEcole;
-	console.log("sas");
 	if (idEcole) {
 		var query = "SELECT COUNT(*) AS nbGames FROM d_gamesAppEcole WHERE idEcole = " + idEcole;
 		req.mysql.query(query, function (error, results, fields) {

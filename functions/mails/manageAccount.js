@@ -64,3 +64,26 @@ exports.sendChangePassword = function (email) {
         }
     });
 };
+
+var sendContactToDuneLink = transporter.templateSender(
+  new EmailTemplate('./templates/helpContact'), {
+    	from: 'Dune - HELP - <noreply@dune.com>',
+  });
+
+exports.sendContactToDune = function (pbType, pbDetail, emailUser) {
+    // transporter.template
+    sendContactToDuneLink({
+        to: "dune.epitech.contact@gmail.com",
+        subject: pbType
+    }, {
+        pbDetail: pbDetail,
+        pbType: pbType,
+        emailUser: emailUser
+    }, function (err, info) {
+        if (err) {
+            console.log(err)
+        } else {
+            console.log('Link sent\n' + JSON.stringify(info));
+        }
+    });
+};
