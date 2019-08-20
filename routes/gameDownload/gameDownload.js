@@ -4,6 +4,7 @@ var router = express.Router();
 const fileUpload = require('express-fileupload');
 var filez = require('../../functions/files/files');
 var tools = require('../../functions/tools');
+var config = require('../../config');
 
 /**
  * @api {get} /files/Games/:idGame Download a game
@@ -22,7 +23,7 @@ router.get('/files/Games/:idGame', function(req, res, next) {
 
     var query = "SELECT * FROM d_gamesAppEcole WHERE idEcole="+idEcole+ " AND idGame="+idGame;
 
-    var file = '/home/zoukie/ftp/dev/files/Games/Game-'+idGame+'.zip';
+    var file = config.dirname + '/files/Games/Game-'+idGame+'.zip';
 
     req.mysql.query(query, function(error, results, fields) {
         if (error){

@@ -37,4 +37,6 @@ SELECT gp.idGP, g.name AS nameGame, tg.labelType AS matiere, gs.score AS note, g
  + ' AND gp.idTypeGame = ' + idMat
 
 
-SELECT u.idUser AS idProf, u.nomUser AS nom, u.prenomUser AS prenom, u.emailUser AS email, u.picPath FROM d_profsAppEcole AS pae, d_users AS u WHERE u.idUser = pae.idProf AND pae.idEcole = 
+SELECT u.idUser AS idProf, u.nomUser AS nom, u.prenomUser AS prenom, u.emailUser AS email, u.picPath FROM d_profsAppEcole AS pae, d_users AS u WHERE u.idUser = pae.idProf AND pae.idEcole =
+
+INSERT INTO d_tableGames(idTable, idGame) VALUES (" + idTable + ", " + idJeu + ")
