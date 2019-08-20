@@ -17,8 +17,9 @@ var tools = require('../../functions/tools');
  */
 
 router.post('/genToken', function(req, res, next) {
+  var tokenTable = md5(Date.now());
   var query = "INSERT INTO ?? (tokenTable, idTable) VALUES (?, ?)";
-  var data = ["d_tableProf", md5(Date.now()), req.body.idTable];
+  var data = ["d_tableProf", tokenTable, req.body.idTable];
   query = mysql.format(query, data);
 	req.mysql.query(query, function (error, results, fields) {
 	  	if(error){
