@@ -3,6 +3,37 @@ let mysql   = require("mysql");
 let router = express.Router();
 let tools = require('../../functions/tools');
 
+/**
+ * @api {put} /table/gestApps/appInstalled When an app is installed on a table
+ * @apiName appInstalled
+ * @apiGroup Table
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idJeu
+ * @apiHeader {String} token Token auth
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": OK
+ * }
+ */
+
+router.put('/appInstalled', function(req, res, next) {
+
+	var idJeu  = req.body.idJeu;
+	var idTable = req.currUser.idTable;
+	let query = "INSERT INTO d_tableGames(idTable, idGame) VALUES ('" + idTable + "', '" + idJeu + "')";
+
+	req.mysql.query(query, function (error, results, fields) {
+		if(error){
+			tools.dSend(res, "NOK", "Table-gestApps", "appInstalled", 500, error, null);
+		} else {
+			tools.dSend(res, "OK", "Table-gestApps", "appInstalled", 200, null, "OK");
+		}
+	});
+});
 
 /**
  * @api {get} /table/gestApps/appsOnTable Getting Games installed
