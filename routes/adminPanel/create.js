@@ -13,8 +13,13 @@ var tools = require('../../functions/tools');
  * @apiVersion 1.0.0
  *
  * @apiHeader {String} token AdminToken auth
- * @apiParam {int} nomEcole
- * @apiParam {int} idDirecteur
+ * @apiParam {Int} idDirecteur Id du directeur de l'école
+ * @apiParam {String} nomEcole Nom de l'école
+ * @apiParam {String} rueEcole Nom de rue de l'école
+ * @apiParam {Int} numRueEcole Numéro batiment de l'école
+ * @apiParam {String} villeEcole Ville de l'école
+ * @apiParam {String} departementEcole Département de l'école
+ * @apiParam {String} telEcole Numero de téléphone de l'école
  *
  * @apiError 500 SQL Error.
  *
@@ -35,16 +40,23 @@ var tools = require('../../functions/tools');
  * }
  * @apiErrorExample {json} Error-Response:
  * {
- *    Cette route necessite nomEcole et idDirecteur
+ *    "Cette route necessite que trous les champs soient remplis."
  * }
  */
 
 router.post('/createSchool', function(req, res, next) {
-	var nomEcole = req.body.nomEcole;
-  var idDirecteur = req.body.idDirecteur;
-  var query = "INSERT INTO d_ecole (idDirecteur, nomEcole) VALUES ('"+ idDirecteur +"', '"+ nomEcole +"')";
+  var name = req.body.nomEcole,
+    idDirecteur = req.body.idDirecteur,
+    rue = req.body.rueEcole,
+    numRue = req.body.numRueEcole,
+    ville = req.body.villeEcole,
+    departement = req.body.departementEcole,
+    tel = req.body.telEcole;
 
-  if (nomEcole && idDirecteur) {
+  if (idDirecteur && name && rue && numRue && ville && departement && tel) {
+    var query = "INSERT INTO ?? (idDirecteur, nomEcole, rue, numRue, ville, departement, tel) VALUES (?,?,?,?,?,?,?)";
+    var data = ['d_ecole', idDirecteur, name, rue, numRue, ville, departement, tel];
+    query = mysql.format(query, data);
     req.mysql.query(query, function(error, results, fields) {
   		if (error){
   			tools.dSend(res, "NOK", "Admin-Create", "createSchool", 500, error, null);
@@ -53,7 +65,7 @@ router.post('/createSchool', function(req, res, next) {
   		}
   	});
   } else {
-    tools.dSend(res, "NOK", "Admin-Create", "createSchool", 500, null, "Cette route necessite nomEcole et idDirecteur");
+    tools.dSend(res, "NOK", "Admin-Create", "createSchool", 500, null, "Cette route necessite que trous les champs soient remplis.");
   }
 });
 
@@ -128,7 +140,6 @@ router.post('/createSchool', function(req, res, next) {
   * @apiParam {String} currVersion Version actuelle de l'app/jeu (1.0)
   * @apiParam {Int} niveau Niveau de difficulté de l'app/jeu (1 ou 2)
   * @apiParam {Int} prix Prix de l'app/jeu (0 = free)
-  * @apiError 500 SQL Error.
   * @apiError 500 SQL Error.
   * @apiSuccessExample {json} Success-Response:
   * {

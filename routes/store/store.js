@@ -366,6 +366,8 @@ router.post('/validating', function(req, res, next) {
   var idDemande = req.body.idDemande;
   var validate = req.body.validate;
 
+  console.log(validate);
+
   if (typeUser && idDemande && validate) {
     if (typeUser == 2) {
       var query = "SELECT idGame, idEcole FROM d_demandeAchatGame WHERE idDemande = " + idDemande;

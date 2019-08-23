@@ -125,4 +125,55 @@ router.put('/picGame', function(req, res, next) {
 	}
 });
 
+
+/**
+ * @api {put} /admin/update/ecole Uploading a School
+ * @apiName ecole
+ * @apiGroup AdminUpdate
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token Token auth
+ * @apiParam {Int} idEcole Id de l'école
+ * @apiParam {String} nomEcole Nom de l'école
+ * @apiParam {String} rueEcole Nom de rue de l'école
+ * @apiParam {Int} numRueEcole Numéro batiment de l'école
+ * @apiParam {String} villeEcole Ville de l'école
+ * @apiParam {String} departementEcole Département de l'école
+ * @apiParam {String} telEcole Numero de téléphone de l'école
+ * @apiError 500 SQL Error.
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *    "Ecole Updated"
+ * }
+ * @apiErrorExample {json} Error-Response:
+ * {
+ *    "Impossible de mettre a jour cette ecole, tous les champs doivent être remplis."
+ * }
+ */
+
+router.put('/ecole', function(req, res, next) {
+  var id  = req.body.idEcole,
+    name = req.body.nomEcole,
+    rue = req.body.rueEcole,
+    numRue = req.body.numRueEcole,
+    ville = req.body.villeEcole,
+    departement = req.body.departementEcole,
+    tel = req.body.telEcole;
+
+  if (id && name && rue && numRue && ville && departement && tel) {
+    var query = "UPDATE ?? SET nomEcole = ?, rue = ?, numRue = ?, ville = ?, departement = ?, tel = ? WHERE id = ?";
+    var data = ['d_ecole', name, rue, numRue, ville, departement, tel, id];
+    query = mysql.format(query, data);
+  	req.mysql.query(query, function(error, results, fields) {
+  		if (error){
+  			tools.dSend(res, "NOK", "Admin-Update", "Update-Ecole", 500, error, "Impossible de mettre a jour cette Ecole.");
+  		} else {
+  			tools.dSend(res, "OK", "Admin-Update", "Update-Ecole", 200, null, "Ecole Updated");
+  		}
+  	});
+  } else {
+    tools.dSend(res, "NOK", "Admin-Update", "Update-Ecole", 500, null, "Impossible de mettre a jour cette ecole, tous les champs doivent être remplis.");
+  }
+});
 module.exports = router;
