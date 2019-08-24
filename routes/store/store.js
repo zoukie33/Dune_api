@@ -294,6 +294,7 @@ router.post('/buyAppDirecteur', function(req, res, next) {
             if(error){
               tools.dSend(res, "NOK", "Store", "buyAppDirecteur", 500, error, null);
             } else {
+              facturation.factureGame(req);
               tools.dSend(res, "OK", "Store", "buyAppDirecteur", 200, null, results);
             }
           });
