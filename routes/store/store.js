@@ -3,6 +3,7 @@ var mysql   = require("mysql");
 var router = express.Router();
 var doNotif = require('../../functions/notifications');
 var tools = require('../../functions/tools');
+var facturation = require('../../functions/facturation');
 
 /**
  * @api {post} /store/ Getting all items in store
@@ -294,7 +295,7 @@ router.post('/buyAppDirecteur', function(req, res, next) {
             if(error){
               tools.dSend(res, "NOK", "Store", "buyAppDirecteur", 500, error, null);
             } else {
-              facturation.factureGame(req);
+              facturation.factureGame(req, res, idApp, idEcole);
               tools.dSend(res, "OK", "Store", "buyAppDirecteur", 200, null, results);
             }
           });
@@ -542,5 +543,96 @@ router.get('/nbAvis/:idApp', function(req, res, next) {
         }
     });
 });
+
+/**
+ * @api {get} /store/getUserAvis/:idApp Getting the view of a user
+ * @apiName getUserAppView
+ * @apiGroup Store
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idApp Id de l'application demandée.
+ * @apiDescription Route permettant de récupérer l'avis d'un utilisateur sur une application, si avis il y a.
+ * @apiSuccessExample Success-Response:
+ * {
+    "status":200,
+    "error":null,
+    "response":[
+        {
+            "idAvis":38,
+            "note":5,
+            "commentaire":"C'est pas mal !!"
+        }
+    ]
+ }
+ {
+     "status":201,
+     "error":null,
+     "response":null
+ }
+ */
+
+router.get('/getUserAvis/:idApp', function(req, res, next) {
+
+    var idApp = req.params.idApp;
+
+    var query = "SELECT avis.idAvis, avis.note, avis.commentaire FROM d_gamesAvis AS avis WHERE avis.idGame="+ idApp + " AND avis.idUser=" + req.currUser.idUser;
+    req.mysql.query(query, function (error, results, fields) {
+        if(error){
+            tools.dSend(res, "NOK", "Avis", "getUserAvis", 500, error, null);
+        } else {
+            if (results.length != 0) {
+                tools.dSend(res, "OK", "Avis", "getUserAvis", 200, null, results);
+            } else {
+                tools.dSend(res, "OK", "Avis", "getUserAvis", 201, null, null);
+            }
+        }
+    });
+});
+
+/**
+ * @api {put} /store/updateUserAvis Update a view
+ * @apiName updateUserAvis
+ * @apiGroup Store
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idApp Id de l'application demandée.
+ * @apiParam {Int} note note donnée par l'utilisateur.
+ * @apiParam {Int} commentaire commentaire donnée par l'utilisateur.
+ * @apiDescription Route permettant de modifier l'avis d'un utilisateur
+ * @apiSuccessExample Success-Response:
+ * {
+ * "status":200,
+ * "error":null,
+ * "response":{
+ *      "fieldCount":0,
+ *      "affectedRows":1,
+ *      "insertId":0,
+ *      "serverStatus":34,
+ *      "warningCount":0,
+ *      "message":"(Rows matched: 1 Changed: 1 Warnings: 0","protocol41":true,"changedRows":1
+ *  }
+ *}
+ */
+
+router.put('/updateUserAvis', function(req, res, next) {
+    let idApp = req.body.idApp;
+    let note = req.body.note;
+    let commentaire = req.body.commentaire;
+    let idUser = req.currUser.idUser;
+
+    var query = "UPDATE ?? SET note = ?, commentaire = ? WHERE idGame= ? AND idUser = ?";
+    var data = ['d_gamesAvis', note, commentaire, idApp, idUser];
+    query = mysql.format(query, data);
+    req.mysql.query(query, function (error, results, fields) {
+        if(error){
+            tools.dSend(res, "NOK", "Avis", "getUserAvis", 500, error, null);
+        } else {
+            tools.dSend(res, "OK", "Avis", "getUserAvis", 200, null, results);
+        }
+    });
+});
+
 
 module.exports = router;

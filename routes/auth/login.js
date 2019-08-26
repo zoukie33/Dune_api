@@ -24,6 +24,7 @@ var tools = require('../../functions/tools');
  */
 
 router.post('/', function(req, res, next) {
+	var status_success = null;
 	var post = {
 		email:req.body.email,
 		password:req.body.password
@@ -40,6 +41,7 @@ router.post('/', function(req, res, next) {
 				typeUser = rows[0].typeUser;
 				user_id = rows[0].idUser;
 				emailUser = rows[0].emailUser;
+				status_success = (rows[0].access_token === 'n/a' ? 201 : 200);
 				var query2 = "SELECT idEcole FROM d_profsAppEcole as a WHERE a.idProf = " + user_id;
 				req.mysql.query(query2,function(err,resu){
 					idEcole = resu[0].idEcole;
@@ -61,9 +63,10 @@ router.post('/', function(req, res, next) {
 						if(err) {
 							tools.dSend(res, "NOK", "Auth", "Login", 500, err, null);
 						} else {
-	            tools.dLog("OK", "Auth", "Login", 200, null, '{token: token, typeUser: typeUser}');
+
+	            tools.dLog("OK", "Auth", "Login", status_success, null, '{token: token, typeUser: typeUser}');
 							res.json({
-								status: 200,
+								status: status_success,
 								success: true,
 								message: 'Token generated',
 								token: token,
