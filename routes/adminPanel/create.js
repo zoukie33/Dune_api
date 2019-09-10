@@ -224,11 +224,10 @@ router.post('/createSchool', function(req, res, next) {
             tools.dSend(res, "NOK", "Admin-Create", "createDirecteur", 500, error, null);
           } else {
             manageAccount.sendCreateAccount(req.body.email, password);
-            res.send(JSON.stringify({"status": 200, "error": null, "pass": password}));
-            tools.dLog("OK", "Admin-Create", "createDirecteur", 200, null, postData);
+            tools.dSend(res, "OK", "Admin-Create", "createDirecteur", 200, null, "Director Added");
           }
         });
-        tools.dSend(res, "OK", "Admin-Create", "createDirecteur", 200, null, "Director Added");
+        
       }
     });
   } else {
