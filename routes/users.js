@@ -220,9 +220,18 @@ router.post('/add', function(req, res, next) {
 	    		if (error){
             tools.dSend(res, "NOK", "Users", "add", 500, error, null);
 	    		} else {
-						manageAccount.sendCreateAccount(req.body.email, password);
-	    			res.send(JSON.stringify({"status": 200, "error": null, "pass": password}));
-            tools.dLog("OK", "Store", "add", 200, null, postData);
+            let query = "INSERT INTO ?? (idEcole, idProf) VALUES (?,?)";
+            let data = ['d_profsAppEcole', req.currUser.idEcole, results.insertId];
+            query = mysql.format(query, data);
+            req.mysql.query(query, function(error, results2, fields) {
+          		if (error){
+                tools.dSend(res, "NOK", "Users", "add", 500, error, null);
+          		} else {
+                manageAccount.sendCreateAccount(req.body.email, password);
+    	    			res.send(JSON.stringify({"status": 200, "error": null, "pass": password}));
+                tools.dLog("OK", "Store", "add", 200, null, postData);
+          		}
+          	});
 	    		}
 	    	  res.end(JSON.stringify(results));
 	    	});

@@ -1,6 +1,7 @@
 var express = require('express');
 var mysql   = require("mysql");
 var serial = require("generate-serial-key");
+var md5 = require("MD5");
 var router = express.Router();
 var filez = require('../../functions/files/files');
 var tools = require('../../functions/tools');
@@ -175,4 +176,63 @@ router.post('/createSchool', function(req, res, next) {
   }
  });
 
+
+ /**
+  * @api {post} /admin/create/createDirecteur Creating a Director
+  * @apiName createDirecteur
+  * @apiGroup AdminCreate
+  * @apiPermission Logged
+  * @apiVersion 1.0.0
+  *
+  * @apiHeader {String} token AdminToken auth
+  * @apiParam {String} nom Nom du directeur a ajouter.
+  * @apiParam {String} prenom Prenom du directeur a ajouter.
+  * @apiParam {String} email Email du directeur a ajouter.
+  * @apiParam {int} idEcole Id de l'ecole du directeur a ajouter.
+  * @apiError 500 SQL Error.
+  * @apiSuccessExample {json} Success-Response:
+  * {
+  *    "Game Added"
+  * }
+  * @apiErrorExample {json} Error-Response:
+  * {
+  *    "un des champs est manquant"
+  * }
+  */
+
+ router.post('/createDirecteur', function(req, res, next) {
+  let nom  = req.body.nom;
+  let prenom = req.body.prenom;
+  let email = req.body.email;
+  let typeUser = 2;
+  let idEcole = req.body.idEcole;
+  let pass = md5(new Date());
+
+  if (nom && prenom && email && typeUser && idEcole) {
+    let query = 'INSERT INTO ?? (nomUser, prenomUser, emailUser, pass, typeUser) VALUES (?,?,?,?,?)';
+    let data = ['d_users', nom, prenom, email, pass, typeUser];
+    query = mysql.format(query, data);
+    req.mysql.query(query, function(error, results, fields) {
+      if (error){
+        tools.dSend(res, "NOK", "Admin-Create", "createDirecteur", 500, error, null);
+      } else {
+        let query = "INSERT INTO ?? (idEcole, idProf) VALUES (?,?)";
+        let data = ['d_profsAppEcole', req.currUser.idEcole, results.insertId];
+        query = mysql.format(query, data);
+        req.mysql.query(query, function(error, results2, fields) {
+          if (error){
+            tools.dSend(res, "NOK", "Admin-Create", "createDirecteur", 500, error, null);
+          } else {
+            manageAccount.sendCreateAccount(req.body.email, password);
+            res.send(JSON.stringify({"status": 200, "error": null, "pass": password}));
+            tools.dLog("OK", "Admin-Create", "createDirecteur", 200, null, postData);
+          }
+        });
+        tools.dSend(res, "OK", "Admin-Create", "createDirecteur", 200, null, "Director Added");
+      }
+    });
+  } else {
+      tools.dSend(res, "NOK", "Admin-Create", "createDirecteur", 500, "un des champs est manquant", null);
+  }
+ });
 module.exports = router;
