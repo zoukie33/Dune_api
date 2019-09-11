@@ -13,8 +13,8 @@ var tools = require('../../functions/tools');
  * @apiPermission notLogged
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} token TokenTable auth
- * @apiParam {Int} idProf
+ * @apiHeader {String} token Auth Token
+ * @apiParam {String} tokenTable Token de la table
  */
 
 router.post('/useToken', function(req, res, next) {
@@ -51,6 +51,5 @@ router.post('/useToken', function(req, res, next) {
 	} else {
 		tools.dSend(res, "NOK", "Table", "/cnxTable/useToken", 500, "idprof : " + idProf + "Le token est invalide : " + token, null);
 	}
-
 });
 module.exports = router;
