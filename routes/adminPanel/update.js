@@ -176,4 +176,95 @@ router.put('/ecole', function(req, res, next) {
     tools.dSend(res, "NOK", "Admin-Update", "Update-Ecole", 500, null, "Impossible de mettre a jour cette ecole, tous les champs doivent être remplis.");
   }
 });
+
+/**
+ * @api {put} /admin/update/user Updating an User
+ * @apiName user
+ * @apiGroup AdminUpdate
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token Token auth
+ * @apiParam {Int} idUser Id de l'utilisateur.
+ * @apiParam {String} nomUser Nom de l'utilisateur.
+ * @apiParam {String} prenomUser Prénom de l'utilisateur.
+ *
+ * @apiDescription Route permettant la mise à jour d'un utilisateur.
+ * @apiError 500 SQL Error.
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *    "User Updated"
+ * }
+ * @apiErrorExample {json} Error-Response:
+ * {
+ *    "Impossible de mettre a jour cet user, tous les champs doivent être remplis."
+ * }
+ */
+
+router.put('/user', function(req, res, next) {
+  var idUser = req.body.idUser,
+      nomUser = req.body.nomUser,
+      prenomUser = req.body.prenomUser,
+      emailUser = req.body.emailUser;
+
+  if (idUser && nomUser && prenomUser && emailUser) {
+    var query = "UPDATE ?? SET nomUser = ?, prenomUser = ?, emailUser = ? WHERE idUser = ?";
+    var data = ['d_users', nomUser, prenomUser, emailUser, idUser];
+    query = mysql.format(query, data);
+    req.mysql.query(query, function(error, results, fields) {
+    	if (error){
+        tools.dSend(res, "NOK", "Admin-Update", "Update-User", 500, error, "Impossible de mettre a jour cet utilisateur.");
+    	} else {
+        tools.dSend(res, "OK", "Admin-Update", "Update-User", 200, null, "User Updated");
+    	}
+    });
+  } else {
+      tools.dSend(res, "NOK", "Admin-Update", "Update-User", 500, "Impossible de mettre a jour cet user, tous les champs doivent être remplis.", null);
+  }
+});
+
+ /**
+  * @api {put} /admin/update/eleve Updating a Student
+  * @apiName eleve
+  * @apiGroup AdminUpdate
+  * @apiPermission Logged
+  * @apiVersion 1.0.0
+  *
+  * @apiHeader {String} token Token auth
+  * @apiParam {Int} idEleve Id de l'élève a mettre a jour.
+  * @apiParam {String} nomEleve Nom de l'élève.
+  * @apiParam {String} prenomEleve Prénom de l'élève.
+  *
+  * @apiDescription Route permettant la mise à jour d'un élève.
+  * @apiError 500 SQL Error.
+  * @apiSuccessExample {json} Success-Response:
+  * {
+  *    "Eleve Updated"
+  * }
+  * @apiErrorExample {json} Error-Response:
+  * {
+  *    "Impossible de mettre a jour cet élève, tous les champs doivent être remplis."
+  * }
+  */
+router.put('/eleve', function(req, res, next) {
+
+  var idEleve = req.body.idEleve,
+      nomEleve = req.body.nomEleve,
+      prenomEleve = req.body.prenomEleve;
+
+  if (idEleve && nomEleve && prenomEleve) {
+    var query = "UPDATE ?? SET nomEleve = ?, prenomEleve = ? WHERE idEleve = ?";
+    var data = ['d_eleves', nomEleve, prenomEleve, idEleve];
+    query = mysql.format(query, data);
+    req.mysql.query(query, function(error, results, fields) {
+      if (error){
+        tools.dSend(res, "NOK", "Admin-Update", "Update-Eleve", 500, error, "Impossible de mettre a jour cet utilisateur.");
+      } else {
+        tools.dSend(res, "OK", "Admin-Update", "Update-Eleve", 200, null, "User Updated");
+      }
+    });
+  } else {
+      tools.dSend(res, "NOK", "Admin-Update", "Update-Eleve", 500, "Impossible de mettre a jour cet élève, tous les champs doivent être remplis.", null);
+  }
+});
 module.exports = router;

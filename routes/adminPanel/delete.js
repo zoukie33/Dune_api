@@ -74,9 +74,7 @@ router.delete('/deleteLicence/:idLicence', function(req, res, next) {
  */
 
 router.delete('/deleteGame/:idGame', function(req, res, next) {
-  var idGame = req.params.idGame;
-
-  var query = "DELETE FROM d_games WHERE id = " + idGame;
+  var query = "DELETE FROM d_games WHERE id = " + req.params.idGame;
 
   req.mysql.query(query, function (error, results, fields) {
     	if(error){
@@ -87,4 +85,42 @@ router.delete('/deleteGame/:idGame', function(req, res, next) {
   	});
 });
 
+/**
+ * @api {delete} /admin/delete/deleteEcole/:idEcole Delete a school
+ * @apiName deleteEcole
+ * @apiGroup AdminDelete
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idEcole Id Ecole
+ * @apiHeader {String} token AdminToken auth
+ * @apiDescription Route permettant de supprimer une Ecole
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": {
+ *        "fieldCount": 0,
+ *        "affectedRows": 1,
+ *        "insertId": 0,
+ *        "serverStatus": 2,
+ *        "warningCount": 0,
+ *        "message": "",
+ *        "protocol41": true,
+ *        "changedRows": 0
+ *    }
+ * }
+ */
+
+router.delete('/deleteEcole/:idEcole', function(req, res, next) {
+  var query = "DELETE FROM d_ecole WHERE id = " + req.params.idEcole;
+
+  req.mysql.query(query, function (error, results, fields) {
+    	if(error){
+        tools.dSend(res, "NOK", "Admin-Delete", "deleteEcole", 500, error, null);
+    	} else {
+        tools.dSend(res, "OK", "Admin-Delete", "deleteEcole", 200, null, results);
+    	}
+  	});
+});
 module.exports = router;
