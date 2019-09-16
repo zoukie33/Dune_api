@@ -43,7 +43,7 @@ var gameDownload = require('./routes/gameDownload/gameDownload');
 var abonnementRouter = require('./routes/abonnement');
 var secureRouter = require('./routes/facturation/secure');
 var facturationRouter = require('./routes/facturation/gestFact');
-var customerRouter = require('./routes/stripe/secure');
+var stripeRouter = require('./routes/stripe/payments');
 
 var app = express();
 
@@ -99,7 +99,7 @@ app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/cnxTable', cnxTableRouter);
 app.use('/tokens', tokensRouter);
-app.use(verifyToken);
+app.use(veriyToken);
 app.use('/', gameDownload);
 app.use('/help', helpRouter);
 app.use('/facturation/secure', secureRouter);
@@ -124,7 +124,7 @@ app.use('/classe', classeRouter);
 app.use('/classes/profs', cProfsRouter);
 app.use('/classes/eleve', cEleveRouter);
 app.use('/classes/ecole', cEcoleRouter);
-app.use('/stripe/customer', customerRouter);
+app.use('/stripe/payments', stripeRouter);
 app.use(verifyTokenAdmin);
 app.use('/admin/create', adminCreateRouter);
 app.use('/admin/dashboard', adminDashboardRouter);
