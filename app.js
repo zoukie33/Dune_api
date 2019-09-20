@@ -99,7 +99,7 @@ app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/cnxTable', cnxTableRouter);
 app.use('/tokens', tokensRouter);
-app.use(veriyToken);
+app.use(verifyToken);
 app.use('/', gameDownload);
 app.use('/help', helpRouter);
 app.use('/facturation/secure', secureRouter);
