@@ -16,10 +16,30 @@ var credentials = {
     key: fs.readFileSync(__dirname + '/server.key'),
     cert: fs.readFileSync(__dirname + '/server.crt')
   };
+/**
+ * Get port from environment and store in Express.
+ */
 
+ //var port = normalizePort(process.env.PORT || '80');
+ //app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+// var server = http.createServer(app);
 http.createServer(app).listen(80);
 https.createServer(credentials, app).listen(443);
+/**
+ * Listen on provided port, on all network interfaces.
+ */
 
+//serverHttps.listen(port);
+// serverHttps.listen(9002);
+// server.on('error', onError);
+// server.on('listening', onListening);
+//serverHttps.on('error', onError);
+//serverHttps.on('listening', onListening);
 
 app.use(function(req, res, next) {
   if(!req.secure) {
@@ -27,6 +47,10 @@ app.use(function(req, res, next) {
   }
   next();
 });
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
 
 function normalizePort(val) {
   var port = parseInt(val, 10);

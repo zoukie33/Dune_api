@@ -5,6 +5,7 @@ var md5 = require("MD5");
 var router = express.Router();
 var filez = require('../../functions/files/files');
 var tools = require('../../functions/tools');
+var stripe = require('../../functions/stripe');
 
 /**
  * @api {post} /admin/create/createSchool/ Create a school
@@ -55,7 +56,7 @@ router.post('/createSchool', function(req, res, next) {
     email = req.body.emailEcole;
 
   if (name && rue && numRue && ville && departement && tel) {
-    var query = "INSERT INTO ?? (nomEcole, rue, numRue, ville, departement, tel) VALUES (?,?,?,?,?,?,?)";
+    var query = "INSERT INTO ?? (nomEcole, rue, numRue, ville, departement, tel, email) VALUES (?,?,?,?,?,?,?)";
     var data = ['d_ecole', name, rue, numRue, ville, departement, tel, email];
     query = mysql.format(query, data);
     req.mysql.query(query, function(error, results, fields) {
