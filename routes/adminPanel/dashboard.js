@@ -1,10 +1,9 @@
 var express = require('express');
-var mysql   = require("mysql");
-var serial = require("generate-serial-key");
+var mysql = require('mysql');
+var serial = require('generate-serial-key');
 var router = express.Router();
 var filez = require('../../functions/files/files');
 var tools = require('../../functions/tools');
-
 
 /**
  * @api {get} /admin/dashboard/getAllSchools Getting Schools
@@ -33,13 +32,29 @@ var tools = require('../../functions/tools');
  */
 
 router.get('/getAllSchools', function(req, res, next) {
-  var query = "SELECT * FROM d_ecole";
+  var query = 'SELECT * FROM d_ecole';
 
   req.mysql.query(query, function(error, results, fields) {
-    if (error){
-      tools.dSend(res, "NOK", "Admin-Dashboard", "getAllSchools", 500, error, null);
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Dashboard',
+        'getAllSchools',
+        500,
+        error,
+        null
+      );
     } else {
-      tools.dSend(res, "OK", "Admin-Dashboard", "getAllSchools", 200, null, results);
+      tools.dSend(
+        res,
+        'OK',
+        'Admin-Dashboard',
+        'getAllSchools',
+        200,
+        null,
+        results
+      );
     }
   });
 });
@@ -76,13 +91,31 @@ router.get('/getAllSchools', function(req, res, next) {
  */
 
 router.get('/getProfsBySchool/:idEcole', function(req, res, next) {
-  var query = "SELECT u.idUser AS idProf, u.nomUser AS nom, u.prenomUser AS prenom, u.emailUser AS email, u.picPath FROM d_profsAppEcole AS pae, d_users AS u WHERE u.idUser = pae.idProf AND pae.idEcole = " + req.params.idEcole;
+  var query =
+    'SELECT u.idUser AS idProf, u.nomUser AS nom, u.prenomUser AS prenom, u.emailUser AS email, u.picPath FROM d_profsAppEcole AS pae, d_users AS u WHERE u.idUser = pae.idProf AND pae.idEcole = ' +
+    req.params.idEcole;
 
   req.mysql.query(query, function(error, results, fields) {
-    if (error){
-      tools.dSend(res, "NOK", "Admin-Dashboard", "getProfsBySchool", 500, error, null);
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Dashboard',
+        'getProfsBySchool',
+        500,
+        error,
+        null
+      );
     } else {
-      tools.dSend(res, "OK", "Admin-Dashboard", "getProfsBySchool", 200, null, results);
+      tools.dSend(
+        res,
+        'OK',
+        'Admin-Dashboard',
+        'getProfsBySchool',
+        200,
+        null,
+        results
+      );
     }
   });
 });
@@ -117,15 +150,32 @@ router.get('/getProfsBySchool/:idEcole', function(req, res, next) {
  */
 
 router.get('/getClassesBySchool/:idEcole', function(req, res, next) {
-  var query = "SELECT c.idClasse, c.level, c.num, c.annee FROM d_classeEcole AS ce, d_classe AS c WHERE ce.idClasse = c.idClasse AND ce.idEcole = ?";
+  var query =
+    'SELECT c.idClasse, c.level, c.num, c.annee FROM d_classeEcole AS ce, d_classe AS c WHERE ce.idClasse = c.idClasse AND ce.idEcole = ?';
   var data = [req.params.idEcole];
   query = mysql.format(query, data);
 
   req.mysql.query(query, function(error, results, fields) {
-    if (error){
-      tools.dSend(res, "NOK", "Admin-Dashboard", "getClassesBySchool", 500, error, null);
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Dashboard',
+        'getClassesBySchool',
+        500,
+        error,
+        null
+      );
     } else {
-      tools.dSend(res, "OK", "Admin-Dashboard", "getClassesBySchool", 200, null, results);
+      tools.dSend(
+        res,
+        'OK',
+        'Admin-Dashboard',
+        'getClassesBySchool',
+        200,
+        null,
+        results
+      );
     }
   });
 });
@@ -160,15 +210,32 @@ router.get('/getClassesBySchool/:idEcole', function(req, res, next) {
  */
 
 router.get('/getStudentsByClasse/:idClasse', function(req, res, next) {
-  var query = "SELECT e.idEleve, e.nomEleve, e.prenomEleve, e.picPath FROM d_classeEleve AS ce, d_eleves AS e WHERE ce.idEleve = e.idEleve AND ce.idClasse = ?";
+  var query =
+    'SELECT e.idEleve, e.nomEleve, e.prenomEleve, e.picPath FROM d_classeEleve AS ce, d_eleves AS e WHERE ce.idEleve = e.idEleve AND ce.idClasse = ?';
   var data = [req.params.idClasse];
   query = mysql.format(query, data);
 
   req.mysql.query(query, function(error, results, fields) {
-    if (error){
-      tools.dSend(res, "NOK", "Admin-Dashboard", "getStudentsByClasse", 500, error, null);
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Dashboard',
+        'getStudentsByClasse',
+        500,
+        error,
+        null
+      );
     } else {
-      tools.dSend(res, "OK", "Admin-Dashboard", "getStudentsByClasse", 200, null, results);
+      tools.dSend(
+        res,
+        'OK',
+        'Admin-Dashboard',
+        'getStudentsByClasse',
+        200,
+        null,
+        results
+      );
     }
   });
 });
@@ -205,13 +272,31 @@ router.get('/getStudentsByClasse/:idClasse', function(req, res, next) {
  */
 
 router.get('/getLicencesBySchool/:idEcole', function(req, res, next) {
-  var query = "SELECT idLicence AS id, idEcole, serial AS licence, used, dateExpire FROM d_licencesTables WHERE idEcole = " + req.params.idEcole;
+  var query =
+    'SELECT idLicence AS id, idEcole, serial AS licence, used, dateExpire FROM d_licencesTables WHERE idEcole = ' +
+    req.params.idEcole;
 
   req.mysql.query(query, function(error, results, fields) {
-    if (error){
-      tools.dSend(res, "NOK", "Admin-Dashboard", "getLicencesBySchool", 500, error, null);
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Dashboard',
+        'getLicencesBySchool',
+        500,
+        error,
+        null
+      );
     } else {
-      tools.dSend(res, "OK", "Admin-Dashboard", "getLicencesBySchool", 200, null, results);
+      tools.dSend(
+        res,
+        'OK',
+        'Admin-Dashboard',
+        'getLicencesBySchool',
+        200,
+        null,
+        results
+      );
     }
   });
 });
@@ -241,13 +326,29 @@ router.get('/getLicencesBySchool/:idEcole', function(req, res, next) {
  */
 
 router.get('/getCreators', function(req, res, next) {
-  var query = "SELECT * FROM d_creator";
+  var query = 'SELECT * FROM d_creator';
 
   req.mysql.query(query, function(error, results, fields) {
-    if (error){
-      tools.dSend(res, "NOK", "Admin-Dashboard", "getCreators", 500, error, null);
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Dashboard',
+        'getCreators',
+        500,
+        error,
+        null
+      );
     } else {
-      tools.dSend(res, "OK", "Admin-Dashboard", "getCreators", 200, null, results);
+      tools.dSend(
+        res,
+        'OK',
+        'Admin-Dashboard',
+        'getCreators',
+        200,
+        null,
+        results
+      );
     }
   });
 });
@@ -270,14 +371,35 @@ router.get('/getCreators', function(req, res, next) {
  */
 
 router.get('/getNbSchools', function(req, res, next) {
-  var query = "SELECT COUNT(id) AS nbSchool FROM d_ecole";
+  var query = 'SELECT COUNT(id) AS nbSchool FROM d_ecole';
 
   req.mysql.query(query, function(error, results, fields) {
-    if (error){
-      tools.dSend(res, "NOK", "Admin-Dashboard", "getNbSchools", 500, error, null);
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Dashboard',
+        'getNbSchools',
+        500,
+        error,
+        null
+      );
     } else {
-			res.send(JSON.stringify({"status": 200, "error": null, "nbSchool": results[0].nbSchool}));
-			tools.dLog("OK", "Admin-Dashboard", "getNbSchools", 200, null, '"nbSchool":' + results[0].nbSchool);
+      res.send(
+        JSON.stringify({
+          status: 200,
+          error: null,
+          nbSchool: results[0].nbSchool
+        })
+      );
+      tools.dLog(
+        'OK',
+        'Admin-Dashboard',
+        'getNbSchools',
+        200,
+        null,
+        '"nbSchool":' + results[0].nbSchool
+      );
     }
   });
 });
@@ -314,13 +436,31 @@ router.get('/getNbSchools', function(req, res, next) {
  */
 
 router.get('/getTableBySchool/:idEcole', function(req, res, next) {
-  var query = "SELECT u.idUser AS idProf, u.nomUser AS nom, u.prenomUser AS prenom, u.emailUser AS email, u.picPath FROM d_tables AS pae, d_users AS u WHERE u.idUser = pae.idProf AND pae.idEcole = " + req.params.idEcole;
+  var query =
+    'SELECT u.idUser AS idProf, u.nomUser AS nom, u.prenomUser AS prenom, u.emailUser AS email, u.picPath FROM d_tables AS pae, d_users AS u WHERE u.idUser = pae.idProf AND pae.idEcole = ' +
+    req.params.idEcole;
 
   req.mysql.query(query, function(error, results, fields) {
-    if (error){
-      tools.dSend(res, "NOK", "Admin-Dashboard", "getProfsBySchool", 500, error, null);
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Dashboard',
+        'getProfsBySchool',
+        500,
+        error,
+        null
+      );
     } else {
-      tools.dSend(res, "OK", "Admin-Dashboard", "getProfsBySchool", 200, null, results);
+      tools.dSend(
+        res,
+        'OK',
+        'Admin-Dashboard',
+        'getProfsBySchool',
+        200,
+        null,
+        results
+      );
     }
   });
 });

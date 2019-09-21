@@ -1,8 +1,8 @@
 var express = require('express');
-var mysql   = require("mysql");
+var mysql = require('mysql');
 var router = express.Router();
 var tools = require('../../functions/tools');
-var md5 = require("MD5");
+var md5 = require('MD5');
 
 /**
  * @api {post} /facturation/secure/verifPassword Verification password
@@ -24,20 +24,49 @@ var md5 = require("MD5");
  */
 router.post('/verifPassword', function(req, res, next) {
   var verifPass = req.body.password;
-	req.mysql.query('SELECT pass FROM d_users WHERE idUser = ' + req.currUser.idUser + ' AND emailUser = \'' + req.currUser.emailUser + '\'', function (error, results, fields) {
-	  	if(error){
-        tools.dSend(res, "NOK", "Facturation/Secure", "verifPassword", 500, error, null);
-	  	} else {
-	  	    console.log(results);
+  req.mysql.query(
+    'SELECT pass FROM d_users WHERE idUser = ' +
+      req.currUser.idUser +
+      " AND emailUser = '" +
+      req.currUser.emailUser +
+      "'",
+    function(error, results, fields) {
+      if (error) {
+        tools.dSend(
+          res,
+          'NOK',
+          'Facturation/Secure',
+          'verifPassword',
+          500,
+          error,
+          null
+        );
+      } else {
+        console.log(results);
         if (md5(verifPass) == results[0].pass) {
-          tools.dSend(res, "OK", "Facturation/Secure", "verifPassword", 200, null, "Password Valid");
+          tools.dSend(
+            res,
+            'OK',
+            'Facturation/Secure',
+            'verifPassword',
+            200,
+            null,
+            'Password Valid'
+          );
         } else {
-          tools.dSend(res, "NOK", "Facturation/Secure", "verifPassword", 500, null, "Invalid Password");
+          tools.dSend(
+            res,
+            'NOK',
+            'Facturation/Secure',
+            'verifPassword',
+            500,
+            null,
+            'Invalid Password'
+          );
         }
-	  	}
-  	});
+      }
+    }
+  );
 });
-
-
 
 module.exports = router;

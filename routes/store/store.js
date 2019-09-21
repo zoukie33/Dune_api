@@ -1,5 +1,5 @@
 var express = require('express');
-var mysql   = require("mysql");
+var mysql = require('mysql');
 var router = express.Router();
 var doNotif = require('../../functions/notifications');
 var tools = require('../../functions/tools');
@@ -29,30 +29,44 @@ var facturation = require('../../functions/facturation');
  * }
  */
 
- router.post('/', function(req, res, next) {
-	var idType = req.body.idType;
- 	var search = req.body.search;
+router.post('/', function(req, res, next) {
+  var idType = req.body.idType;
+  var search = req.body.search;
   if (search) {
     if (idType == 0) {
-  		var query = "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND ((g.name LIKE '" + search +"%') OR (c.nom LIKE '" + search +"%'))";
-  	} else {
-  		var query = "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND ((g.name LIKE '" + search +"%') OR (c.nom LIKE '" + search +"%')) AND idType = " + idType;
-  	}
+      var query =
+        "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND ((g.name LIKE '" +
+        search +
+        "%') OR (c.nom LIKE '" +
+        search +
+        "%'))";
+    } else {
+      var query =
+        "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND ((g.name LIKE '" +
+        search +
+        "%') OR (c.nom LIKE '" +
+        search +
+        "%')) AND idType = " +
+        idType;
+    }
   } else {
     if (idType == 0) {
-  		var query = "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator";
-  	} else {
-  		var query = "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND idType = " + idType;
-  	}
+      var query =
+        "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator";
+    } else {
+      var query =
+        "SELECT g.id, g.name as 'nomApp', c.nom as 'nomCreator', g.picPath FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND idType = " +
+        idType;
+    }
   }
 
-	req.mysql.query(query, function (error, results, fields) {
-	  	if(error){
-        tools.dSend(res, "NOK", "Store", "Store", 500, error, null);
-	  	} else {
-        tools.dSend(res, "OK", "Store", "Store", 200, null, results);
-	  	}
-  	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Store', 'Store', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Store', 'Store', 200, null, results);
+    }
+  });
 });
 
 /**
@@ -87,15 +101,27 @@ var facturation = require('../../functions/facturation');
 router.post('/getApp', function(req, res, next) {
   var idApp = req.body.idApp;
   if (idApp) {
-    req.mysql.query('SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path, g.prix, g.nb_joueurs, g.current_version, g.niveau, g.description FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND g.id = ' + idApp, function (error, results, fields) {
-  	  	if(error){
-          tools.dSend(res, "NOK", "Store", "getApp", 500, error, null);
-  	  	} else {
-          tools.dSend(res, "OK", "Store", "getApp", 200, null, results);
-  	  	}
-    	});
+    req.mysql.query(
+      'SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path, g.prix, g.nb_joueurs, g.current_version, g.niveau, g.description FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND g.id = ' +
+        idApp,
+      function(error, results, fields) {
+        if (error) {
+          tools.dSend(res, 'NOK', 'Store', 'getApp', 500, error, null);
+        } else {
+          tools.dSend(res, 'OK', 'Store', 'getApp', 200, null, results);
+        }
+      }
+    );
   } else {
-    tools.dSend(res, "NOK", "Store", "getApp", 500, "Parametre manquant : idApp", null);
+    tools.dSend(
+      res,
+      'NOK',
+      'Store',
+      'getApp',
+      500,
+      'Parametre manquant : idApp',
+      null
+    );
   }
 });
 
@@ -126,15 +152,27 @@ router.post('/getApp', function(req, res, next) {
 router.get('/getAppsEcole', function(req, res, next) {
   var idEcole = req.currUser.idEcole;
   if (idEcole) {
-    req.mysql.query('SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path FROM d_games AS g, d_gamesAppEcole AS ga, d_creator as c WHERE g.id = ga.idGame AND g.creator = c.idCreator AND ga.idEcole = ' + idEcole, function (error, results, fields) {
-  	  	if(error){
-          tools.dSend(res, "NOK", "Store", "getAppsEcole", 500, error, null);
-  	  	} else {
-          tools.dSend(res, "OK", "Store", "getAppsEcole", 200, null, results);
-  	  	}
-    	});
+    req.mysql.query(
+      'SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path FROM d_games AS g, d_gamesAppEcole AS ga, d_creator as c WHERE g.id = ga.idGame AND g.creator = c.idCreator AND ga.idEcole = ' +
+        idEcole,
+      function(error, results, fields) {
+        if (error) {
+          tools.dSend(res, 'NOK', 'Store', 'getAppsEcole', 500, error, null);
+        } else {
+          tools.dSend(res, 'OK', 'Store', 'getAppsEcole', 200, null, results);
+        }
+      }
+    );
   } else {
-    tools.dSend(res, "NOK", "Store", "getAppsEcole", 500, "Parametre manquant : idEcole", null);
+    tools.dSend(
+      res,
+      'NOK',
+      'Store',
+      'getAppsEcole',
+      500,
+      'Parametre manquant : idEcole',
+      null
+    );
   }
 });
 
@@ -158,21 +196,53 @@ router.get('/getAppStatus/:idApp', function(req, res, next) {
   var idEcole = req.currUser.idEcole;
   var idApp = req.params.idApp;
   if (idEcole && idApp) {
-    req.mysql.query('SELECT * FROM d_gamesAppEcole AS ga WHERE ga.idGame = '+ idApp +' AND ga.idEcole = ' + idEcole, function (error, results, fields) {
-  	  	if(error){
-          tools.dSend(res, "NOK", "Store", "getAppStatus", 500, error, null);
-  	  	} else {
-          if (results.length==1) {
-            tools.dLog("OK", "Store", "getAppStatus", 200, null, '"appStatus": "1"');
-            res.send(JSON.stringify({"status": 200, "error": null, "appStatus": "1"}));
+    req.mysql.query(
+      'SELECT * FROM d_gamesAppEcole AS ga WHERE ga.idGame = ' +
+        idApp +
+        ' AND ga.idEcole = ' +
+        idEcole,
+      function(error, results, fields) {
+        if (error) {
+          tools.dSend(res, 'NOK', 'Store', 'getAppStatus', 500, error, null);
+        } else {
+          if (results.length == 1) {
+            tools.dLog(
+              'OK',
+              'Store',
+              'getAppStatus',
+              200,
+              null,
+              '"appStatus": "1"'
+            );
+            res.send(
+              JSON.stringify({ status: 200, error: null, appStatus: '1' })
+            );
           } else {
-            tools.dLog("OK", "Store", "getAppStatus", 200, null, '"appStatus": "0"');
-            res.send(JSON.stringify({"status": 200, "error": null, "appStatus": "0"}));
+            tools.dLog(
+              'OK',
+              'Store',
+              'getAppStatus',
+              200,
+              null,
+              '"appStatus": "0"'
+            );
+            res.send(
+              JSON.stringify({ status: 200, error: null, appStatus: '0' })
+            );
           }
-  	  	}
-    	});
+        }
+      }
+    );
   } else {
-    tools.dSend(res, "NOK", "Store", "getAppStatus", 500, "Parametre manquant : idEcole", null);
+    tools.dSend(
+      res,
+      'NOK',
+      'Store',
+      'getAppStatus',
+      500,
+      'Parametre manquant : idEcole',
+      null
+    );
   }
 });
 
@@ -204,56 +274,102 @@ router.get('/getAppStatus/:idApp', function(req, res, next) {
  *
  */
 
-
 router.post('/buyApp', function(req, res, next) {
   var idApp = req.body.idApp;
   var idProf = req.currUser.idUser;
   var idEcole = req.currUser.idEcole;
   var commentaire = req.body.commentaire;
-  var quer = "SELECT da.idDemande FROM d_demandeAchatGame AS da WHERE da.idGame = " + idApp + " AND da.idEcole = " + idEcole + " AND da.isAccepted = 2";
+  var quer =
+    'SELECT da.idDemande FROM d_demandeAchatGame AS da WHERE da.idGame = ' +
+    idApp +
+    ' AND da.idEcole = ' +
+    idEcole +
+    ' AND da.isAccepted = 2';
   if (idApp && idProf && idEcole) {
-    req.mysql.query(quer, function (error, results, fields) {
+    req.mysql.query(quer, function(error, results, fields) {
       if (results.length == 1) {
         if (commentaire) {
-          var query2 = 'INSERT INTO d_partDemandeAchat(idDemande, idProf, commentaire) VALUES ('+ results[0].idDemande +','+ idProf +',"'+ commentaire +'")';
+          var query2 =
+            'INSERT INTO d_partDemandeAchat(idDemande, idProf, commentaire) VALUES (' +
+            results[0].idDemande +
+            ',' +
+            idProf +
+            ',"' +
+            commentaire +
+            '")';
         } else {
-          var query2 = "INSERT INTO d_partDemandeAchat(idDemande, idProf) VALUES ("+ results[0].idDemande +","+ idProf +")";
+          var query2 =
+            'INSERT INTO d_partDemandeAchat(idDemande, idProf) VALUES (' +
+            results[0].idDemande +
+            ',' +
+            idProf +
+            ')';
         }
-        req.mysql.query(query2, function (error, results2, fields) {
-          if(error){
-            tools.dSend(res, "NOK", "Store", "buyApp", 500, error, 1);
+        req.mysql.query(query2, function(error, results2, fields) {
+          if (error) {
+            tools.dSend(res, 'NOK', 'Store', 'buyApp', 500, error, 1);
           } else {
             //doNotif.createNotifDirecteur(req, idEcole, results[0].idDemande, 1, "Une demande d'achat d'application a été faite.1");
-            tools.dSend(res, "OK", "Store", "buyApp", 200, null, results2);
+            tools.dSend(res, 'OK', 'Store', 'buyApp', 200, null, results2);
           }
         });
       } else {
-        var query = "INSERT INTO d_demandeAchatGame (idGame, idEcole) VALUES ('" + idApp + "', '" + idEcole + "')";
-        req.mysql.query(query, function (error, results, fields) {
-      	  	if(error){
-              tools.dSend(res, "NOK", "Store", "buyApp", 500, error, 2);
-      	  	} else {
-              if (commentaire) {
-                var query2 = 'INSERT INTO d_partDemandeAchat(idDemande, idProf, commentaire) VALUES ('+ results.insertId +','+ idProf +',"'+ commentaire +'")';
+        var query =
+          "INSERT INTO d_demandeAchatGame (idGame, idEcole) VALUES ('" +
+          idApp +
+          "', '" +
+          idEcole +
+          "')";
+        req.mysql.query(query, function(error, results, fields) {
+          if (error) {
+            tools.dSend(res, 'NOK', 'Store', 'buyApp', 500, error, 2);
+          } else {
+            if (commentaire) {
+              var query2 =
+                'INSERT INTO d_partDemandeAchat(idDemande, idProf, commentaire) VALUES (' +
+                results.insertId +
+                ',' +
+                idProf +
+                ',"' +
+                commentaire +
+                '")';
+            } else {
+              var query2 =
+                'INSERT INTO d_partDemandeAchat(idDemande, idProf) VALUES (' +
+                results.insertId +
+                ',' +
+                idProf +
+                ')';
+            }
+            doNotif.createNotifDirecteur(
+              req,
+              idEcole,
+              results.insertId,
+              1,
+              "Une demande d'achat d'application a été faite."
+            );
+            req.mysql.query(query2, function(error, results2, fields) {
+              if (error) {
+                tools.dSend(res, 'NOK', 'Store', 'buyApp', 500, error, 2);
               } else {
-                var query2 = "INSERT INTO d_partDemandeAchat(idDemande, idProf) VALUES ("+ results.insertId +","+ idProf +")";
+                tools.dSend(res, 'OK', 'Store', 'buyApp', 200, null, results2);
               }
-              doNotif.createNotifDirecteur(req, idEcole, results.insertId, 1, "Une demande d'achat d'application a été faite.");
-              req.mysql.query(query2, function (error, results2, fields) {
-                if(error){
-                  tools.dSend(res, "NOK", "Store", "buyApp", 500, error, 2);
-          	  	} else {
-                  tools.dSend(res, "OK", "Store", "buyApp", 200, null, results2);
-                }
-              });
-      	  	}
-        	});
+            });
+          }
+        });
       }
     });
   } else {
-    tools.dSend(res, "NOK", "Store", "buyApp", 500, "Parametres necessaires: idApp, idProf, idEcole", null);
+    tools.dSend(
+      res,
+      'NOK',
+      'Store',
+      'buyApp',
+      500,
+      'Parametres necessaires: idApp, idProf, idEcole',
+      null
+    );
   }
-
 });
 
 /**
@@ -285,28 +401,68 @@ router.post('/buyApp', function(req, res, next) {
 router.post('/buyAppDirecteur', function(req, res, next) {
   var idApp = req.body.idApp;
   var idEcole = req.currUser.idEcole;
-  var query = "SELECT * FROM d_gamesAppEcole WHERE idGame = " + idApp + " AND idEcole = " + idEcole;
-  var query2 = "INSERT INTO d_gamesAppEcole (idGame, idEcole) VALUES ('" + idApp + "', '" + idEcole + "')";
+  var query =
+    'SELECT * FROM d_gamesAppEcole WHERE idGame = ' +
+    idApp +
+    ' AND idEcole = ' +
+    idEcole;
+  var query2 =
+    "INSERT INTO d_gamesAppEcole (idGame, idEcole) VALUES ('" +
+    idApp +
+    "', '" +
+    idEcole +
+    "')";
 
   if (idApp && idEcole) {
-    req.mysql.query(query, function (error, results, fields) {
-  	  	if(results.length == 0){
-          req.mysql.query(query2, function (error, results, fields) {
-            if(error){
-              tools.dSend(res, "NOK", "Store", "buyAppDirecteur", 500, error, null);
-            } else {
-              facturation.factureGame(req, res, idApp, idEcole);
-              tools.dSend(res, "OK", "Store", "buyAppDirecteur", 200, null, results);
-            }
-          });
-  	  	} else {
-          tools.dSend(res, "NOK", "Store", "buyAppDirecteur", 500, "Application déjà achetée", null);
-  	  	}
-    	});
+    req.mysql.query(query, function(error, results, fields) {
+      if (results.length == 0) {
+        req.mysql.query(query2, function(error, results, fields) {
+          if (error) {
+            tools.dSend(
+              res,
+              'NOK',
+              'Store',
+              'buyAppDirecteur',
+              500,
+              error,
+              null
+            );
+          } else {
+            facturation.factureGame(req, res, idApp, idEcole);
+            tools.dSend(
+              res,
+              'OK',
+              'Store',
+              'buyAppDirecteur',
+              200,
+              null,
+              results
+            );
+          }
+        });
+      } else {
+        tools.dSend(
+          res,
+          'NOK',
+          'Store',
+          'buyAppDirecteur',
+          500,
+          'Application déjà achetée',
+          null
+        );
+      }
+    });
   } else {
-    tools.dSend(res, "NOK", "Store", "buyAppDirecteur", 500, "Parametres necessaires: idApp, idEcole", null);
+    tools.dSend(
+      res,
+      'NOK',
+      'Store',
+      'buyAppDirecteur',
+      500,
+      'Parametres necessaires: idApp, idEcole',
+      null
+    );
   }
-
 });
 
 /**
@@ -330,14 +486,14 @@ router.post('/buyAppDirecteur', function(req, res, next) {
  */
 
 router.get('/typesGames', function(req, res, next) {
-	var query = "SELECT * FROM d_typeGames";
-    req.mysql.query(query, function (error, results, fields) {
-  	  	if(error){
-          tools.dSend(res, "NOK", "Store", "typesGames", 500, error, null);
-  	  	} else {
-          tools.dSend(res, "OK", "Store", "typesGames", 200, null, results);
-  	  	}
-    	});
+  var query = 'SELECT * FROM d_typeGames';
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Store', 'typesGames', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Store', 'typesGames', 200, null, results);
+    }
+  });
 });
 
 /**
@@ -372,53 +528,114 @@ router.post('/validating', function(req, res, next) {
 
   if (typeUser && idDemande && validate) {
     if (typeUser == 2) {
-      var query = "SELECT idGame, idEcole FROM d_demandeAchatGame WHERE idDemande = " + idDemande;
+      var query =
+        'SELECT idGame, idEcole FROM d_demandeAchatGame WHERE idDemande = ' +
+        idDemande;
     } else {
-      tools.dSend(res, "NOK", "Store", "Validating", 500, "Seulement un directeur peut utiliser cette fonction.", null);
+      tools.dSend(
+        res,
+        'NOK',
+        'Store',
+        'Validating',
+        500,
+        'Seulement un directeur peut utiliser cette fonction.',
+        null
+      );
     }
 
-    req.mysql.query(query, function (error, results1, fields) {
-  	  	if(error){
-          tools.dSend(res, "NOK", "Store", "Validating", 500, error, null);
-  	  	} else {
-          if (validate == 1) {
-            var query = "INSERT INTO d_gamesAppEcole (idGame, idEcole) VALUES ('" + results1[0].idGame + "', '" + results1[0].idEcole + "')";
-            var query2 = "UPDATE d_demandeAchatGame SET isAccepted = '1' WHERE idDemande = " + idDemande;
-            req.mysql.query(query, function (error, results, fields) {
-              if(error){
-                tools.dSend(res, "NOK", "Store", "Validating", 500, error, null);
-        	  	} else {
-                req.mysql.query(query2, function (error, results2, fields) {
-                  if(error){
-                    tools.dSend(res, "NOK", "Store", "Validating", 500, error, null);
-            	  	} else {
-                      console.log("FAIS TA NOTIF");
-                    doNotif.createPoolNotif(req, idDemande, 1, "Votre demande d'achat a été validée par le directeur.");
-                    tools.dSend(res, "OK", "Store", "Validating", 200, null, results);
-                  }
-                });
-              }
-            });
-          } else {
-            var query2 = "UPDATE d_demandeAchatGame SET isAccepted = '0' WHERE idDemande = " + idDemande;
-            req.mysql.query(query2, function (error, results2, fields) {
-              if(error){
-                tools.dSend(res, "NOK", "Store", "Validating", 500, error, null);
-            	  res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-            	 } else {
-                 doNotif.createPoolNotif(req, idDemande, 1, "Votre demande d'achat n'a pas été validée par le directeur.");
-                 tools.dSend(res, "OK", "Store", "Validating", 200, null, results1);
-              }
-            });
-          }
-  	  	}
-    	});
+    req.mysql.query(query, function(error, results1, fields) {
+      if (error) {
+        tools.dSend(res, 'NOK', 'Store', 'Validating', 500, error, null);
+      } else {
+        if (validate == 1) {
+          var query =
+            "INSERT INTO d_gamesAppEcole (idGame, idEcole) VALUES ('" +
+            results1[0].idGame +
+            "', '" +
+            results1[0].idEcole +
+            "')";
+          var query2 =
+            "UPDATE d_demandeAchatGame SET isAccepted = '1' WHERE idDemande = " +
+            idDemande;
+          req.mysql.query(query, function(error, results, fields) {
+            if (error) {
+              tools.dSend(res, 'NOK', 'Store', 'Validating', 500, error, null);
+            } else {
+              req.mysql.query(query2, function(error, results2, fields) {
+                if (error) {
+                  tools.dSend(
+                    res,
+                    'NOK',
+                    'Store',
+                    'Validating',
+                    500,
+                    error,
+                    null
+                  );
+                } else {
+                  console.log('FAIS TA NOTIF');
+                  doNotif.createPoolNotif(
+                    req,
+                    idDemande,
+                    1,
+                    "Votre demande d'achat a été validée par le directeur."
+                  );
+                  tools.dSend(
+                    res,
+                    'OK',
+                    'Store',
+                    'Validating',
+                    200,
+                    null,
+                    results
+                  );
+                }
+              });
+            }
+          });
+        } else {
+          var query2 =
+            "UPDATE d_demandeAchatGame SET isAccepted = '0' WHERE idDemande = " +
+            idDemande;
+          req.mysql.query(query2, function(error, results2, fields) {
+            if (error) {
+              tools.dSend(res, 'NOK', 'Store', 'Validating', 500, error, null);
+              res.send(
+                JSON.stringify({ status: 500, error: error, response: null })
+              );
+            } else {
+              doNotif.createPoolNotif(
+                req,
+                idDemande,
+                1,
+                "Votre demande d'achat n'a pas été validée par le directeur."
+              );
+              tools.dSend(
+                res,
+                'OK',
+                'Store',
+                'Validating',
+                200,
+                null,
+                results1
+              );
+            }
+          });
+        }
+      }
+    });
   } else {
-    tools.dSend(res, "NOK", "Store", "Validating", 500, "Parametres demandées : typeUser, idDemande", null);
+    tools.dSend(
+      res,
+      'NOK',
+      'Store',
+      'Validating',
+      500,
+      'Parametres demandées : typeUser, idDemande',
+      null
+    );
   }
 });
-
-
 
 /**
  * @api {post} /store/addAvis Add a view to a game in the store
@@ -434,28 +651,28 @@ router.post('/validating', function(req, res, next) {
  */
 
 router.post('/addAvis', function(req, res, next) {
-    var idProf = req.currUser.idUser;
-    var postData = {
-        note:req.body.note,
-        commentaire:req.body.commentaire,
-        idUser: idProf,
-        idGame: req.body.idGame
+  var idProf = req.currUser.idUser;
+  var postData = {
+    note: req.body.note,
+    commentaire: req.body.commentaire,
+    idUser: idProf,
+    idGame: req.body.idGame
+  };
+
+  let idAvis;
+  var query = 'INSERT INTO ?? SET ?';
+  var table = ['d_gamesAvis'];
+  query = mysql.format(query, table);
+
+  req.mysql.query(query, postData, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Avis', 'add', 500, error, null);
+    } else {
+      idAvis = results.insertId;
+      tools.dSend(res, 'OK', 'Avis', 'add', 200, null, results);
     }
-
-    let idAvis;
-    var query = "INSERT INTO ?? SET ?";
-    var table = ["d_gamesAvis"];
-    query = mysql.format(query,table);
-
-    req.mysql.query(query, postData, function(error, results, fields) {
-        if (error){
-            tools.dSend(res, "NOK", "Avis", "add", 500, error, null);
-        } else {
-            idAvis = results.insertId;
-            tools.dSend(res, "OK", "Avis", "add", 200, null, results);
-        }
-        res.end(JSON.stringify(results));
-    });
+    res.end(JSON.stringify(results));
+  });
 });
 
 /**
@@ -487,25 +704,31 @@ router.post('/addAvis', function(req, res, next) {
  */
 
 router.post('/avis', function(req, res, next) {
+  var idApp = req.body.idApp;
+  var depart = req.body.depart;
+  var nbRes = req.body.nbRes;
 
-    var idApp = req.body.idApp;
-    var depart = req.body.depart;
-    var nbRes = req.body.nbRes
+  var query =
+    'SELECT avis.dateAvis as date, avis.commentaire, avis.note, user.nomUser as nomProf, user.prenomUser as prenomProf, user.picPath as photo ' +
+    'FROM d_gamesAvis AS avis ' +
+    'INNER JOIN d_users AS user ON user.idUser=avis.idUser ' +
+    'WHERE avis.idGame=' +
+    idApp +
+    ' ' +
+    'ORDER BY avis.dateAvis DESC' +
+    ' ' +
+    'LIMIT ' +
+    depart +
+    ', ' +
+    nbRes;
 
-    var query = "SELECT avis.dateAvis as date, avis.commentaire, avis.note, user.nomUser as nomProf, user.prenomUser as prenomProf, user.picPath as photo " +
-        "FROM d_gamesAvis AS avis " +
-        "INNER JOIN d_users AS user ON user.idUser=avis.idUser " +
-        "WHERE avis.idGame=" + idApp + " " +
-        "ORDER BY avis.dateAvis DESC" + " " +
-        "LIMIT " + depart + ", " + nbRes;
-
-    req.mysql.query(query, function (error, results, fields) {
-        if(error){
-            tools.dSend(res, "NOK", "Store", "typesGames", 500, error, null);
-        } else {
-            tools.dSend(res, "OK", "Store", "typesGames", 200, null, results);
-        }
-    });
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Store', 'typesGames', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Store', 'typesGames', 200, null, results);
+    }
+  });
 });
 
 /**
@@ -531,17 +754,19 @@ router.post('/avis', function(req, res, next) {
  */
 
 router.get('/nbAvis/:idApp', function(req, res, next) {
+  var idApp = req.params.idApp;
 
-    var idApp = req.params.idApp;
-
-    var query = "SELECT COUNT(avis.idAvis) as nbAvis, AVG(avis.note) as moyenne FROM d_gamesAvis AS avis INNER JOIN d_users AS user ON user.idUser=avis.idUser WHERE avis.idGame=" + idApp + " ORDER BY avis.dateAvis DESC";
-    req.mysql.query(query, function (error, results, fields) {
-        if(error){
-            tools.dSend(res, "NOK", "Store", "typesGames", 500, error, null);
-        } else {
-            tools.dSend(res, "OK", "Store", "typesGames", 200, null, results);
-        }
-    });
+  var query =
+    'SELECT COUNT(avis.idAvis) as nbAvis, AVG(avis.note) as moyenne FROM d_gamesAvis AS avis INNER JOIN d_users AS user ON user.idUser=avis.idUser WHERE avis.idGame=' +
+    idApp +
+    ' ORDER BY avis.dateAvis DESC';
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Store', 'typesGames', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Store', 'typesGames', 200, null, results);
+    }
+  });
 });
 
 /**
@@ -573,21 +798,24 @@ router.get('/nbAvis/:idApp', function(req, res, next) {
  */
 
 router.get('/getUserAvis/:idApp', function(req, res, next) {
+  var idApp = req.params.idApp;
 
-    var idApp = req.params.idApp;
-
-    var query = "SELECT avis.idAvis, avis.note, avis.commentaire FROM d_gamesAvis AS avis WHERE avis.idGame="+ idApp + " AND avis.idUser=" + req.currUser.idUser;
-    req.mysql.query(query, function (error, results, fields) {
-        if(error){
-            tools.dSend(res, "NOK", "Avis", "getUserAvis", 500, error, null);
-        } else {
-            if (results.length != 0) {
-                tools.dSend(res, "OK", "Avis", "getUserAvis", 200, null, results);
-            } else {
-                tools.dSend(res, "OK", "Avis", "getUserAvis", 201, null, null);
-            }
-        }
-    });
+  var query =
+    'SELECT avis.idAvis, avis.note, avis.commentaire FROM d_gamesAvis AS avis WHERE avis.idGame=' +
+    idApp +
+    ' AND avis.idUser=' +
+    req.currUser.idUser;
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Avis', 'getUserAvis', 500, error, null);
+    } else {
+      if (results.length != 0) {
+        tools.dSend(res, 'OK', 'Avis', 'getUserAvis', 200, null, results);
+      } else {
+        tools.dSend(res, 'OK', 'Avis', 'getUserAvis', 201, null, null);
+      }
+    }
+  });
 });
 
 /**
@@ -617,22 +845,22 @@ router.get('/getUserAvis/:idApp', function(req, res, next) {
  */
 
 router.put('/updateUserAvis', function(req, res, next) {
-    let idApp = req.body.idApp;
-    let note = req.body.note;
-    let commentaire = req.body.commentaire;
-    let idUser = req.currUser.idUser;
+  let idApp = req.body.idApp;
+  let note = req.body.note;
+  let commentaire = req.body.commentaire;
+  let idUser = req.currUser.idUser;
 
-    var query = "UPDATE ?? SET note = ?, commentaire = ? WHERE idGame= ? AND idUser = ?";
-    var data = ['d_gamesAvis', note, commentaire, idApp, idUser];
-    query = mysql.format(query, data);
-    req.mysql.query(query, function (error, results, fields) {
-        if(error){
-            tools.dSend(res, "NOK", "Avis", "getUserAvis", 500, error, null);
-        } else {
-            tools.dSend(res, "OK", "Avis", "getUserAvis", 200, null, results);
-        }
-    });
+  var query =
+    'UPDATE ?? SET note = ?, commentaire = ? WHERE idGame= ? AND idUser = ?';
+  var data = ['d_gamesAvis', note, commentaire, idApp, idUser];
+  query = mysql.format(query, data);
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Avis', 'getUserAvis', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Avis', 'getUserAvis', 200, null, results);
+    }
+  });
 });
-
 
 module.exports = router;

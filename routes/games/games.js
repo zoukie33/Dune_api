@@ -1,5 +1,5 @@
 var express = require('express');
-var mysql   = require("mysql");
+var mysql = require('mysql');
 var router = express.Router();
 const fileUpload = require('express-fileupload');
 var filez = require('../../functions/files/files');
@@ -29,21 +29,23 @@ var tools = require('../../functions/tools');
  */
 
 router.get('/nbGames', function(req, res, next) {
-	var idEcole = req.currUser.idEcole;
-	if (idEcole) {
-		var query = "SELECT COUNT(*) AS nbGames FROM d_gamesAppEcole WHERE idEcole = " + idEcole;
-		req.mysql.query(query, function (error, results, fields) {
-			if(error){
-				tools.dSend(res, "NOK", "Games", "nbGames", 500, error, null);
-			} else {
-				if (results.length != 0) {
-					tools.dSend(res, "OK", "Games", "nbGames", 200, null, results);
-				}
-			}
-		});
-	} else {
-		tools.dSend(res, "OK", "Games", "nbGames", 510, "idEcole is missing", null);
-	}
+  var idEcole = req.currUser.idEcole;
+  if (idEcole) {
+    var query =
+      'SELECT COUNT(*) AS nbGames FROM d_gamesAppEcole WHERE idEcole = ' +
+      idEcole;
+    req.mysql.query(query, function(error, results, fields) {
+      if (error) {
+        tools.dSend(res, 'NOK', 'Games', 'nbGames', 500, error, null);
+      } else {
+        if (results.length != 0) {
+          tools.dSend(res, 'OK', 'Games', 'nbGames', 200, null, results);
+        }
+      }
+    });
+  } else {
+    tools.dSend(res, 'OK', 'Games', 'nbGames', 510, 'idEcole is missing', null);
+  }
 });
 
 /**
@@ -73,13 +75,13 @@ router.get('/nbGames', function(req, res, next) {
  */
 
 router.get('/', function(req, res, next) {
-	req.mysql.query('SELECT * from d_games', function (error, results, fields) {
-		if(error){
-			tools.dSend(res, "NOK", "Games", "games", 500, error, null);
-		} else {
-			tools.dSend(res, "OK", "Games", "games", 200, null, results);
-		}
-	});
+  req.mysql.query('SELECT * from d_games', function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Games', 'games', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Games', 'games', 200, null, results);
+    }
+  });
 });
 
 /**
@@ -108,13 +110,17 @@ router.get('/', function(req, res, next) {
  */
 
 router.get('/:id?', function(req, res, next) {
-	req.mysql.query('SELECT * from d_games WHERE id = ' + req.params.id , function (error, results, fields) {
-		if(error){
-			tools.dSend(res, "NOK", "Games", "gamesById", 500, error, null);
-		} else {
-			tools.dSend(res, "OK", "Games", "gamesById", 200, null, results);
-		}
-	});
+  req.mysql.query('SELECT * from d_games WHERE id = ' + req.params.id, function(
+    error,
+    results,
+    fields
+  ) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Games', 'gamesById', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Games', 'gamesById', 200, null, results);
+    }
+  });
 });
 
 /**
@@ -130,19 +136,24 @@ router.get('/:id?', function(req, res, next) {
  */
 
 router.post('/add', function(req, res, next) {
-	var name  = req.body.name;
-	var creator  = req.body.creator;
+  var name = req.body.name;
+  var creator = req.body.creator;
 
-	var query = "INSERT INTO d_games (name, creator, path) VALUES ('"+ name +"', '"+ creator +"', 'NULL')";
+  var query =
+    "INSERT INTO d_games (name, creator, path) VALUES ('" +
+    name +
+    "', '" +
+    creator +
+    "', 'NULL')";
 
-	req.mysql.query(query, function(error, results, fields) {
-		if (error){
-			tools.dSend(res, "NOK", "Games", "addGame", 500, error, null);
-		} else {
-			tools.dSend(res, "OK", "Games", "addGame", 200, null, "Game Added");
-		}
-		res.end(JSON.stringify(results));
-	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Games', 'addGame', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Games', 'addGame', 200, null, 'Game Added');
+    }
+    res.end(JSON.stringify(results));
+  });
 });
 
 module.exports = router;

@@ -3,28 +3,36 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-	req.mysql.query('SELECT * from d_classeEleve', function (error, results, fields) {
-	  	if(error){
-	  		res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-	  		//If there is error, we send the error in the error section with 500 status
-	  	} else {
-  			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  			//If there is no error, all is good and response is 200OK.
-	  	}
-  	});
+  req.mysql.query('SELECT * from d_classeEleve', function(
+    error,
+    results,
+    fields
+  ) {
+    if (error) {
+      res.send(JSON.stringify({ status: 500, error: error, response: null }));
+      //If there is error, we send the error in the error section with 500 status
+    } else {
+      res.send(JSON.stringify({ status: 200, error: null, response: results }));
+      //If there is no error, all is good and response is 200OK.
+    }
+  });
 });
 
 router.post('/', function(req, res, next) {
-	var postData = req.body;
-	console.log(postData);
-	req.mysql.query('INSERT INTO d_classeEleve SET ?',  postData, function(error, results, fields) {
-		if (error){
-			res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-		} else {
-			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-		}
-	  res.end(JSON.stringify(results));
-	});
+  var postData = req.body;
+  console.log(postData);
+  req.mysql.query('INSERT INTO d_classeEleve SET ?', postData, function(
+    error,
+    results,
+    fields
+  ) {
+    if (error) {
+      res.send(JSON.stringify({ status: 500, error: error, response: null }));
+    } else {
+      res.send(JSON.stringify({ status: 200, error: null, response: results }));
+    }
+    res.end(JSON.stringify(results));
+  });
 });
 
 module.exports = router;

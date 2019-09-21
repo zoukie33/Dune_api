@@ -48,30 +48,38 @@ var stripeRouter = require('./routes/stripe/payments');
 var app = express();
 
 app.all('*', function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, token');
-    if ('OPTIONS' == req.method) {
-        res.sendStatus(200);
-    } else {
-        next();
-    }
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+  );
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, token'
+  );
+  if ('OPTIONS' == req.method) {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
 });
 
 var pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'fnbxfzmxfn33',
-    database: 'dune_api',
-    insecureAuth: true,
-    queueLimit : 0,
-    connectionLimit : 0,
+  host: 'localhost',
+  user: 'root',
+  password: 'fnbxfzmxfn33',
+  database: 'dune_api',
+  insecureAuth: true,
+  queueLimit: 0,
+  connectionLimit: 0
 });
 
-app.use(fileUpload({
+app.use(
+  fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 },
     preserveExtension: 2
-}));
+  })
+);
 
 app.use('/', express.static(__dirname + '/public/apidoc'));
 app.use('/files/apps', express.static(__dirname + '/files/apps'));
@@ -79,10 +87,13 @@ app.use('/files/eleves', express.static(__dirname + '/files/eleves'));
 app.use('/files/profs', express.static(__dirname + '/files/profs'));
 app.use('/files/fm', express.static(__dirname + '/files/fm'));
 
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+app.use(bodyParser.json()); // to support JSON-encoded bodies
+app.use(
+  bodyParser.urlencoded({
+    // to support URL-encoded bodies
     extended: true
-}));
+  })
+);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -90,9 +101,9 @@ app.set('view engine', 'pug');
 
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(function (req, res, next) {
-    req.mysql = pool;
-    next();
+app.use(function(req, res, next) {
+  req.mysql = pool;
+  next();
 });
 
 app.use('/login', loginRouter);
@@ -132,22 +143,20 @@ app.use('/admin/statistiques', adminStatistiquesRouter);
 app.use('/admin/delete', adminDeleteRouter);
 app.use('/admin/update', adminUpdateRouter);
 
-
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    next(createError(404));
+  next(createError(404));
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
 });
 
 module.exports = app;

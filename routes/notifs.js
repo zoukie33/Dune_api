@@ -1,5 +1,5 @@
 var express = require('express');
-var mysql   = require("mysql");
+var mysql = require('mysql');
 var router = express.Router();
 var tools = require('../functions/tools');
 
@@ -32,15 +32,38 @@ var tools = require('../functions/tools');
 
 router.get('/', function(req, res, next) {
   var idUser = req.currUser.idUser;
-  var query = "SELECT n.idNotif, n.idUser, n.idToNotify, n.typeNotif, n.isRead, n.textNotif, da.idGame AS 'idApp', g.name AS 'nomApp' FROM d_notifications  AS n, d_demandeAchatGame AS da, d_games AS g WHERE n.idToNotify = da.idDemande AND da.idGame = g.id AND n.idUser = " + idUser;
+  var query =
+    "SELECT n.idNotif, n.idUser, n.idToNotify, n.typeNotif, n.isRead, n.textNotif, da.idGame AS 'idApp', g.name AS 'nomApp' FROM d_notifications  AS n, d_demandeAchatGame AS da, d_games AS g WHERE n.idToNotify = da.idDemande AND da.idGame = g.id AND n.idUser = " +
+    idUser;
 
-  req.mysql.query(query, function (error, results, fields) {
-  	 if(error){
-       tools.dSend(res, "NOK", "Notifications", "Notifications", 500, error, null);
-  	 } else {
-       tools.dLog("OK", "Notifications", "Notifications", 200, null, "nbNotifs:" + results.length + " response:" + results);
-    	 res.send(JSON.stringify({"status": 200, "nbNotifs": results.length, "response": results}));
-  	 }
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Notifications',
+        'Notifications',
+        500,
+        error,
+        null
+      );
+    } else {
+      tools.dLog(
+        'OK',
+        'Notifications',
+        'Notifications',
+        200,
+        null,
+        'nbNotifs:' + results.length + ' response:' + results
+      );
+      res.send(
+        JSON.stringify({
+          status: 200,
+          nbNotifs: results.length,
+          response: results
+        })
+      );
+    }
   });
 });
 
@@ -73,15 +96,31 @@ router.get('/', function(req, res, next) {
 
 router.get('/popUpMenu', function(req, res, next) {
   var idUser = req.currUser.idUser;
-  var query = "SELECT n.idNotif, n.idUser, n.idToNotify, n.typeNotif, n.isRead, n.textNotif, da.idGame AS 'idApp', g.name AS 'nomApp', g.picPath AS game_image FROM d_notifications  AS n, d_demandeAchatGame AS da, d_games AS g WHERE n.idToNotify = da.idDemande AND da.idGame = g.id AND n.idUser = " + idUser + " AND isRead = 0";
+  var query =
+    "SELECT n.idNotif, n.idUser, n.idToNotify, n.typeNotif, n.isRead, n.textNotif, da.idGame AS 'idApp', g.name AS 'nomApp', g.picPath AS game_image FROM d_notifications  AS n, d_demandeAchatGame AS da, d_games AS g WHERE n.idToNotify = da.idDemande AND da.idGame = g.id AND n.idUser = " +
+    idUser +
+    ' AND isRead = 0';
 
-  req.mysql.query(query, function (error, results, fields) {
-  	 if(error){
-       tools.dSend(res, "NOK", "Notifications", "popUpMenu", 500, error, null);
-  	 } else {
-       tools.dLog("OK", "Notifications", "popUpMenu", 200, null, "nbNotifs:" + results.length + " response:" + JSON.stringify(results));
-    	 res.send(JSON.stringify({"status": 200, "nbNotifs": results.length, "response": results}));
-  	 }
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Notifications', 'popUpMenu', 500, error, null);
+    } else {
+      tools.dLog(
+        'OK',
+        'Notifications',
+        'popUpMenu',
+        200,
+        null,
+        'nbNotifs:' + results.length + ' response:' + JSON.stringify(results)
+      );
+      res.send(
+        JSON.stringify({
+          status: 200,
+          nbNotifs: results.length,
+          response: results
+        })
+      );
+    }
   });
 });
 
@@ -118,18 +157,39 @@ router.get('/popUpMenu', function(req, res, next) {
  */
 
 router.get('/getArrayProf/:idDemande', function(req, res, next) {
-
-  var query = "SELECT u.idUser, u.picPath, CONCAT(u.prenomUser,' ',u.nomUser) AS nomPrenom, p.commentaire, p.dateDemande FROM ?? AS p, d_users AS u WHERE p.idProf = u.idUser AND p.idDemande = ?";
-  var data = ["d_partDemandeAchat", req.params.idDemande];
+  var query =
+    "SELECT u.idUser, u.picPath, CONCAT(u.prenomUser,' ',u.nomUser) AS nomPrenom, p.commentaire, p.dateDemande FROM ?? AS p, d_users AS u WHERE p.idProf = u.idUser AND p.idDemande = ?";
+  var data = ['d_partDemandeAchat', req.params.idDemande];
   query = mysql.format(query, data);
 
-  req.mysql.query(query, function (error, results, fields) {
-  	 if(error){
-       tools.dSend(res, "NOK", "Notifications", "getArrayProf", 500, error, null);
-  	 } else {
-       tools.dLog("OK", "Notifications", "getArrayProf", 200, null, "nbProfsDemande:" + results.length + " response:" + results);
-    	 res.send(JSON.stringify({"status": 200, "nbProfsDemande": results.length, "response": results}));
-  	 }
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Notifications',
+        'getArrayProf',
+        500,
+        error,
+        null
+      );
+    } else {
+      tools.dLog(
+        'OK',
+        'Notifications',
+        'getArrayProf',
+        200,
+        null,
+        'nbProfsDemande:' + results.length + ' response:' + results
+      );
+      res.send(
+        JSON.stringify({
+          status: 200,
+          nbProfsDemande: results.length,
+          response: results
+        })
+      );
+    }
   });
 });
 
@@ -151,17 +211,26 @@ router.get('/getArrayProf/:idDemande', function(req, res, next) {
 
 router.get('/getNbNotifs/', function(req, res, next) {
   var idUser = req.currUser.idUser;
-  var query = "SELECT COUNT(idNotif) AS nb FROM d_notifications WHERE idUser = " + idUser + " AND isRead = 0";
+  var query =
+    'SELECT COUNT(idNotif) AS nb FROM d_notifications WHERE idUser = ' +
+    idUser +
+    ' AND isRead = 0';
 
-  req.mysql.query(query, function (error, results, fields) {
-    	if(error){
-        tools.dSend(res, "NOK", "Notifications", "getNbNotifs", 500, error, null);
-    	} else {
-        tools.dLog("OK", "Notifications", "getNbNotifs", 200, null, "nb:" + results[0].nb);
-        res.send(JSON.stringify({"status": 200, "error": null, "nb": results[0].nb}));
-    	}
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Notifications', 'getNbNotifs', 500, error, null);
+    } else {
+      tools.dLog(
+        'OK',
+        'Notifications',
+        'getNbNotifs',
+        200,
+        null,
+        'nb:' + results[0].nb
+      );
+      res.send(JSON.stringify({ status: 200, error: null, nb: results[0].nb }));
+    }
   });
-
 });
 
 /**
@@ -192,15 +261,31 @@ router.get('/getNbNotifs/', function(req, res, next) {
 
 router.put('/read/:idNotif', function(req, res, next) {
   var query = "UPDATE ?? SET isRead = '1' WHERE idNotif = ?";
-  var data = ["d_notifications", req.params.idNotif];
+  var data = ['d_notifications', req.params.idNotif];
   query = mysql.format(query, data);
 
-  req.mysql.query(query, function (error, results, fields) {
-    	if(error){
-        tools.dSend(res, "NOK", "Notifications", "read/:idNotif", 500, error, null);
-    	} else {
-        tools.dSend(res, "OK", "Notifications", "read/:idNotif", 200, null, results);
-    	}
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Notifications',
+        'read/:idNotif',
+        500,
+        error,
+        null
+      );
+    } else {
+      tools.dSend(
+        res,
+        'OK',
+        'Notifications',
+        'read/:idNotif',
+        200,
+        null,
+        results
+      );
+    }
   });
 });
 
@@ -232,15 +317,31 @@ router.put('/read/:idNotif', function(req, res, next) {
 
 router.put('/unRead/:idNotif', function(req, res, next) {
   var query = "UPDATE ?? SET isRead = '0' WHERE idNotif = ?";
-  var data = ["d_notifications", req.params.idNotif];
+  var data = ['d_notifications', req.params.idNotif];
   query = mysql.format(query, data);
 
-  req.mysql.query(query, function (error, results, fields) {
-    	if(error){
-        tools.dSend(res, "NOK", "Notifications", "unRead/:idNotif", 500, error, null);
-    	} else {
-        tools.dSend(res, "OK", "Notifications", "unRead/:idNotif", 200, null, results);
-    	}
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Notifications',
+        'unRead/:idNotif',
+        500,
+        error,
+        null
+      );
+    } else {
+      tools.dSend(
+        res,
+        'OK',
+        'Notifications',
+        'unRead/:idNotif',
+        200,
+        null,
+        results
+      );
+    }
   });
 });
 
@@ -277,16 +378,33 @@ router.put('/unRead/:idNotif', function(req, res, next) {
  */
 
 router.get('/getNotif/:idNotif', function(req, res, next) {
-  var query = "SELECT n.idNotif, n.idUser AS idUserNotif, n.typeNotif, n.isRead, n.textNotif, d.idDemande, d.idGame, d.idEcole, d.isAccepted FROM ?? AS n, d_demandeAchatGame AS d WHERE d.idDemande = n.idToNotify AND n.idNotif = ?";
-  var data = ["d_notifications", req.params.idNotif];
+  var query =
+    'SELECT n.idNotif, n.idUser AS idUserNotif, n.typeNotif, n.isRead, n.textNotif, d.idDemande, d.idGame, d.idEcole, d.isAccepted FROM ?? AS n, d_demandeAchatGame AS d WHERE d.idDemande = n.idToNotify AND n.idNotif = ?';
+  var data = ['d_notifications', req.params.idNotif];
   query = mysql.format(query, data);
 
-  req.mysql.query(query, function (error, results, fields) {
-    	if(error){
-        tools.dSend(res, "NOK", "Notifications", "getNotif/:idNotif", 500, error, null);
-    	} else {
-        tools.dSend(res, "OK", "Notifications", "getNotif/:idNotif", 200, null, results);
-    	}
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Notifications',
+        'getNotif/:idNotif',
+        500,
+        error,
+        null
+      );
+    } else {
+      tools.dSend(
+        res,
+        'OK',
+        'Notifications',
+        'getNotif/:idNotif',
+        200,
+        null,
+        results
+      );
+    }
   });
 });
 /**
@@ -316,16 +434,16 @@ router.get('/getNotif/:idNotif', function(req, res, next) {
  */
 
 router.delete('/:idNotif', function(req, res, next) {
-  var query = "DELETE FROM ?? WHERE idNotif = ?";
-  var data = ["d_notifications", req.params.idNotif];
+  var query = 'DELETE FROM ?? WHERE idNotif = ?';
+  var data = ['d_notifications', req.params.idNotif];
   query = mysql.format(query, data);
 
-  req.mysql.query(query, function (error, results, fields) {
-    	if(error){
-        tools.dSend(res, "NOK", "Notifications", "/:idNotif", 500, error, null);
-    	} else {
-        tools.dSend(res, "OK", "Notifications", "/:idNotif", 200, null, results);
-    	}
-  	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Notifications', '/:idNotif', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Notifications', '/:idNotif', 200, null, results);
+    }
+  });
 });
 module.exports = router;

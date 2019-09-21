@@ -1,6 +1,6 @@
 var express = require('express');
-var mysql   = require("mysql");
-var serial = require("generate-serial-key");
+var mysql = require('mysql');
+var serial = require('generate-serial-key');
 var router = express.Router();
 var filez = require('../../functions/files/files');
 var tools = require('../../functions/tools');
@@ -38,15 +38,37 @@ router.put('/updateLicence', function(req, res, next) {
   var licence = req.body.licence;
   var used = req.body.used;
   var dateExpire = req.body.dateExpire;
-  var query = "UPDATE d_licencesTables SET used = " + used + ", dateExpire = " + dateExpire + " WHERE serial = " + licence;
+  var query =
+    'UPDATE d_licencesTables SET used = ' +
+    used +
+    ', dateExpire = ' +
+    dateExpire +
+    ' WHERE serial = ' +
+    licence;
 
-  req.mysql.query(query, function (error, results, fields) {
-    	if(error){
-        tools.dSend(res, "NOK", "Admin-Update", "updateLicence", 500, error, null);
-    	} else {
-        tools.dSend(res, "OK", "Admin-Update", "updateLicence", 200, null, results);
-    	}
-  	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Update',
+        'updateLicence',
+        500,
+        error,
+        null
+      );
+    } else {
+      tools.dSend(
+        res,
+        'OK',
+        'Admin-Update',
+        'updateLicence',
+        200,
+        null,
+        results
+      );
+    }
+  });
 });
 
 /**
@@ -68,24 +90,40 @@ router.put('/updateLicence', function(req, res, next) {
  */
 
 router.put('/updateGame', function(req, res, next) {
-		var id  = req.body.id;
-		var name  = req.body.name;
-		var creator  = req.body.creator;
-	  var description = req.body.description;
-	  var nbJoueurs = req.body.nbJoueurs;
-	  var currVersion = req.body.currVersion;
-	  var niveau = req.body.niveau;
-	  var prix = req.body.prix;
-	var query = "UPDATE d_games SET name = '"+ name +"', creator = '"+ creator +"', description = '" + description + "', nb_joueurs = " + nbJoueurs + ", current_version = '" + currVersion + "', niveau = " + niveau + ", prix = '" + prix + "' WHERE id = " + id;
+  var id = req.body.id;
+  var name = req.body.name;
+  var creator = req.body.creator;
+  var description = req.body.description;
+  var nbJoueurs = req.body.nbJoueurs;
+  var currVersion = req.body.currVersion;
+  var niveau = req.body.niveau;
+  var prix = req.body.prix;
+  var query =
+    "UPDATE d_games SET name = '" +
+    name +
+    "', creator = '" +
+    creator +
+    "', description = '" +
+    description +
+    "', nb_joueurs = " +
+    nbJoueurs +
+    ", current_version = '" +
+    currVersion +
+    "', niveau = " +
+    niveau +
+    ", prix = '" +
+    prix +
+    "' WHERE id = " +
+    id;
 
-	req.mysql.query(query, function(error, results, fields) {
-		if (error){
-			tools.dSend(res, "NOK", "Games", "updateGame", 500, error, null);
-		} else {
-			tools.dSend(res, "OK", "Games", "updateGame", 200, null, "Game Updated");
-		}
-		res.end(JSON.stringify(results));
-	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Games', 'updateGame', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Games', 'updateGame', 200, null, 'Game Updated');
+    }
+    res.end(JSON.stringify(results));
+  });
 });
 
 /**
@@ -101,30 +139,46 @@ router.put('/updateGame', function(req, res, next) {
  */
 
 router.put('/picGame', function(req, res, next) {
-	if (Object.keys(req.files).length != 0) {
-		var id  = req.body.idGame;
-		let file;
+  if (Object.keys(req.files).length != 0) {
+    var id = req.body.idGame;
+    let file;
 
-		file = req.files.picGame;
-		var fileName = id + "-app.png";
-		if (filez.filesGest(file, "apps/", fileName)) {
-			var query = "UPDATE d_games SET picPath = '" + fileName + "'  WHERE id = " + id;
-			req.mysql.query(query, function(error, results, fields) {
-				if (error){
-					tools.dSend(res, "NOK", "Games", "picGame", 500, error, "Impossible de mettre a jour cet utilisateur.");
-				} else {
-					tools.dSend(res, "OK", "Games", "picGame", 200, null, "Game Updated");
-				}
-				res.end(JSON.stringify(results));
-			});
-		} else {
-			tools.dSend(res, "NOK", "Games", "picGame", 500, "Directory error", null);
-		}
-	} else {
-		tools.dSend(res, "NOK", "Games", "picGame", 500, "Error uploading File", null);
-	}
+    file = req.files.picGame;
+    var fileName = id + '-app.png';
+    if (filez.filesGest(file, 'apps/', fileName)) {
+      var query =
+        "UPDATE d_games SET picPath = '" + fileName + "'  WHERE id = " + id;
+      req.mysql.query(query, function(error, results, fields) {
+        if (error) {
+          tools.dSend(
+            res,
+            'NOK',
+            'Games',
+            'picGame',
+            500,
+            error,
+            'Impossible de mettre a jour cet utilisateur.'
+          );
+        } else {
+          tools.dSend(res, 'OK', 'Games', 'picGame', 200, null, 'Game Updated');
+        }
+        res.end(JSON.stringify(results));
+      });
+    } else {
+      tools.dSend(res, 'NOK', 'Games', 'picGame', 500, 'Directory error', null);
+    }
+  } else {
+    tools.dSend(
+      res,
+      'NOK',
+      'Games',
+      'picGame',
+      500,
+      'Error uploading File',
+      null
+    );
+  }
 });
-
 
 /**
  * @api {put} /admin/update/ecole Uploading a School
@@ -153,7 +207,7 @@ router.put('/picGame', function(req, res, next) {
  */
 
 router.put('/ecole', function(req, res, next) {
-  var id  = req.body.idEcole,
+  var id = req.body.idEcole,
     name = req.body.nomEcole,
     rue = req.body.rueEcole,
     numRue = req.body.numRueEcole,
@@ -162,18 +216,43 @@ router.put('/ecole', function(req, res, next) {
     tel = req.body.telEcole;
 
   if (id && name && rue && numRue && ville && departement && tel) {
-    var query = "UPDATE ?? SET nomEcole = ?, rue = ?, numRue = ?, ville = ?, departement = ?, tel = ? WHERE id = ?";
+    var query =
+      'UPDATE ?? SET nomEcole = ?, rue = ?, numRue = ?, ville = ?, departement = ?, tel = ? WHERE id = ?';
     var data = ['d_ecole', name, rue, numRue, ville, departement, tel, id];
     query = mysql.format(query, data);
-  	req.mysql.query(query, function(error, results, fields) {
-  		if (error){
-  			tools.dSend(res, "NOK", "Admin-Update", "Update-Ecole", 500, error, "Impossible de mettre a jour cette Ecole.");
-  		} else {
-  			tools.dSend(res, "OK", "Admin-Update", "Update-Ecole", 200, null, "Ecole Updated");
-  		}
-  	});
+    req.mysql.query(query, function(error, results, fields) {
+      if (error) {
+        tools.dSend(
+          res,
+          'NOK',
+          'Admin-Update',
+          'Update-Ecole',
+          500,
+          error,
+          'Impossible de mettre a jour cette Ecole.'
+        );
+      } else {
+        tools.dSend(
+          res,
+          'OK',
+          'Admin-Update',
+          'Update-Ecole',
+          200,
+          null,
+          'Ecole Updated'
+        );
+      }
+    });
   } else {
-    tools.dSend(res, "NOK", "Admin-Update", "Update-Ecole", 500, null, "Impossible de mettre a jour cette ecole, tous les champs doivent être remplis.");
+    tools.dSend(
+      res,
+      'NOK',
+      'Admin-Update',
+      'Update-Ecole',
+      500,
+      null,
+      'Impossible de mettre a jour cette ecole, tous les champs doivent être remplis.'
+    );
   }
 });
 
@@ -203,68 +282,116 @@ router.put('/ecole', function(req, res, next) {
 
 router.put('/user', function(req, res, next) {
   var idUser = req.body.idUser,
-      nomUser = req.body.nomUser,
-      prenomUser = req.body.prenomUser,
-      emailUser = req.body.emailUser;
+    nomUser = req.body.nomUser,
+    prenomUser = req.body.prenomUser,
+    emailUser = req.body.emailUser;
 
   if (idUser && nomUser && prenomUser && emailUser) {
-    var query = "UPDATE ?? SET nomUser = ?, prenomUser = ?, emailUser = ? WHERE idUser = ?";
+    var query =
+      'UPDATE ?? SET nomUser = ?, prenomUser = ?, emailUser = ? WHERE idUser = ?';
     var data = ['d_users', nomUser, prenomUser, emailUser, idUser];
     query = mysql.format(query, data);
     req.mysql.query(query, function(error, results, fields) {
-    	if (error){
-        tools.dSend(res, "NOK", "Admin-Update", "Update-User", 500, error, "Impossible de mettre a jour cet utilisateur.");
-    	} else {
-        tools.dSend(res, "OK", "Admin-Update", "Update-User", 200, null, "User Updated");
-    	}
-    });
-  } else {
-      tools.dSend(res, "NOK", "Admin-Update", "Update-User", 500, "Impossible de mettre a jour cet user, tous les champs doivent être remplis.", null);
-  }
-});
-
- /**
-  * @api {put} /admin/update/eleve Updating a Student
-  * @apiName eleve
-  * @apiGroup AdminUpdate
-  * @apiPermission Logged
-  * @apiVersion 1.0.0
-  *
-  * @apiHeader {String} token Token auth
-  * @apiParam {Int} idEleve Id de l'élève a mettre a jour.
-  * @apiParam {String} nomEleve Nom de l'élève.
-  * @apiParam {String} prenomEleve Prénom de l'élève.
-  *
-  * @apiDescription Route permettant la mise à jour d'un élève.
-  * @apiError 500 SQL Error.
-  * @apiSuccessExample {json} Success-Response:
-  * {
-  *    "Eleve Updated"
-  * }
-  * @apiErrorExample {json} Error-Response:
-  * {
-  *    "Impossible de mettre a jour cet élève, tous les champs doivent être remplis."
-  * }
-  */
-router.put('/eleve', function(req, res, next) {
-
-  var idEleve = req.body.idEleve,
-      nomEleve = req.body.nomEleve,
-      prenomEleve = req.body.prenomEleve;
-
-  if (idEleve && nomEleve && prenomEleve) {
-    var query = "UPDATE ?? SET nomEleve = ?, prenomEleve = ? WHERE idEleve = ?";
-    var data = ['d_eleves', nomEleve, prenomEleve, idEleve];
-    query = mysql.format(query, data);
-    req.mysql.query(query, function(error, results, fields) {
-      if (error){
-        tools.dSend(res, "NOK", "Admin-Update", "Update-Eleve", 500, error, "Impossible de mettre a jour cet utilisateur.");
+      if (error) {
+        tools.dSend(
+          res,
+          'NOK',
+          'Admin-Update',
+          'Update-User',
+          500,
+          error,
+          'Impossible de mettre a jour cet utilisateur.'
+        );
       } else {
-        tools.dSend(res, "OK", "Admin-Update", "Update-Eleve", 200, null, "User Updated");
+        tools.dSend(
+          res,
+          'OK',
+          'Admin-Update',
+          'Update-User',
+          200,
+          null,
+          'User Updated'
+        );
       }
     });
   } else {
-      tools.dSend(res, "NOK", "Admin-Update", "Update-Eleve", 500, "Impossible de mettre a jour cet élève, tous les champs doivent être remplis.", null);
+    tools.dSend(
+      res,
+      'NOK',
+      'Admin-Update',
+      'Update-User',
+      500,
+      'Impossible de mettre a jour cet user, tous les champs doivent être remplis.',
+      null
+    );
+  }
+});
+
+/**
+ * @api {put} /admin/update/eleve Updating a Student
+ * @apiName eleve
+ * @apiGroup AdminUpdate
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token Token auth
+ * @apiParam {Int} idEleve Id de l'élève a mettre a jour.
+ * @apiParam {String} nomEleve Nom de l'élève.
+ * @apiParam {String} prenomEleve Prénom de l'élève.
+ *
+ * @apiDescription Route permettant la mise à jour d'un élève.
+ * @apiError 500 SQL Error.
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *    "Eleve Updated"
+ * }
+ * @apiErrorExample {json} Error-Response:
+ * {
+ *    "Impossible de mettre a jour cet élève, tous les champs doivent être remplis."
+ * }
+ */
+router.put('/eleve', function(req, res, next) {
+  var idEleve = req.body.idEleve,
+    nomEleve = req.body.nomEleve,
+    prenomEleve = req.body.prenomEleve;
+
+  if (idEleve && nomEleve && prenomEleve) {
+    var query = 'UPDATE ?? SET nomEleve = ?, prenomEleve = ? WHERE idEleve = ?';
+    var data = ['d_eleves', nomEleve, prenomEleve, idEleve];
+    query = mysql.format(query, data);
+    req.mysql.query(query, function(error, results, fields) {
+      if (error) {
+        tools.dSend(
+          res,
+          'NOK',
+          'Admin-Update',
+          'Update-Eleve',
+          500,
+          error,
+          'Impossible de mettre a jour cet utilisateur.'
+        );
+      } else {
+        tools.dSend(
+          res,
+          'OK',
+          'Admin-Update',
+          'Update-Eleve',
+          200,
+          null,
+          'User Updated'
+        );
+      }
+    });
+  } else {
+    tools.dSend(
+      res,
+      'NOK',
+      'Admin-Update',
+      'Update-Eleve',
+      500,
+      'Impossible de mettre a jour cet élève, tous les champs doivent être remplis.',
+      null
+    );
   }
 });
 module.exports = router;

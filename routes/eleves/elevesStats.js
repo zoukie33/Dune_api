@@ -1,5 +1,5 @@
 var express = require('express');
-var mysql   = require("mysql");
+var mysql = require('mysql');
 var router = express.Router();
 var filez = require('../../functions/files/files');
 var tools = require('../../functions/tools');
@@ -53,26 +53,56 @@ router.get('/bySession/:idGP', function(req, res, next) {
   var idProf = req.currUser.idUser;
   var idGP = req.params.idGP;
   if (req.currUser.typeUser == 2) {
-		var query1 = 'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_profsAppEcole AS pae, d_classeEcole AS ce, d_classe AS c, d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND gp.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEcole = pae.idEcole AND e.idEleve = gs.idEleve AND pae.idProf = ' + idProf + ' AND gp.idGP = ' + idGP + ' ORDER BY e.nomEleve ASC';
-  	var query2 = 'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_profsAppEcole AS pae, d_classeEcole AS ce, d_classe AS c, d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND gp.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEcole = pae.idEcole AND e.idEleve = gs.idEleve AND pae.idProf = ' + idProf + ' AND gp.idGP = ' + idGP + ' ORDER BY gs.score DESC';
-	} else {
-		var query1 = 'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND e.idEleve = gs.idEleve AND gp.idGP = ' + idGP + ' ORDER BY e.nomEleve ASC';
-  	var query2 = 'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND e.idEleve = gs.idEleve AND gp.idGP = ' + idGP + ' ORDER BY gs.score DESC';
-	}
-	req.mysql.query(query1, function (error, results1, fields) {
-	  	if(error){
-        tools.dSend(res, "NOK", "ElevesStats", "byGame", 500, error, null);
-	  	} else {
-        req.mysql.query(query2, function (error, results2, fields) {
-          if(error){
-            tools.dSend(res, "NOK", "ElevesStats", "byGame", 500, error, null);
-    	  	} else {
-            tools.dLog("OK", "ElevesStats", "byGame", 200, null, '"ascEleve": ' + results1 + ', "descNote":' + results2);
-            res.send(JSON.stringify({"status": 200, "error": null, "ascEleve": results1, "descNote": results2}));
-          }
-        });
-	  	}
-  	});
+    var query1 =
+      'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_profsAppEcole AS pae, d_classeEcole AS ce, d_classe AS c, d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND gp.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEcole = pae.idEcole AND e.idEleve = gs.idEleve AND pae.idProf = ' +
+      idProf +
+      ' AND gp.idGP = ' +
+      idGP +
+      ' ORDER BY e.nomEleve ASC';
+    var query2 =
+      'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_profsAppEcole AS pae, d_classeEcole AS ce, d_classe AS c, d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND gp.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEcole = pae.idEcole AND e.idEleve = gs.idEleve AND pae.idProf = ' +
+      idProf +
+      ' AND gp.idGP = ' +
+      idGP +
+      ' ORDER BY gs.score DESC';
+  } else {
+    var query1 =
+      'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND e.idEleve = gs.idEleve AND gp.idGP = ' +
+      idGP +
+      ' ORDER BY e.nomEleve ASC';
+    var query2 =
+      'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND e.idEleve = gs.idEleve AND gp.idGP = ' +
+      idGP +
+      ' ORDER BY gs.score DESC';
+  }
+  req.mysql.query(query1, function(error, results1, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'ElevesStats', 'byGame', 500, error, null);
+    } else {
+      req.mysql.query(query2, function(error, results2, fields) {
+        if (error) {
+          tools.dSend(res, 'NOK', 'ElevesStats', 'byGame', 500, error, null);
+        } else {
+          tools.dLog(
+            'OK',
+            'ElevesStats',
+            'byGame',
+            200,
+            null,
+            '"ascEleve": ' + results1 + ', "descNote":' + results2
+          );
+          res.send(
+            JSON.stringify({
+              status: 200,
+              error: null,
+              ascEleve: results1,
+              descNote: results2
+            })
+          );
+        }
+      });
+    }
+  });
 });
 
 /**
@@ -107,16 +137,33 @@ router.get('/bySession/:idGP', function(req, res, next) {
 router.get('/byClasse/:idClasse', function(req, res, next) {
   var idProf = req.currUser.idUser;
   var idClasse = req.params.idClasse;
-	var query = 'SELECT gp.idGP AS idGP, g.name AS nameGame, tg.idType AS idMatiere, tg.labelType AS matiere, AVG(gs.score) AS moyenne, COUNT(gs.idEleve) AS nbJoueurs, gp.TimeStamp AS date FROM d_gamesPlayed AS gp, d_typeGames AS tg, d_games AS g, d_gamesScored AS gs WHERE g.id = gp.idGame AND gp.idGP = gs.idGP AND g.idType = tg.idType AND gp.idClasse = ' + idClasse + ' AND gp.isPlayed = 1 GROUP BY gp.idGP ORDER BY gp.TimeStamp';
+  var query =
+    'SELECT gp.idGP AS idGP, g.name AS nameGame, tg.idType AS idMatiere, tg.labelType AS matiere, AVG(gs.score) AS moyenne, COUNT(gs.idEleve) AS nbJoueurs, gp.TimeStamp AS date FROM d_gamesPlayed AS gp, d_typeGames AS tg, d_games AS g, d_gamesScored AS gs WHERE g.id = gp.idGame AND gp.idGP = gs.idGP AND g.idType = tg.idType AND gp.idClasse = ' +
+    idClasse +
+    ' AND gp.isPlayed = 1 GROUP BY gp.idGP ORDER BY gp.TimeStamp';
 
-	req.mysql.query(query, function (error, results, fields) {
-	  	if(error){
-        tools.dSend(res, "NOK", "ElevesStats", "byClasse", 500, error, null);
-	  	} else {
-        tools.dLog("OK", "ElevesStats", "byClasse", 200, null, '"nbGamesPlayedBC": ' + results.length + ', "response":' + results);
-        res.send(JSON.stringify({"status": 200, "error": null, "nbGamesPlayedBC": results.length, "response": results}));
-	  	}
-  	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'ElevesStats', 'byClasse', 500, error, null);
+    } else {
+      tools.dLog(
+        'OK',
+        'ElevesStats',
+        'byClasse',
+        200,
+        null,
+        '"nbGamesPlayedBC": ' + results.length + ', "response":' + results
+      );
+      res.send(
+        JSON.stringify({
+          status: 200,
+          error: null,
+          nbGamesPlayedBC: results.length,
+          response: results
+        })
+      );
+    }
+  });
 });
 
 /**
@@ -148,16 +195,25 @@ router.get('/byClasse/:idClasse', function(req, res, next) {
  */
 router.get('/gamesPlayed/:idEleve', function(req, res, next) {
   var idEleve = req.params.idEleve;
-	var query = 'SELECT gp.idGP, g.name AS nameGame, tg.labelType AS matiere, gs.score AS note, gp.TimeStamp AS date, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp2.idGP = gp.idGP) AS moyenne FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_games AS g, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idGame = g.id AND gp.idTypeGame = tg.idType AND gs.idEleve =' + idEleve;
+  var query =
+    'SELECT gp.idGP, g.name AS nameGame, tg.labelType AS matiere, gs.score AS note, gp.TimeStamp AS date, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp2.idGP = gp.idGP) AS moyenne FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_games AS g, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idGame = g.id AND gp.idTypeGame = tg.idType AND gs.idEleve =' +
+    idEleve;
 
-	req.mysql.query(query, function (error, results, fields) {
-	  	if(error){
-        tools.dSend(res, "NOK", "ElevesStats", "gamesPlayed", 500, error, null);
-	  	} else {
-        tools.dLog("OK", "ElevesStats", "gamesPlayed", 200, null, 'response":' + results);
-        res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-	  	}
-  	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'ElevesStats', 'gamesPlayed', 500, error, null);
+    } else {
+      tools.dLog(
+        'OK',
+        'ElevesStats',
+        'gamesPlayed',
+        200,
+        null,
+        'response":' + results
+      );
+      res.send(JSON.stringify({ status: 200, error: null, response: results }));
+    }
+  });
 });
 
 /**
@@ -196,27 +252,50 @@ router.get('/gamesPlayed/:idEleve', function(req, res, next) {
 
 router.get('/bulletin/:idEleve', function(req, res, next) {
   var idEleve = req.params.idEleve;
-	var query = 'SELECT tg.labeltype, AVG(gs.score) AS moyenne, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp.idTypeGame = gp2.idTypeGame AND gs2.score != -1 AND gp2.isPlayed = 1) AS moyenneClasse, COUNT(gp.idGP) AS nbPlayed FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idTypeGame = tg.idType AND gs.score != -1 AND gp.isPlayed = 1 AND gs.idEleve = '+ idEleve +' GROUP BY gp.idTypeGame ORDER BY gp.idTypeGame ASC';
+  var query =
+    'SELECT tg.labeltype, AVG(gs.score) AS moyenne, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp.idTypeGame = gp2.idTypeGame AND gs2.score != -1 AND gp2.isPlayed = 1) AS moyenneClasse, COUNT(gp.idGP) AS nbPlayed FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idTypeGame = tg.idType AND gs.score != -1 AND gp.isPlayed = 1 AND gs.idEleve = ' +
+    idEleve +
+    ' GROUP BY gp.idTypeGame ORDER BY gp.idTypeGame ASC';
 
-	req.mysql.query(query, function (error, results, fields) {
-	  	if(error){
-        tools.dSend(res, "NOK", "ElevesStats", "bulletin", 500, error, null);
-	  	} else {
-        let moyGen = 0;
-        let moyGenClasse = 0;
-        for (const k in results) {
-          let moyMat = results[k].moyenne;
-          let moyClasse = results[k].moyenneClasse;
-          moyGen += moyMat;
-          moyGenClasse += moyClasse;
-          console.log("moyGen: " + moyGen + " - moyGenClasse: " + moyGenClasse);
-        }
-        moyGen = moyGen / results.length;
-        moyGenClasse = moyGenClasse / results.length;
-        tools.dLog("OK", "ElevesStats", "bulletin", 200, null, '"response": ' + results + ', "moyenneGeneralEleve": ' + moyGen + ', "moyenneGeneraleClasse": ' + moyGenClasse);
-        res.send(JSON.stringify({"status": 200, "error": null, "response": results, "moyenneGeneralEleve": moyGen, "moyenneGeneraleClasse": moyGenClasse}));
-	  	}
-  	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'ElevesStats', 'bulletin', 500, error, null);
+    } else {
+      let moyGen = 0;
+      let moyGenClasse = 0;
+      for (const k in results) {
+        let moyMat = results[k].moyenne;
+        let moyClasse = results[k].moyenneClasse;
+        moyGen += moyMat;
+        moyGenClasse += moyClasse;
+        console.log('moyGen: ' + moyGen + ' - moyGenClasse: ' + moyGenClasse);
+      }
+      moyGen = moyGen / results.length;
+      moyGenClasse = moyGenClasse / results.length;
+      tools.dLog(
+        'OK',
+        'ElevesStats',
+        'bulletin',
+        200,
+        null,
+        '"response": ' +
+          results +
+          ', "moyenneGeneralEleve": ' +
+          moyGen +
+          ', "moyenneGeneraleClasse": ' +
+          moyGenClasse
+      );
+      res.send(
+        JSON.stringify({
+          status: 200,
+          error: null,
+          response: results,
+          moyenneGeneralEleve: moyGen,
+          moyenneGeneraleClasse: moyGenClasse
+        })
+      );
+    }
+  });
 });
 
 /**
@@ -249,17 +328,19 @@ router.get('/bulletin/:idEleve', function(req, res, next) {
 
 router.get('/getMat/:idEleve', function(req, res, next) {
   var idEleve = req.params.idEleve;
-  var query = "SELECT gp.idTypeGame, tg.labelType FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_typeGames AS tg WHERE gp.idGP = gs.idGP AND gp.idTypeGame = tg.idType AND gs.idEleve = " + idEleve + " AND gs.score != -1 GROUP BY gp.idTypeGame";
+  var query =
+    'SELECT gp.idTypeGame, tg.labelType FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_typeGames AS tg WHERE gp.idGP = gs.idGP AND gp.idTypeGame = tg.idType AND gs.idEleve = ' +
+    idEleve +
+    ' AND gs.score != -1 GROUP BY gp.idTypeGame';
 
-  req.mysql.query(query, function (error, results, fields) {
-    if(error){
-      tools.dSend(res, "NOK", "ElevesStats", "getMat", 500, error, null);
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'ElevesStats', 'getMat', 500, error, null);
     } else {
-      tools.dSend(res, "OK", "ElevesStats", "getMat", 200, null, results);
+      tools.dSend(res, 'OK', 'ElevesStats', 'getMat', 200, null, results);
     }
   });
 });
-
 
 /**
  * @api {get} /eleves/stats/getGamesByMatEleve/:idEleve/:idMat Get games played by a student for one gametype
@@ -293,17 +374,37 @@ router.get('/getMat/:idEleve', function(req, res, next) {
 router.get('/getGamesByMatEleve/:idEleve/:idMat', function(req, res, next) {
   var idEleve = req.params.idEleve;
   var idMat = req.params.idMat;
-  var query = 'SELECT gp.idGP, g.name AS nameGame, tg.labelType AS matiere, gs.score AS note, gp.TimeStamp AS date, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp2.idGP = gp.idGP) AS moyenne FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_games AS g, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idGame = g.id AND gp.idTypeGame = tg.idType AND gs.idEleve =' + idEleve + ' AND gp.idTypeGame = ' + idMat + ' AND gs.score != -1 ORDER BY gp.TimeStamp DESC';
+  var query =
+    'SELECT gp.idGP, g.name AS nameGame, tg.labelType AS matiere, gs.score AS note, gp.TimeStamp AS date, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp2.idGP = gp.idGP) AS moyenne FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_games AS g, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idGame = g.id AND gp.idTypeGame = tg.idType AND gs.idEleve =' +
+    idEleve +
+    ' AND gp.idTypeGame = ' +
+    idMat +
+    ' AND gs.score != -1 ORDER BY gp.TimeStamp DESC';
 
-  req.mysql.query(query, function (error, results, fields) {
-    if(error){
-      tools.dSend(res, "NOK", "ElevesStats", "getGamesByMatEleve", 500, error, null);
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'ElevesStats',
+        'getGamesByMatEleve',
+        500,
+        error,
+        null
+      );
     } else {
-      tools.dSend(res, "OK", "ElevesStats", "getGamesByMatEleve", 200, null, results);
+      tools.dSend(
+        res,
+        'OK',
+        'ElevesStats',
+        'getGamesByMatEleve',
+        200,
+        null,
+        results
+      );
     }
   });
 });
-
 
 /**
  * @api {get} /eleves/stats/getElevesRank Get the rank of the 10 best student of the current user
@@ -318,53 +419,66 @@ router.get('/getGamesByMatEleve/:idEleve/:idMat', function(req, res, next) {
  * {"status":200,
  * "error":null,
  * "response":[
-     *      {
-     *          "score":70.3333,"idEleve":2
-     *      },
-     *      {
-     *          "score":67.6667,"idEleve":4
-     *      },
-     *      {
-     *          "score":57.4286,"idEleve":3
-     *      },
-     *      {
-     *          "score":34,"idEleve":1
-     *      }
+ *      {
+ *          "score":70.3333,"idEleve":2
+ *      },
+ *      {
+ *          "score":67.6667,"idEleve":4
+ *      },
+ *      {
+ *          "score":57.4286,"idEleve":3
+ *      },
+ *      {
+ *          "score":34,"idEleve":1
+ *      }
  *      ]
  * }
  */
 
 router.get('/getElevesRank', function(req, res, next) {
-    var idEleve = req.params.idEleve;
-    var idMat = req.params.idMat;
+  var idEleve = req.params.idEleve;
+  var idMat = req.params.idMat;
 
-    if (req.currUser.typeUser === 1) {
+  if (req.currUser.typeUser === 1) {
+    var query =
+      'SELECT AVG(score) score, s.idEleve, e.nomEleve, e.prenomEleve FROM d_gamesScored s ' +
+      'INNER JOIN d_eleves e ON e.idEleve=s.idEleve ' +
+      'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
+      'INNER JOIN d_profsAppClasse pc ON pc.idClasse=ce.idClasse ' +
+      'WHERE pc.idProf=' +
+      req.currUser.idUser +
+      ' ' +
+      'GROUP BY ce.idEleve ' +
+      'ORDER BY score DESC';
+  } else if (req.currUser.typeUser === 2) {
+    var query =
+      'SELECT AVG(score) score, s.idEleve, el.nomEleve, el.prenomEleve FROM d_gamesScored s ' +
+      'INNER JOIN d_eleves el ON el.idEleve=s.idEleve ' +
+      'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
+      'INNER JOIN d_classeEcole e ON e.idClasse=ce.idClasse ' +
+      'WHERE e.idEcole= ' +
+      req.currUser.idEcole +
+      ' ' +
+      'GROUP BY ce.idEleve ' +
+      'ORDER BY score DESC ' +
+      'LIMIT 10';
+  }
 
-        var query = 'SELECT AVG(score) score, s.idEleve, e.nomEleve, e.prenomEleve FROM d_gamesScored s ' +
-            'INNER JOIN d_eleves e ON e.idEleve=s.idEleve ' +
-            'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
-            'INNER JOIN d_profsAppClasse pc ON pc.idClasse=ce.idClasse ' +
-            'WHERE pc.idProf=' + req.currUser.idUser + ' ' +
-            'GROUP BY ce.idEleve ' +
-            'ORDER BY score DESC';
-    }else if (req.currUser.typeUser === 2){
-        var query = 'SELECT AVG(score) score, s.idEleve, el.nomEleve, el.prenomEleve FROM d_gamesScored s ' +
-                    'INNER JOIN d_eleves el ON el.idEleve=s.idEleve ' +
-                    'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
-                    'INNER JOIN d_classeEcole e ON e.idClasse=ce.idClasse ' +
-                    'WHERE e.idEcole= ' + req.currUser.idEcole + ' ' +
-                    'GROUP BY ce.idEleve ' +
-                    'ORDER BY score DESC ' +
-                     'LIMIT 10';
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'ElevesStats', 'getElevesRank', 500, error, null);
+    } else {
+      tools.dSend(
+        res,
+        'OK',
+        'ElevesStats',
+        'getElevesRank',
+        200,
+        null,
+        results
+      );
     }
-
-    req.mysql.query(query, function (error, results, fields) {
-        if(error){
-            tools.dSend(res, "NOK", "ElevesStats", "getElevesRank", 500, error, null);
-        } else {
-            tools.dSend(res, "OK", "ElevesStats", "getElevesRank", 200, null, results);
-        }
-    });
+  });
 });
 
 /**
@@ -382,8 +496,8 @@ router.get('/getElevesRank', function(req, res, next) {
  *      "error":null,
  *      "response":[
  *          {
-     *          "moyenne":59.3913,
-     *          "level":4,
+ *          "moyenne":59.3913,
+ *          "level":4,
  *              "num":1
  *          },
  *          {
@@ -396,35 +510,46 @@ router.get('/getElevesRank', function(req, res, next) {
  */
 
 router.get('/getClassesAvg', function(req, res, next) {
-    var idEleve = req.params.idEleve;
-    var idMat = req.params.idMat;
+  var idEleve = req.params.idEleve;
+  var idMat = req.params.idMat;
 
-    if (req.currUser.typeUser === 1) {
+  if (req.currUser.typeUser === 1) {
+    var query =
+      'SELECT AVG(s.score) as moyenne, cl.level, cl.num FROM d_gamesScored s ' +
+      'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
+      'INNER JOIN d_classe cl ON cl.idClasse=ce.idClasse ' +
+      'INNER JOIN d_profsAppClasse ap ON ap.idClasse=cl.idClasse ' +
+      'WHERE ap.idProf=' +
+      req.currUser.idUser +
+      ' ' +
+      'GROUP BY cl.idClasse';
+  } else if (req.currUser.typeUser === 2) {
+    var query =
+      'SELECT AVG(s.score) as moyenne, cl.level, cl.num FROM d_gamesScored s ' +
+      'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
+      'INNER JOIN d_classe cl ON cl.idClasse=ce.idClasse ' +
+      'INNER JOIN d_classeEcole ceo ON ceo.idClasse=cl.idClasse ' +
+      'WHERE ceo.idEcole=' +
+      req.currUser.idEcole +
+      ' ' +
+      'GROUP BY cl.idClasse';
+  }
 
-        var query = 'SELECT AVG(s.score) as moyenne, cl.level, cl.num FROM d_gamesScored s '+
-                    'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
-                    'INNER JOIN d_classe cl ON cl.idClasse=ce.idClasse ' +
-                    'INNER JOIN d_profsAppClasse ap ON ap.idClasse=cl.idClasse ' +
-                    'WHERE ap.idProf=' + req.currUser.idUser + ' ' +
-                    'GROUP BY cl.idClasse';
-
-    }else if (req.currUser.typeUser === 2){
-        var query = 'SELECT AVG(s.score) as moyenne, cl.level, cl.num FROM d_gamesScored s ' +
-                    'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
-                    'INNER JOIN d_classe cl ON cl.idClasse=ce.idClasse ' +
-                    'INNER JOIN d_classeEcole ceo ON ceo.idClasse=cl.idClasse ' +
-                    'WHERE ceo.idEcole=' + req.currUser.idEcole + ' ' +
-                    'GROUP BY cl.idClasse';
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'ElevesStats', 'getElevesRank', 500, error, null);
+    } else {
+      tools.dSend(
+        res,
+        'OK',
+        'ElevesStats',
+        'getElevesRank',
+        200,
+        null,
+        results
+      );
     }
-
-    req.mysql.query(query, function (error, results, fields) {
-        if(error){
-            tools.dSend(res, "NOK", "ElevesStats", "getElevesRank", 500, error, null);
-        } else {
-            tools.dSend(res, "OK", "ElevesStats", "getElevesRank", 200, null, results);
-        }
-    });
+  });
 });
-
 
 module.exports = router;

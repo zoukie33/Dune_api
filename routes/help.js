@@ -27,11 +27,19 @@ router.post('/contact', function(req, res, next) {
   var pbType = req.body.pbType;
   var pbDetail = req.body.pbDetail;
 
-  if (pbType != "" && pbDetail != "") {
+  if (pbType != '' && pbDetail != '') {
     help.sendContactToDune(pbType, pbDetail, req.currUser.emailUser);
-    tools.dSend(res, "OK", "Help", "contact", 200, null, "Form help valid.");
+    tools.dSend(res, 'OK', 'Help', 'contact', 200, null, 'Form help valid.');
   } else {
-    tools.dSend(res, "NOK", "Help", "verifPassword", 500, null, "Champs incomplets");
+    tools.dSend(
+      res,
+      'NOK',
+      'Help',
+      'verifPassword',
+      500,
+      null,
+      'Champs incomplets'
+    );
   }
 });
 

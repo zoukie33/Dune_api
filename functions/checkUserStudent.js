@@ -1,7 +1,1 @@
-
-
-exports.checkUserStudent = function(req, idProf, idStudent){
-
-    
-
-};
+exports.checkUserStudent = function(req, idProf, idStudent) {};

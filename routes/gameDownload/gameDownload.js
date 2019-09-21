@@ -1,5 +1,5 @@
 var express = require('express');
-var mysql   = require("mysql");
+var mysql = require('mysql');
 var router = express.Router();
 const fileUpload = require('express-fileupload');
 var filez = require('../../functions/files/files');
@@ -17,35 +17,34 @@ var config = require('../../config');
  */
 
 router.get('/files/Games/:idGame', function(req, res, next) {
+  var idGame = req.params.idGame;
+  var idEcole = req.currUser.idEcole;
 
-    var idGame  = req.params.idGame;
-    var idEcole = req.currUser.idEcole;
+  var query =
+    'SELECT * FROM d_gamesAppEcole WHERE idEcole=' +
+    idEcole +
+    ' AND idGame=' +
+    idGame;
 
-    var query = "SELECT * FROM d_gamesAppEcole WHERE idEcole="+idEcole+ " AND idGame="+idGame;
+  var file = config.dirname + '/files/Games/Game-' + idGame + '.zip';
 
-    var file = config.dirname + '/files/Games/Game-'+idGame+'.zip';
-
-    req.mysql.query(query, function(error, results, fields) {
-        if (error){
-            tools.dSend(res, "NOK", "Games", "Games", 500, error, null);
-        } else {
-            if (results.length > 0){
-
-                var files = res.download(file, 'game.zip', function(err){
-                    if (err) {
-                        res.status(err.statusCode).end();
-                    } else {
-                        res.status(200).end();
-
-                    }
-                });
-
-            }else{
-                tools.dSend(res, "NOK", "Games", "Games", 401, error, "unauthorized");
-            }
-        }
-    });
-
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Games', 'Games', 500, error, null);
+    } else {
+      if (results.length > 0) {
+        var files = res.download(file, 'game.zip', function(err) {
+          if (err) {
+            res.status(err.statusCode).end();
+          } else {
+            res.status(200).end();
+          }
+        });
+      } else {
+        tools.dSend(res, 'NOK', 'Games', 'Games', 401, error, 'unauthorized');
+      }
+    }
+  });
 });
 
 module.exports = router;

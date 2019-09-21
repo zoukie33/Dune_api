@@ -1,8 +1,8 @@
 {
-    "name": "Dune API documentation",
-    "version": "1.0.0",
-    "description": "Dune task Routes",
-    "template": {
-        "forceLanguage": "en"
-    }
+  "name": "Dune API documentation",
+  "version": "1.0.0",
+  "description": "Dune task Routes",
+  "template": {
+    "forceLanguage": "en"
+  }
 }

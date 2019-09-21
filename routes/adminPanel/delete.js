@@ -1,6 +1,6 @@
 var express = require('express');
-var mysql   = require("mysql");
-var serial = require("generate-serial-key");
+var mysql = require('mysql');
+var serial = require('generate-serial-key');
 var router = express.Router();
 var filez = require('../../functions/files/files');
 var tools = require('../../functions/tools');
@@ -35,15 +35,31 @@ var tools = require('../../functions/tools');
 router.delete('/deleteLicence/:idLicence', function(req, res, next) {
   var idLicence = req.params.idLicence;
 
-    var query = "DELETE FROM d_licencesTables WHERE idLicence = " + idLicence;
+  var query = 'DELETE FROM d_licencesTables WHERE idLicence = ' + idLicence;
 
-      req.mysql.query(query, function (error, results, fields) {
-    	  	if(error){
-            tools.dSend(res, "NOK", "Admin-Delete", "deleteLicence", 500, error, null);
-    	  	} else {
-            tools.dSend(res, "OK", "Admin-Delete", "deleteLicence", 200, null, results);
-    	  	}
-      	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Delete',
+        'deleteLicence',
+        500,
+        error,
+        null
+      );
+    } else {
+      tools.dSend(
+        res,
+        'OK',
+        'Admin-Delete',
+        'deleteLicence',
+        200,
+        null,
+        results
+      );
+    }
+  });
 });
 
 /**
@@ -74,15 +90,31 @@ router.delete('/deleteLicence/:idLicence', function(req, res, next) {
  */
 
 router.delete('/deleteGame/:idGame', function(req, res, next) {
-  var query = "DELETE FROM d_games WHERE id = " + req.params.idGame;
+  var query = 'DELETE FROM d_games WHERE id = ' + req.params.idGame;
 
-  req.mysql.query(query, function (error, results, fields) {
-    	if(error){
-        tools.dSend(res, "NOK", "Admin-Delete", "deleteLicence", 500, error, null);
-    	} else {
-        tools.dSend(res, "OK", "Admin-Delete", "deleteLicence", 200, null, results);
-    	}
-  	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Delete',
+        'deleteLicence',
+        500,
+        error,
+        null
+      );
+    } else {
+      tools.dSend(
+        res,
+        'OK',
+        'Admin-Delete',
+        'deleteLicence',
+        200,
+        null,
+        results
+      );
+    }
+  });
 });
 
 /**
@@ -113,14 +145,14 @@ router.delete('/deleteGame/:idGame', function(req, res, next) {
  */
 
 router.delete('/deleteEcole/:idEcole', function(req, res, next) {
-  var query = "DELETE FROM d_ecole WHERE id = " + req.params.idEcole;
+  var query = 'DELETE FROM d_ecole WHERE id = ' + req.params.idEcole;
 
-  req.mysql.query(query, function (error, results, fields) {
-    	if(error){
-        tools.dSend(res, "NOK", "Admin-Delete", "deleteEcole", 500, error, null);
-    	} else {
-        tools.dSend(res, "OK", "Admin-Delete", "deleteEcole", 200, null, results);
-    	}
-  	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Admin-Delete', 'deleteEcole', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Admin-Delete', 'deleteEcole', 200, null, results);
+    }
+  });
 });
 module.exports = router;

@@ -1,5 +1,5 @@
 var express = require('express');
-var mysql   = require("mysql");
+var mysql = require('mysql');
 var router = express.Router();
 var filez = require('../../functions/files/files');
 var tools = require('../../functions/tools');
@@ -42,25 +42,39 @@ var tools = require('../../functions/tools');
  */
 
 router.post('/createGame', function(req, res, next) {
-
-  var query = "INSERT INTO ?? (idGame, idTypeGame, idProf, idClasse) VALUES (?, ?, ?, ?)";
-  var data = ["d_gamesPlayed", req.body.idGame, req.body.idTypeGame, req.currUser.idUser, req.body.idClasse];
+  var query =
+    'INSERT INTO ?? (idGame, idTypeGame, idProf, idClasse) VALUES (?, ?, ?, ?)';
+  var data = [
+    'd_gamesPlayed',
+    req.body.idGame,
+    req.body.idTypeGame,
+    req.currUser.idUser,
+    req.body.idClasse
+  ];
   query = mysql.format(query, data);
 
   var good = 0;
   if (req.currUser.idUser) {
-    req.mysql.query(query, function (error, results, fields) {
-  	  	if(error){
-          tools.dSend(res, "NOK", "Play", "createGame", 500, error, null);
-  	  	} else {
-          var idGP = results.insertId;
-          tools.dLog("OK", "Play", "createGame", 200, null, "idGP:" + idGP + ", response:" + results);
-          res.send(JSON.stringify({"status": 200, "idGP": idGP, "response": results}));
-
-  	  	}
-    	});
+    req.mysql.query(query, function(error, results, fields) {
+      if (error) {
+        tools.dSend(res, 'NOK', 'Play', 'createGame', 500, error, null);
+      } else {
+        var idGP = results.insertId;
+        tools.dLog(
+          'OK',
+          'Play',
+          'createGame',
+          200,
+          null,
+          'idGP:' + idGP + ', response:' + results
+        );
+        res.send(
+          JSON.stringify({ status: 200, idGP: idGP, response: results })
+        );
+      }
+    });
   } else {
-    tools.dSend(res, "OK", "Play", "createGame", 500, "Bad token", null);
+    tools.dSend(res, 'OK', 'Play', 'createGame', 500, 'Bad token', null);
   }
 });
 
@@ -96,19 +110,18 @@ router.post('/createGame', function(req, res, next) {
  */
 
 router.get('/myGame/:idGP', function(req, res, next) {
-  var query = "SELECT * FROM ?? AS gp WHERE gp.idGP = ?";
-  var data = ["d_gamesPlayed", req.params.idGP];
+  var query = 'SELECT * FROM ?? AS gp WHERE gp.idGP = ?';
+  var data = ['d_gamesPlayed', req.params.idGP];
   query = mysql.format(query, data);
 
-  req.mysql.query(query, function (error, results, fields) {
-    	if(error){
-        tools.dSend(res, "NOK", "Play", "myGame", 500, error, null);
-    	} else {
-        tools.dSend(res, "OK", "Play", "myGame", 200, null, results);
-    	}
-  	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Play', 'myGame', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Play', 'myGame', 200, null, results);
+    }
+  });
 });
-
 
 /**
  * @api {post} /play/endGame/ Ending a game
@@ -138,7 +151,6 @@ router.get('/myGame/:idGP', function(req, res, next) {
  * }
  */
 
-
 router.post('/endGame', function(req, res, next) {
   var scorePlayer1 = req.body.scorePlayer1;
   var scorePlayer2 = req.body.scorePlayer2;
@@ -150,51 +162,152 @@ router.post('/endGame', function(req, res, next) {
   var idPlayer4 = req.body.player4;
   var idGP = req.body.idGP;
 
-
   if (idPlayer1) {
-    req.mysql.query("INSERT INTO d_gamesScored (idGP, idEleve, score) VALUES ("+ idGP +", "+ idPlayer1 +", " + scorePlayer1 +")", function (error, results, fields) {
-      if(error){
-        tools.dSend(res, "NOK", "Play", "createGame", 500, error, results);
-      } else {
-        if (idPlayer2) {
-          req.mysql.query("INSERT INTO d_gamesScored (idGP, idEleve, score) VALUES ("+ idGP +", "+ idPlayer2 +", " + scorePlayer2 +")", function (error, results, fields) {
-            if(error){
-              tools.dSend(res, "NOK", "Play", "createGame", 500, error, results);
-            } else {
-              if (idPlayer3) {
-                req.mysql.query("INSERT INTO d_gamesScored (idGP, idEleve, score) VALUES ("+ idGP +", "+ idPlayer3 +", " + scorePlayer3 +")", function (error, results, fields) {
-                  if(error){
-                    tools.dSend(res, "NOK", "Play", "createGame", 500, error, results);
-                  } else {
-                    if (idPlayer4) {
-                      req.mysql.query("INSERT INTO d_gamesScored (idGP, idEleve, score) VALUES ("+ idGP +", "+ idPlayer4 +", " + scorePlayer4 +")", function (error, results, fields) {
-                        if(error){
-                          tools.dSend(res, "NOK", "Play", "createGame", 500, error, results);
-                        } else {
-                          tools.dLog("OK", "Play", "endGame", 200, null, "idGP:" + idGP + ", response: 4");
-                          res.send(JSON.stringify({"status": 200, "idGP": idGP, "response": 4}));
-                        }
-                      });
-                    } else {
-                      tools.dLog("OK", "Play", "endGame", 200, null, "idGP:" + idGP + ", response: 3");
-                      res.send(JSON.stringify({"status": 200, "idGP": idGP, "response": 3}));
-                    }
-                  }
-                });
-              } else {
-                tools.dLog("OK", "Play", "endGame", 200, null, "idGP:" + idGP + ", response: 2");
-                res.send(JSON.stringify({"status": 200, "idGP": idGP, "response": 2}));
-              }
-            }
-          });
+    req.mysql.query(
+      'INSERT INTO d_gamesScored (idGP, idEleve, score) VALUES (' +
+        idGP +
+        ', ' +
+        idPlayer1 +
+        ', ' +
+        scorePlayer1 +
+        ')',
+      function(error, results, fields) {
+        if (error) {
+          tools.dSend(res, 'NOK', 'Play', 'createGame', 500, error, results);
         } else {
-          tools.dLog("OK", "Play", "endGame", 200, null, "idGP:" + idGP + ", response: 1");
-          res.send(JSON.stringify({"status": 200, "idGP": idGP, "response": 1}));
+          if (idPlayer2) {
+            req.mysql.query(
+              'INSERT INTO d_gamesScored (idGP, idEleve, score) VALUES (' +
+                idGP +
+                ', ' +
+                idPlayer2 +
+                ', ' +
+                scorePlayer2 +
+                ')',
+              function(error, results, fields) {
+                if (error) {
+                  tools.dSend(
+                    res,
+                    'NOK',
+                    'Play',
+                    'createGame',
+                    500,
+                    error,
+                    results
+                  );
+                } else {
+                  if (idPlayer3) {
+                    req.mysql.query(
+                      'INSERT INTO d_gamesScored (idGP, idEleve, score) VALUES (' +
+                        idGP +
+                        ', ' +
+                        idPlayer3 +
+                        ', ' +
+                        scorePlayer3 +
+                        ')',
+                      function(error, results, fields) {
+                        if (error) {
+                          tools.dSend(
+                            res,
+                            'NOK',
+                            'Play',
+                            'createGame',
+                            500,
+                            error,
+                            results
+                          );
+                        } else {
+                          if (idPlayer4) {
+                            req.mysql.query(
+                              'INSERT INTO d_gamesScored (idGP, idEleve, score) VALUES (' +
+                                idGP +
+                                ', ' +
+                                idPlayer4 +
+                                ', ' +
+                                scorePlayer4 +
+                                ')',
+                              function(error, results, fields) {
+                                if (error) {
+                                  tools.dSend(
+                                    res,
+                                    'NOK',
+                                    'Play',
+                                    'createGame',
+                                    500,
+                                    error,
+                                    results
+                                  );
+                                } else {
+                                  tools.dLog(
+                                    'OK',
+                                    'Play',
+                                    'endGame',
+                                    200,
+                                    null,
+                                    'idGP:' + idGP + ', response: 4'
+                                  );
+                                  res.send(
+                                    JSON.stringify({
+                                      status: 200,
+                                      idGP: idGP,
+                                      response: 4
+                                    })
+                                  );
+                                }
+                              }
+                            );
+                          } else {
+                            tools.dLog(
+                              'OK',
+                              'Play',
+                              'endGame',
+                              200,
+                              null,
+                              'idGP:' + idGP + ', response: 3'
+                            );
+                            res.send(
+                              JSON.stringify({
+                                status: 200,
+                                idGP: idGP,
+                                response: 3
+                              })
+                            );
+                          }
+                        }
+                      }
+                    );
+                  } else {
+                    tools.dLog(
+                      'OK',
+                      'Play',
+                      'endGame',
+                      200,
+                      null,
+                      'idGP:' + idGP + ', response: 2'
+                    );
+                    res.send(
+                      JSON.stringify({ status: 200, idGP: idGP, response: 2 })
+                    );
+                  }
+                }
+              }
+            );
+          } else {
+            tools.dLog(
+              'OK',
+              'Play',
+              'endGame',
+              200,
+              null,
+              'idGP:' + idGP + ', response: 1'
+            );
+            res.send(JSON.stringify({ status: 200, idGP: idGP, response: 1 }));
+          }
         }
       }
-    });
+    );
   } else {
-    tools.dSend(res, "NOK", "Play", "createGame", 500, "Aucun élèves", 0);
+    tools.dSend(res, 'NOK', 'Play', 'createGame', 500, 'Aucun élèves', 0);
   }
 });
 module.exports = router;

@@ -1,8 +1,8 @@
 var express = require('express');
-var mysql   = require("mysql");
+var mysql = require('mysql');
 var router = express.Router();
 var tools = require('../../functions/tools');
-var md5 = require("MD5");
+var md5 = require('MD5');
 
 /**
  * @api {get} /facturation/getFactures/:idEcole Get all Bills from a school
@@ -33,17 +33,17 @@ var md5 = require("MD5");
  * }
  */
 router.get('/getFactures/:idEcole', function(req, res, next) {
-  var query = "SELECT * FROM ?? WHERE idEcole = ?";
-  var data = ["d_facturation", req.params.idEcole];
+  var query = 'SELECT * FROM ?? WHERE idEcole = ?';
+  var data = ['d_facturation', req.params.idEcole];
   query = mysql.format(query, data);
 
-	req.mysql.query(query, function (error, results, fields) {
-	  	if(error){
-        tools.dSend(res, "NOK", "Facturation", "getFactures", 500, error, null);
-	  	} else {
-        tools.dSend(res, "OK", "Facturation", "getFactures", 200, null, results);
-	  	}
-  	});
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Facturation', 'getFactures', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Facturation', 'getFactures', 200, null, results);
+    }
+  });
 });
 
 /**
@@ -78,44 +78,51 @@ router.get('/getFactures/:idEcole', function(req, res, next) {
  * }
  */
 
-
 router.get('/getFacture/:idFacture', function(req, res, next) {
-    var query = "SELECT * FROM ?? WHERE idFacture = ?";
-    var data = ["d_facturation", req.params.idFacture];
-    query = mysql.format(query, data);
+  var query = 'SELECT * FROM ?? WHERE idFacture = ?';
+  var data = ['d_facturation', req.params.idFacture];
+  query = mysql.format(query, data);
 
-  	req.mysql.query(query, function (error, results, fields) {
-  	  	if(error){
-          tools.dSend(res, "NOK", "Facturation", "getFacture", 500, error, null);
-  	  	} else {
-          var query = "SELECT * FROM ?? WHERE id = ?";
-          var data = ["d_ecole", results[0].idEcole];
-          query = mysql.format(query, data);
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Facturation', 'getFacture', 500, error, null);
+    } else {
+      var query = 'SELECT * FROM ?? WHERE id = ?';
+      var data = ['d_ecole', results[0].idEcole];
+      query = mysql.format(query, data);
 
-          req.mysql.query(query, function (error, results2, fields) {
-        	  	if(error){
-                tools.dSend(res, "NOK", "Facturation", "getFacture", 500, error, null);
-        	  	} else {
-                var ret = {
-                  idFacture: results[0].idFacture,
-                  typeFacture: results[0].typeFacture,
-                  dateFacture: results[0].date,
-                  prixHT: results[0].prixHT,
-                  prixTTC: results[0].prixTTC,
-                  paid: results[0].paid,
-                  nomEcole: results2[0].nomEcole,
-                  rueEcole: results2[0].rue,
-                  numRueEcole: results2[0].numRue,
-                  villeEcole: results2[0].ville,
-                  departementEcole: results2[0].departement,
-                  mailEcole: results2[0].mail,
-                  telEcole:results2[0].tel
-                }
-                tools.dSend(res, "OK", "Facturation", "getFacture", 200, null, ret);
-        	  	}
-          	});
-  	  	}
-    	});
+      req.mysql.query(query, function(error, results2, fields) {
+        if (error) {
+          tools.dSend(
+            res,
+            'NOK',
+            'Facturation',
+            'getFacture',
+            500,
+            error,
+            null
+          );
+        } else {
+          var ret = {
+            idFacture: results[0].idFacture,
+            typeFacture: results[0].typeFacture,
+            dateFacture: results[0].date,
+            prixHT: results[0].prixHT,
+            prixTTC: results[0].prixTTC,
+            paid: results[0].paid,
+            nomEcole: results2[0].nomEcole,
+            rueEcole: results2[0].rue,
+            numRueEcole: results2[0].numRue,
+            villeEcole: results2[0].ville,
+            departementEcole: results2[0].departement,
+            mailEcole: results2[0].mail,
+            telEcole: results2[0].tel
+          };
+          tools.dSend(res, 'OK', 'Facturation', 'getFacture', 200, null, ret);
+        }
+      });
+    }
+  });
 });
 
 module.exports = router;

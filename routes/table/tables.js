@@ -1,31 +1,31 @@
 var express = require('express');
-var mysql   = require("mysql");
+var mysql = require('mysql');
 var router = express.Router();
 var tools = require('../../functions/tools');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-	req.mysql.query('SELECT * from d_tables', function (error, results, fields) {
-	  	if(error){
-        tools.dSend(res, "NOK", "Table", "/", 500, error, null);
-	  	} else {
-        tools.dSend(res, "OK", "Table", "/", 200, null, results);
-	  	}
-  	});
+  req.mysql.query('SELECT * from d_tables', function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Table', '/', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Table', '/', 200, null, results);
+    }
+  });
 });
 
 router.get('/getTableBySchool/:idEcole', function(req, res, next) {
-	req.mysql.query('SELECT * from d_tables', function (error, results, fields) {
-	  	if(error){
-        tools.dSend(res, "NOK", "Table", "/", 500, error, null);
-	  	} else {
-        tools.dSend(res, "OK", "Table", "/", 200, null, results);
-	  	}
-  	});
+  req.mysql.query('SELECT * from d_tables', function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Table', '/', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'Table', '/', 200, null, results);
+    }
+  });
 });
 
 router.post('/update', function(req, res, next) {
-	// var id  = req.body.idEleve;
+  // var id  = req.body.idEleve;
   // var nom  = req.body.nomEleve;
   // var prenom  = req.body.prenomEleve;
   //
