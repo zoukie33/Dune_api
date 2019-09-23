@@ -56,7 +56,7 @@ router.post('/createSchool', function(req, res, next) {
 
   if (name && rue && numRue && ville && departement && tel) {
     var query =
-      'INSERT INTO ?? (nomEcole, rue, numRue, ville, departement, tel) VALUES (?,?,?,?,?,?,?)';
+      'INSERT INTO ?? (nomEcole, rue, numRue, ville, departement, tel, email) VALUES (?,?,?,?,?,?,?)';
     var data = ['d_ecole', name, rue, numRue, ville, departement, tel, email];
     query = mysql.format(query, data);
     req.mysql.query(query, function(error, results, fields) {
@@ -622,4 +622,5 @@ router.post('/addAllStudents', function(req, res, next) {
     );
   }
 });
+
 module.exports = router;
