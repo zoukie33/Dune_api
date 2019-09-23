@@ -115,7 +115,7 @@ router.get('/getSub', function(req, res, next) {
   var idEcole = req.currUser.idEcole;
 
   var query =
-    'SELECT isActive AS typeAbo FROM d_abonnement WHERE idEcole = ' + idEcole;
+    'SELECT typeAbo, status FROM d_abonnement WHERE idEcole = ' + idEcole;
 
   req.mysql.query(query, function(error, results, fields) {
     if (error) {
