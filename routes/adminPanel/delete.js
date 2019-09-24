@@ -155,4 +155,54 @@ router.delete('/deleteEcole/:idEcole', function(req, res, next) {
     }
   });
 });
+
+/**
+ * @api {delete} /admin/delete/deleteProf/:idProf Delete a Professor
+ * @apiName deleteProf
+ * @apiGroup AdminDelete
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idProf Id Prof
+ * @apiHeader {String} token AdminToken auth
+ * @apiDescription Route permettant de supprimer un professeur
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": {
+ *        "fieldCount": 0,
+ *        "affectedRows": 1,
+ *        "insertId": 0,
+ *        "serverStatus": 2,
+ *        "warningCount": 0,
+ *        "message": "",
+ *        "protocol41": true,
+ *        "changedRows": 0
+ *    }
+ * }
+ */
+
+router.delete('/deleteProf/:idProf', function(req, res, next) {
+  var query = 'SELECT typeUser FROM d_users WHERE idUser = ' + req.params.idProf;
+
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'Admin-Delete', 'deleteProf', 500, error, null);
+    } else {
+      if (results[0].typeUser == 1) {
+        var query = 'DELETE FROM d_users WHERE iduser = ' + req.params.idProf;
+        req.mysql.query(query, function(error, results, fields) {
+          if (error) {
+            tools.dSend(res, 'NOK', 'Admin-Delete', 'deleteProf', 500, error, null);
+          } else {
+            tools.dSend(res, 'OK', 'Admin-Delete', 'deleteProf', 200, null, results);
+          }
+        });
+      } else {
+        tools.dSend(res, 'NOK', 'Admin-Delete', 'deleteProf', 500, null, "Vous ne pouvez supprimer que des professeurs.");
+      }
+    }
+  });
+});
 module.exports = router;
