@@ -12,6 +12,7 @@ var fileUpload = require('express-fileupload');
 // Routes
 var loginRouter = require('./routes/auth/login');
 var helpRouter = require('./routes/help');
+var adminLoginRouter = require('./routes/adminPanel/login');
 var adminCreateRouter = require('./routes/adminPanel/create');
 var adminDashboardRouter = require('./routes/adminPanel/dashboard');
 var adminStatistiquesRouter = require('./routes/adminPanel/statistiques');
@@ -21,6 +22,7 @@ var logoutRouter = require('./routes/auth/logout');
 var tokensRouter = require('./routes/auth/tokens');
 var usersRouter = require('./routes/users');
 var dashRouter = require('./routes/dashboard');
+var compRouter = require('./routes/competences');
 var elevesRouter = require('./routes/eleves/eleves');
 var elevesStatsRouter = require('./routes/eleves/elevesStats');
 var trombiRouter = require('./routes/trombi');
@@ -107,6 +109,7 @@ app.use(function(req, res, next) {
 });
 
 app.use('/login', loginRouter);
+app.use('/admin/login', adminLoginRouter);
 app.use('/logout', logoutRouter);
 app.use('/cnxTable', cnxTableRouter);
 app.use('/tokens', tokensRouter);
@@ -128,6 +131,7 @@ app.use('/table/licences', gestLicencesRouter);
 app.use('/play', playRouter);
 app.use('/users', usersRouter);
 app.use('/dashBoard', dashRouter);
+app.use('/competences', compRouter);
 app.use('/eleves/stats', elevesStatsRouter);
 app.use('/eleves', elevesRouter);
 app.use('/ecole', ecoleRouter);

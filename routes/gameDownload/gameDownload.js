@@ -26,7 +26,7 @@ router.get('/files/Games/:idGame', function(req, res, next) {
     ' AND idGame=' +
     idGame;
 
-  var file = config.dirname + '/files/Games/Game-' + idGame + '.zip';
+  var file = config.dirname + '/files/Games/' + idGame + '.zip';
 
   req.mysql.query(query, function(error, results, fields) {
     if (error) {

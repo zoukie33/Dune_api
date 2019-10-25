@@ -1,9 +1,12 @@
 var express = require('express');
 var mysql = require('mysql');
 var serial = require('generate-serial-key');
+var generator = require('generate-password');
+var md5 = require('MD5');
 var router = express.Router();
 var filez = require('../../functions/files/files');
 var tools = require('../../functions/tools');
+var resetPass = require('../../functions/mails/resetPass');
 
 /**
  * @api {put} /admin/update/updateLicence/ Updating a licence
@@ -350,6 +353,7 @@ router.put('/user', function(req, res, next) {
  *    "Impossible de mettre a jour cet élève, tous les champs doivent être remplis."
  * }
  */
+ 
 router.put('/eleve', function(req, res, next) {
   var idEleve = req.body.idEleve,
     nomEleve = req.body.nomEleve,
@@ -390,6 +394,92 @@ router.put('/eleve', function(req, res, next) {
       'Update-Eleve',
       500,
       'Impossible de mettre a jour cet élève, tous les champs doivent être remplis.',
+      null
+    );
+  }
+});
+
+/**
+ * @api {put} /admin/update/passwordUser Updating a passwordUser
+ * @apiName passwordUser
+ * @apiGroup AdminUpdate
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token Token auth
+ * @apiParam {Int} idUser Id de l'utilisateur a update.
+ *
+ * @apiDescription Route permettant la mise à jour le mot de passe d'un utilisateur.
+ * @apiError 500 SQL Error.
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *    "Password Updated"
+ * }
+ * @apiErrorExample {json} Error-Response:
+ * {
+ *    "Impossible de mettre a jour cet Utilisateur, tous les champs doivent être remplis."
+ * }
+ */
+router.put('/passwordUser', function(req, res, next) {
+  var idUser = req.body.idUser;
+
+  if (idUser) {
+    var password = generator.generate({
+      length: 8,
+      numbers: true
+    });
+    var query = 'SELECT emailUser FROM ?? WHERE idUser = ?';
+    var data = ['d_user', idUser];
+    query = mysql.format(query, data);
+    req.mysql.query(query, function(error, results, fields) {
+      if (error) {
+        tools.dSend(
+          res,
+          'NOK',
+          'Admin-Update',
+          'Update-Eleve',
+          500,
+          error,
+          'Impossible de mettre a jour cet utilisateur.'
+        );
+      } else {
+        var query = 'UPDATE ?? SET pass = ? WHERE idUser = ?';
+        var data = ['d_user', md5(password), idUser];
+        query = mysql.format(query, data);
+        resetPass.sendPasswordReset(results[0].emailUser, password);
+        req.mysql.query(query, function(error, results, fields) {
+          if (error) {
+            tools.dSend(
+              res,
+              'NOK',
+              'Admin-Update',
+              'Update-Eleve',
+              500,
+              error,
+              'Impossible de mettre a jour cet utilisateur.'
+            );
+          } else {
+            tools.dSend(
+              res,
+              'OK',
+              'Admin-Update',
+              'Update-Eleve',
+              200,
+              null,
+              'Password Updated'
+            );
+          }
+        });
+      }
+    });
+  } else {
+    tools.dSend(
+      res,
+      'NOK',
+      'Admin-Update',
+      'Update-Eleve',
+      500,
+      'Impossible de mettre a jour cet Utilisateur, tous les champs doivent être remplis.',
       null
     );
   }

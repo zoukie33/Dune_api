@@ -19,12 +19,30 @@ var tools = require('../../functions/tools');
  *         {
  *            "id": 1,
  *            "idDirecteur": 1,
- *            "nomEcole": "Sainte-Marie: Grand Lebrun"
+ *            "nomEcole": "Sainte-Marie: Grand Lebrun",
+ *            "rue": "Rue de l'école normale",
+ *            "numRue": "4",
+ *            "ville": "Bordeaux",
+ *            "departement": "Aquitaine",
+ *            "tel": "0603**4206",
+ *            "id_customer": "cus_FpPdZuUxTL0Z5n",
+ *            "email": "elodie.berthaud@epitech.eu",
+ *            "nomUser": "Berthaud",
+ *            "prenomUser": "Elodie"
  *        },
  *        {
  *            "id": 2,
  *            "idDirecteur": 33,
- *            "nomEcole": "Epitech"
+ *            "nomEcole": "Epitech",
+ *            "rue": "Rue de l'école normale",
+ *            "numRue": "4",
+ *            "ville": "Bordeaux",
+ *            "departement": "Aquitaine",
+ *            "tel": "0603**4206",
+ *            "id_customer": "cus_FpPdZuUxTL0Z5n",
+ *            "email": "elodie.berthaud@epitech.eu",
+ *            "nomUser": "Berthaud",
+ *            "prenomUser": "Elodie"
  *        }
  *     ]
  * }
@@ -32,7 +50,8 @@ var tools = require('../../functions/tools');
  */
 
 router.get('/getAllSchools', function(req, res, next) {
-  var query = 'SELECT * FROM d_ecole';
+  var query =
+    'SELECT e.*, u.nomUser, u.prenomUser FROM d_ecole AS e, d_users AS u WHERE e.idDirecteur = u.idUser';
 
   req.mysql.query(query, function(error, results, fields) {
     if (error) {
@@ -457,6 +476,66 @@ router.get('/getTableBySchool/:idEcole', function(req, res, next) {
         'OK',
         'Admin-Dashboard',
         'getProfsBySchool',
+        200,
+        null,
+        results
+      );
+    }
+  });
+});
+
+/**
+ * @api {get} /admin/dashboard/getStudentsBySchool/:idSchool Getting students by School
+ * @apiName getStudentsBySchool
+ * @apiGroup AdminDashboard
+ * @apiPermission notLogged
+ * @apiVersion 1.0.0
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *  "status": 200,
+ *  "error": null,
+ *  "response": [
+ *      {
+ *          "idEleve": 1,
+ *          "nomEleve": "Merveillau",
+ *          "prenomEleve": "Denis",
+ *          "picPath": "1-eleve.png"
+ *      },
+ *      {
+ *          "idEleve": 2,
+ *          "nomEleve": "Senouci",
+ *          "prenomEleve": "Elies",
+ *          "picPath": "2-eleve.png"
+ *      }
+ *    ]
+ * }
+ * @apiHeader {String} token AdminToken auth
+ * @apiParam {Int} idSchool
+ */
+
+router.get('/getStudentsBySchool/:idSchool', function(req, res, next) {
+  var query =
+    'SELECT e.idEleve, e.nomEleve, e.prenomEleve, e.picPath FROM d_elevesEcole AS ee, d_eleves AS e WHERE e.idEleve = ee.idEleve AND ee.idEcole = ?';
+  var data = [req.params.idSchool];
+  query = mysql.format(query, data);
+
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Dashboard',
+        'getStudentsBySchool',
+        500,
+        error,
+        null
+      );
+    } else {
+      tools.dSend(
+        res,
+        'OK',
+        'Admin-Dashboard',
+        'getStudentsBySchool',
         200,
         null,
         results

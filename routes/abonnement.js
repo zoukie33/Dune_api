@@ -1,9 +1,10 @@
 var express = require('express');
-var mysql = require('mysql');
-var serial = require('generate-serial-key');
+var mysql   = require("mysql");
+var serial = require("generate-serial-key");
 var router = express.Router();
 var filez = require('../functions/files/files');
 var tools = require('../functions/tools');
+var stripe = require('../functions/stripe');
 
 /**
  * @api {post} /abonnement/subscribe Subscribing to an abonnement
@@ -16,113 +17,96 @@ var tools = require('../functions/tools');
  * @apiHeader {String} token auth
  */
 
-router.post('/subscribe', function(req, res, next) {
-  var query = 'INSERT INTO ?? (idEcole, isActive) VALUES (?, ?)';
-  var data = ['d_abonnement', req.currUser.idEcole, req.body.typeAbo];
-  query = mysql.format(query, data);
+ router.post('/subscribe', function(req, res, next) {
+   var queryCustomer = "SELECT id_customer FROM d_ecole WHERE id=" + req.currUser.idEcole;
 
-  req.mysql.query(query, function(error, results, fields) {
-    if (error) {
-      tools.dSend(res, 'NOK', 'Abonnement', 'subscribe', 500, error, null);
-    } else {
-      var query2 =
-        'INSERT INTO d_histAchat(idAbo) VALUES (' + results.insertId + ')';
+   req.mysql.query(queryCustomer, function(error, results, fields) {
+     if (error) {
+       tools.dSend(res, "NOK", "Abonnement", "subscribe", 500, error, "Can't get id customer");
+     } else {
+       customer = results[0].id_customer;
 
-      req.mysql.query(query2, function(error, results, fields) {
-        if (error) {
-          tools.dSend(res, 'NOK', 'Abonnement', 'subscribe', 500, error, null);
-        } else {
-          tools.dSend(res, 'OK', 'Abonnement', 'subscribe', 200, null, results);
-        }
-      });
-    }
-  });
-});
+       let ret = stripe.createSub(req, res, {customer: customer});
+     }
+   });
+ });
 
-/**
- * @api {get} /abonnement/isValid Verifying a sub
- * @apiName isValid
- * @apiGroup Abonnement
- * @apiPermission Logged
- * @apiVersion 1.0.0
- * @apiDescription Route permettant de vérifier si un abonnement est encore valide.
- * @apiHeader {String} token auth
- */
+ /**
+  * @api {get} /abonnement/isValid Verifying a sub
+  * @apiName isValid
+  * @apiGroup Abonnement
+  * @apiPermission Logged
+  * @apiVersion 1.0.0
+  * @apiDescription Route permettant de vérifier si un abonnement est encore valide.
+  * @apiHeader {String} token auth
+  */
 // TODO: PROBLEME DE NOTVALID ALORS QUE VALID
-router.get('/isValid', function(req, res, next) {
-  var idEcole = req.currUser.idEcole;
+ router.get('/isValid', function(req, res, next) {
+   var idEcole = req.currUser.idEcole;
 
-  var query = 'SELECT isActive FROM d_abonnement WHERE idEcole = ' + idEcole;
+   var query = "SELECT isActive FROM d_abonnement WHERE idEcole = " + idEcole;
 
-  req.mysql.query(query, function(error, results, fields) {
-    if (error) {
-      tools.dSend(res, 'NOK', 'Abonnement', 'isValid', 500, error, null);
-    } else {
-      if (results.isActive == 1 || results.isActive == 2) {
-        tools.dSend(res, 'OK', 'Abonnement', 'isValid', 200, null, 'OK');
-      } else {
-        tools.dSend(res, 'OK', 'Abonnement', 'isValid', 200, null, 'NOTVALID');
-      }
-    }
-  });
-});
+   req.mysql.query(query, function(error, results, fields) {
+     if (error){
+       tools.dSend(res, "NOK", "Abonnement", "isValid", 500, error, null);
+     } else {
+       if (results.isActive == 1 || results.isActive == 2) {
+         tools.dSend(res, "OK", "Abonnement", "isValid", 200, null, "OK");
+       } else {
+         tools.dSend(res, "OK", "Abonnement", "isValid", 200, null, "NOTVALID");
+       }
 
-/**
- * @api {get} /abonnement/endSub Deleting a Subscription
- * @apiName endSub
- * @apiGroup Abonnement
- * @apiPermission Logged
- * @apiVersion 1.0.0
- * @apiDescription Route permettant d'annuler l'abonnement d'une école.
- *
- * @apiHeader {String} token auth
- */
+     }
+   });
+ });
 
-router.get('/endSub', function(req, res, next) {
-  var idEcole = req.currUser.idEcole;
+ /**
+  * @api {get} /abonnement/endSub Deleting a Subscription
+  * @apiName endSub
+  * @apiGroup Abonnement
+  * @apiPermission Logged
+  * @apiVersion 1.0.0
+  * @apiDescription Route permettant d'annuler l'abonnement d'une école.
+  *
+  * @apiHeader {String} token auth
+  */
 
-  var query = 'UPDATE d_abonnement SET isActive = 0 WHERE idEcole = ' + idEcole;
+ router.get('/endSub', function(req, res, next) {
+   var idEcole = req.currUser.idEcole;
 
-  req.mysql.query(query, function(error, results, fields) {
-    if (error) {
-      tools.dSend(res, 'NOK', 'Abonnement', 'endSub', 500, error, null);
-    } else {
-      tools.dSend(
-        res,
-        'OK',
-        'Abonnement',
-        'endSub',
-        200,
-        null,
-        'Abonnement Annulé'
-      );
-    }
-  });
-});
+   var query = "UPDATE d_abonnement SET isActive = 0 WHERE idEcole = " + idEcole;
 
-/**
- * @api {get} /abonnement/getSub Getting a Subscription information
- * @apiName getSub
- * @apiGroup Abonnement
- * @apiPermission Logged
- * @apiVersion 1.0.0
- * @apiDescription Route permettant de récupérer les informations d'un abonnement.
- *
- * @apiHeader {String} token auth
- */
+   req.mysql.query(query, function(error, results, fields) {
+     if (error){
+       tools.dSend(res, "NOK", "Abonnement", "endSub", 500, error, null);
+     } else {
+       tools.dSend(res, "OK", "Abonnement", "endSub", 200, null, "Abonnement Annulé");
+     }
+   });
+ });
 
-router.get('/getSub', function(req, res, next) {
-  var idEcole = req.currUser.idEcole;
+ /**
+  * @api {get} /abonnement/getSub Getting a Subscription information
+  * @apiName getSub
+  * @apiGroup Abonnement
+  * @apiPermission Logged
+  * @apiVersion 1.0.0
+  * @apiDescription Route permettant de récupérer les informations d'un abonnement.
+  *
+  * @apiHeader {String} token auth
+  */
 
-  var query =
-    'SELECT isActive AS typeAbo FROM d_abonnement WHERE idEcole = ' + idEcole;
+ router.get('/getSub', function(req, res, next) {
+   var idEcole = req.currUser.idEcole;
 
-  req.mysql.query(query, function(error, results, fields) {
-    if (error) {
-      tools.dSend(res, 'NOK', 'Abonnement', 'getSub', 500, error, null);
-    } else {
-      tools.dSend(res, 'OK', 'Abonnement', 'getSub', 200, null, results);
-    }
-  });
-});
+   var query = "SELECT typeAbo, status FROM d_abonnement WHERE idEcole = " + idEcole;
+
+   req.mysql.query(query, function(error, results, fields) {
+     if (error){
+       tools.dSend(res, "NOK", "Abonnement", "getSub", 500, error, null);
+     } else {
+       tools.dSend(res, "OK", "Abonnement", "getSub", 200, null, results);
+     }
+   });
+ });
 module.exports = router;

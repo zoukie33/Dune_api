@@ -50,3 +50,51 @@ exports.attachPaymentMethod = function(req, res, datas) {
     }
   );
 };
+
+exports.createSub = function(req, res, datas) {
+  var query = 'INSERT INTO ?? (typeAbo, idEcole, status) VALUES (?, ?, ?)';
+  var data = ['d_abonnement', 1, req.currUser.idEcole, 1];
+  var plan =
+    req.body.plan === '1'
+      ? 'plan_FqV8c329keSQjW'
+      : req.body.plan === '2'
+      ? 'plan_FqAjvHIBM8zxZY'
+      : '';
+
+  query = mysql.format(query, data);
+
+  stripe.subscriptions.create(
+    {
+      customer: datas.customer,
+      items: [
+        {
+          plan: plan
+        }
+      ]
+    },
+    function(err, subscription) {
+      if (err) {
+        //tools.dSend(res, "NOK", "Abonnement/Stripe", "subscribe", 500, error, 'Can\'t create stripe sub');
+      } else {
+        req.mysql.query(query, function(error, results, fields) {
+          if (error) {
+            //tools.dSend(res, "NOK", "Abonnement/Stripe", "subscribe", 500, error, 'Can\'t create stripe sub');
+          } else {
+            var querySub = 'UPDATE ?? SET idSubStripe=? WHERE idEcole=?';
+            var data = ['d_abonnement', subscription.id, req.currUser.idEcole];
+            querySub = mysql.format(querySub, data);
+            req.mysql.query(querySub, function(error, results, fields) {
+              if (error) {
+                console.log(results);
+                return false;
+              } else {
+                console.log(results);
+                return true;
+              }
+            });
+          }
+        });
+      }
+    }
+  );
+};

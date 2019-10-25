@@ -2,8 +2,11 @@ var express = require('express');
 var mysql = require('mysql');
 var serial = require('generate-serial-key');
 var md5 = require('MD5');
+var generator = require('generate-password');
+var manageAccount = require('../../functions/mails/manageAccount');
 var router = express.Router();
 var filez = require('../../functions/files/files');
+var stripe = require('../../functions/stripe');
 var tools = require('../../functions/tools');
 
 /**
@@ -56,7 +59,7 @@ router.post('/createSchool', function(req, res, next) {
 
   if (name && rue && numRue && ville && departement && tel) {
     var query =
-      'INSERT INTO ?? (nomEcole, rue, numRue, ville, departement, tel) VALUES (?,?,?,?,?,?,?)';
+      'INSERT INTO ?? (nomEcole, rue, numRue, ville, departement, tel, email) VALUES (?,?,?,?,?,?,?)';
     var data = ['d_ecole', name, rue, numRue, ville, departement, tel, email];
     query = mysql.format(query, data);
     req.mysql.query(query, function(error, results, fields) {
@@ -511,6 +514,95 @@ router.post('/createClass', function(req, res, next) {
 });
 
 /**
+ * @api {post} /admin/create/addStudent/ Creating one student
+ * @apiName addStudent
+ * @apiGroup AdminCreate
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token AdminToken auth
+ * @apiParam {Int} idEcole Id de l'école
+ * @apiParam {String} nomEleve Nom de l'élève
+ * @apiParam {String} prenomEleve Prénom de l'élève
+
+ *
+ * @apiError 500 SQL Error.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *    "status": 200,
+ *    "error": null,
+ *       "response": {
+ *           "fieldCount": 0,
+ *           "affectedRows": 1,
+ *           "insertId": 11,
+ *           "serverStatus": 2,
+ *           "warningCount": 0,
+ *           "message": "",
+ *           "protocol41": true,
+ *           "changedRows": 0
+ *       }
+ * }
+ * @apiErrorExample {json} Error-Response:
+ * {
+ *    "Cette route necessite que trous les champs soient remplis."
+ * }
+ */
+
+router.post('/addStudent', function(req, res, next) {
+  var idEcole = req.body.idEcole,
+    nomEleve = req.body.nomEleve,
+    prenomEleve = req.body.prenomEleve;
+  if (idEcole && nomEleve && prenomEleve) {
+    var query = 'INSERT INTO ?? (nomEleve, prenomEleve) VALUES (?,?)';
+    var data = ['d_eleves', nomEleve, prenomEleve];
+    query = mysql.format(query, data);
+    req.mysql.query(query, function(error, results, fields) {
+      if (error) {
+        tools.dSend(res, 'NOK', 'Admin-Create', 'addStudent', 500, error, null);
+      } else {
+        var query = 'INSERT INTO ?? (idEleve, idEcole) VALUES (?,?)';
+        var data = ['d_elevesEcole', results.insertId, idEcole];
+        query = mysql.format(query, data);
+        req.mysql.query(query, function(error, results, fields) {
+          if (error) {
+            tools.dSend(
+              res,
+              'NOK',
+              'Admin-Create',
+              'addStudent',
+              500,
+              error,
+              null
+            );
+          } else {
+            tools.dSend(
+              res,
+              'OK',
+              'Admin-Create',
+              'addStudent',
+              200,
+              null,
+              results
+            );
+          }
+        });
+      }
+    });
+  } else {
+    tools.dSend(
+      res,
+      'NOK',
+      'Admin-Create',
+      'addStudent',
+      500,
+      null,
+      'Cette route necessite que trous les champs soient remplis.'
+    );
+  }
+});
+
+/**
  * @api {post} /admin/create/addAllStudents/ Pushing all studients in one time
  * @apiName createClass
  * @apiGroup AdminCreate
@@ -518,10 +610,8 @@ router.post('/createClass', function(req, res, next) {
  * @apiVersion 1.0.0
  *
  * @apiHeader {String} token AdminToken auth
- * @apiParam {Int} idEcole Id de l'école
- * @apiParam {Int} level Niveau de la classe
- * @apiParam {Int} num Numero de la classe
- * @apiParam {String} annee Année de la classe (2019/2020)
+ * @apiParam {Int} idClasse Id de la classe
+ * @apiParam {Array} idEleves Id des eleves
  *
  * @apiError 500 SQL Error.
  *
@@ -542,17 +632,8 @@ router.post('/createClass', function(req, res, next) {
  * }
  * @apiParamExample {json} Request-Example:
  *  {
- *    "idEcole": 1,
- *    "Eleves": [
- *      {
- *        "nomEleve":"Fodid",
- *        "prenomEleve":"Patrick"
- *      },
- *      {
- *        "nomEleve":"Pastis",
- *        "prenomEleve":"Landais"
- *      }
- *    ]
+ *    "idClasse": 1,
+ *    "eleves": {idEleve: [1, 2, 3, 4, 5, 6]}
  *  }
  * @apiErrorExample {json} Error-Response:
  * {
@@ -561,65 +642,147 @@ router.post('/createClass', function(req, res, next) {
  */
 
 router.post('/addAllStudents', function(req, res, next) {
-  var idEcole = req.body.idEcole,
-    levelClass = req.body.level,
-    numClasse = req.body.num,
-    anneeClasse = req.body.annee;
-
-  if (idEcole && levelClass && numClasse && anneeClasse) {
-    var query = 'INSERT INTO ?? (level, num, annee) VALUES (?,?,?)';
-    var data = ['d_classe', levelClass, numClasse, anneeClasse];
-    query = mysql.format(query, data);
-    req.mysql.query(query, function(error, results, fields) {
-      if (error) {
-        tools.dSend(
-          res,
-          'NOK',
-          'Admin-Create',
-          'createClass',
-          500,
-          error,
-          null
-        );
-      } else {
-        var query = 'INSERT INTO ?? (idClasse, idEcole) VALUES (?,?)';
-        var data = ['d_classeEcole', results.insertId, idEcole];
-        query = mysql.format(query, data);
-        req.mysql.query(query, function(error, results, fields) {
-          if (error) {
-            tools.dSend(
-              res,
-              'NOK',
-              'Admin-Create',
-              'createClass',
-              500,
-              error,
-              null
-            );
-          } else {
-            tools.dSend(
-              res,
-              'OK',
-              'Admin-Create',
-              'createClass',
-              200,
-              null,
-              results
-            );
-          }
-        });
-      }
-    });
+  var idCLasse = req.body.idCLasse,
+    eleves = JSON.parse(req.body.eleves);
+  console.log(idCLasse + ' ' + eleves);
+  if (idCLasse && eleves) {
+    for (let i = 0; i < eleves.length; i++) {
+      const element = eleves[i];
+      console.log(element);
+    }
+    tools.dSend(res, 'OK', 'Admin-Create', 'addAllStudents', 200, null, null);
   } else {
     tools.dSend(
       res,
       'NOK',
       'Admin-Create',
-      'createClass',
+      'addAllStudents',
       500,
       null,
       'Cette route necessite que trous les champs soient remplis.'
     );
   }
+});
+
+/**
+ * @api {post} /admin/create/createProf/ Creating a professor
+ * @apiName createProf
+ * @apiGroup AdminCreate
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token AdminToken auth
+ * @apiParam {String} nom Nome de l'utilisateur.
+ * @apiParam {String} prenom Prénom de l'utilisateur.
+ * @apiParam {String} email Email de l'utilisateur.
+ * @apiParam {Int} idEcole Id de l'école.
+ *
+ * @apiError 500 SQL Error.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *    "status": 200,
+ *    "error": null,
+ *       "response": {
+ *           "fieldCount": 0,
+ *           "affectedRows": 1,
+ *           "insertId": 11,
+ *           "serverStatus": 2,
+ *           "warningCount": 0,
+ *           "message": "",
+ *           "protocol41": true,
+ *           "changedRows": 0
+ *       }
+ * }
+ * @apiErrorExample {json} Error-Response:
+ * {
+ *    "Cette route necessite que trous les champs soient remplis."
+ * }
+ */
+
+router.post('/createProf', function(req, res, next) {
+  var query = 'SELECT * FROM ?? WHERE ??=?';
+  var table = ['d_users', 'emailUser', req.body.email];
+  query = mysql.format(query, table);
+
+  req.mysql.query(query, function(err, rows) {
+    if (err) {
+      tools.dSend(res, 'NOK', 'Admin-Create', 'createProf', 500, err, null);
+    } else {
+      if (rows.length == 0) {
+        var password = generator.generate({
+          length: 8,
+          numbers: true
+        });
+        var postData = {
+          nomUser: req.body.nom,
+          prenomUser: req.body.prenom,
+          emailUser: req.body.email,
+          pass: md5(password),
+          typeUser: 1,
+          access_token: 'n/a',
+          device_type: 'web'
+        };
+        var query = 'INSERT INTO ?? SET ?';
+        var table = ['d_users'];
+        query = mysql.format(query, table);
+
+        req.mysql.query(query, postData, function(error, results, fields) {
+          if (error) {
+            tools.dSend(
+              res,
+              'NOK',
+              'Admin-Create',
+              'createProf',
+              500,
+              error,
+              null
+            );
+          } else {
+            let query = 'INSERT INTO ?? (idEcole, idProf) VALUES (?,?)';
+            let data = ['d_profsAppEcole', req.body.idEcole, results.insertId];
+            query = mysql.format(query, data);
+            req.mysql.query(query, function(error, results2, fields) {
+              if (error) {
+                tools.dSend(
+                  res,
+                  'NOK',
+                  'Users',
+                  'createProf',
+                  500,
+                  error,
+                  null
+                );
+              } else {
+                manageAccount.sendCreateAccount(req.body.email, password);
+                res.send(
+                  JSON.stringify({ status: 200, error: null, pass: password })
+                );
+                tools.dLog(
+                  'OK',
+                  'Admin-Create',
+                  'createProf',
+                  200,
+                  null,
+                  postData
+                );
+              }
+            });
+          }
+          res.end(JSON.stringify(results));
+        });
+      } else {
+        tools.dSend(
+          res,
+          'NOK',
+          'Admin-Create',
+          'createProf',
+          501,
+          err,
+          'Un utilisateur est déja inscrit avec cet Email.'
+        );
+      }
+    }
+  });
 });
 module.exports = router;

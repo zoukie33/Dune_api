@@ -130,6 +130,89 @@
   },
   {
     "type": "post",
+    "url": "/admin/create/addStudent/",
+    "title": "Creating one student",
+    "name": "addStudent",
+    "group": "AdminCreate",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>AdminToken auth</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idEcole",
+            "description": "<p>Id de l'école</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "nomEleve",
+            "description": "<p>Nom de l'élève</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "prenomEleve",
+            "description": "<p>Prénom de l'élève</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "{\n   \"Cette route necessite que trous les champs soient remplis.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n      \"response\": {\n          \"fieldCount\": 0,\n          \"affectedRows\": 1,\n          \"insertId\": 11,\n          \"serverStatus\": 2,\n          \"warningCount\": 0,\n          \"message\": \"\",\n          \"protocol41\": true,\n          \"changedRows\": 0\n      }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/adminPanel/create.js",
+    "groupTitle": "AdminCreate"
+  },
+  {
+    "type": "post",
     "url": "/admin/create/createClass/",
     "title": "Create a class",
     "name": "createClass",
@@ -186,6 +269,103 @@
           }
         ]
       }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "{\n   \"Cette route necessite que trous les champs soient remplis.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n      \"response\": {\n          \"fieldCount\": 0,\n          \"affectedRows\": 1,\n          \"insertId\": 11,\n          \"serverStatus\": 2,\n          \"warningCount\": 0,\n          \"message\": \"\",\n          \"protocol41\": true,\n          \"changedRows\": 0\n      }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/adminPanel/create.js",
+    "groupTitle": "AdminCreate"
+  },
+  {
+    "type": "post",
+    "url": "/admin/create/addAllStudents/",
+    "title": "Pushing all studients in one time",
+    "name": "createClass",
+    "group": "AdminCreate",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>AdminToken auth</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idEcole",
+            "description": "<p>Id de l'école</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "level",
+            "description": "<p>Niveau de la classe</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "num",
+            "description": "<p>Numero de la classe</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "annee",
+            "description": "<p>Année de la classe (2019/2020)</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"idEcole\": 1,\n  \"Eleves\": [\n    {\n      \"nomEleve\":\"Fodid\",\n      \"prenomEleve\":\"Patrick\"\n    },\n    {\n      \"nomEleve\":\"Pastis\",\n      \"prenomEleve\":\"Landais\"\n    }\n  ]\n}",
+          "type": "json"
+        }
+      ]
     },
     "error": {
       "fields": {
@@ -428,6 +608,96 @@
   },
   {
     "type": "post",
+    "url": "/admin/create/createProf/",
+    "title": "Creating a professor",
+    "name": "createProf",
+    "group": "AdminCreate",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>AdminToken auth</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "nom",
+            "description": "<p>Nome de l'utilisateur.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "prenom",
+            "description": "<p>Prénom de l'utilisateur.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email de l'utilisateur.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idEcole",
+            "description": "<p>Id de l'école.</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "{\n   \"Cette route necessite que trous les champs soient remplis.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n      \"response\": {\n          \"fieldCount\": 0,\n          \"affectedRows\": 1,\n          \"insertId\": 11,\n          \"serverStatus\": 2,\n          \"warningCount\": 0,\n          \"message\": \"\",\n          \"protocol41\": true,\n          \"changedRows\": 0\n      }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/adminPanel/create.js",
+    "groupTitle": "AdminCreate"
+  },
+  {
+    "type": "post",
     "url": "/admin/create/createSchool/",
     "title": "Create a school",
     "name": "createSchool",
@@ -610,7 +880,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n   \"status\": 200,\n   \"error\": null,\n      \"response\": [\n        {\n           \"id\": 1,\n           \"idDirecteur\": 1,\n           \"nomEcole\": \"Sainte-Marie: Grand Lebrun\"\n       },\n       {\n           \"id\": 2,\n           \"idDirecteur\": 33,\n           \"nomEcole\": \"Epitech\"\n       }\n    ]\n}",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n      \"response\": [\n        {\n           \"id\": 1,\n           \"idDirecteur\": 1,\n           \"nomEcole\": \"Sainte-Marie: Grand Lebrun\",\n           \"rue\": \"Rue de l'école normale\",\n           \"numRue\": \"4\",\n           \"ville\": \"Bordeaux\",\n           \"departement\": \"Aquitaine\",\n           \"tel\": \"0603**4206\",\n           \"id_customer\": \"cus_FpPdZuUxTL0Z5n\",\n           \"email\": \"elodie.berthaud@epitech.eu\",\n           \"nomUser\": \"Berthaud\",\n           \"prenomUser\": \"Elodie\"\n       },\n       {\n           \"id\": 2,\n           \"idDirecteur\": 33,\n           \"nomEcole\": \"Epitech\",\n           \"rue\": \"Rue de l'école normale\",\n           \"numRue\": \"4\",\n           \"ville\": \"Bordeaux\",\n           \"departement\": \"Aquitaine\",\n           \"tel\": \"0603**4206\",\n           \"id_customer\": \"cus_FpPdZuUxTL0Z5n\",\n           \"email\": \"elodie.berthaud@epitech.eu\",\n           \"nomUser\": \"Berthaud\",\n           \"prenomUser\": \"Elodie\"\n       }\n    ]\n}",
           "type": "json"
         }
       ]
@@ -907,6 +1177,56 @@
   },
   {
     "type": "get",
+    "url": "/admin/dashboard/getStudentsBySchool/:idSchool",
+    "title": "Getting students by School",
+    "name": "getStudentsBySchool",
+    "group": "AdminDashboard",
+    "permission": [
+      {
+        "name": "notLogged"
+      }
+    ],
+    "version": "1.0.0",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n \"status\": 200,\n \"error\": null,\n \"response\": [\n     {\n         \"idEleve\": 1,\n         \"nomEleve\": \"Merveillau\",\n         \"prenomEleve\": \"Denis\",\n         \"picPath\": \"1-eleve.png\"\n     },\n     {\n         \"idEleve\": 2,\n         \"nomEleve\": \"Senouci\",\n         \"prenomEleve\": \"Elies\",\n         \"picPath\": \"2-eleve.png\"\n     }\n   ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>AdminToken auth</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idSchool",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "filename": "routes/adminPanel/dashboard.js",
+    "groupTitle": "AdminDashboard"
+  },
+  {
+    "type": "get",
     "url": "/admin/dashboard/getTableBySchool/:idEcole",
     "title": "Getting Tables by school",
     "name": "getTableBySchool",
@@ -1107,6 +1427,111 @@
     },
     "filename": "routes/adminPanel/delete.js",
     "groupTitle": "AdminDelete"
+  },
+  {
+    "type": "delete",
+    "url": "/admin/delete/deleteProf/:idProf",
+    "title": "Delete a Professor",
+    "name": "deleteProf",
+    "group": "AdminDelete",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idProf",
+            "description": "<p>Id Prof</p>"
+          }
+        ]
+      }
+    },
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>AdminToken auth</p>"
+          }
+        ]
+      }
+    },
+    "description": "<p>Route permettant de supprimer un professeur</p>",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": {\n       \"fieldCount\": 0,\n       \"affectedRows\": 1,\n       \"insertId\": 0,\n       \"serverStatus\": 2,\n       \"warningCount\": 0,\n       \"message\": \"\",\n       \"protocol41\": true,\n       \"changedRows\": 0\n   }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/adminPanel/delete.js",
+    "groupTitle": "AdminDelete"
+  },
+  {
+    "type": "post",
+    "url": "/admin/login/",
+    "title": "Login an User",
+    "name": "Login",
+    "group": "AdminLogin",
+    "permission": [
+      {
+        "name": "Public"
+      }
+    ],
+    "version": "1.0.0",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "502",
+            "description": "<p>Aucun utilisateur ne correspond à ces identifiants.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email de l'utilisateur</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Mot de passe de l'utilisateur</p>"
+          }
+        ]
+      }
+    },
+    "description": "<p>Route permettant à un utilisateur de se connecter.</p>",
+    "filename": "routes/adminPanel/login.js",
+    "groupTitle": "AdminLogin"
   },
   {
     "type": "get",
@@ -1443,6 +1868,76 @@
         {
           "title": "Success-Response:",
           "content": "{\n   \"Eleve Updated\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/adminPanel/update.js",
+    "groupTitle": "AdminUpdate"
+  },
+  {
+    "type": "put",
+    "url": "/admin/update/passwordUser",
+    "title": "Updating a passwordUser",
+    "name": "passwordUser",
+    "group": "AdminUpdate",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token auth</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idUser",
+            "description": "<p>Id de l'utilisateur a update.</p>"
+          }
+        ]
+      }
+    },
+    "description": "<p>Route permettant la mise à jour le mot de passe d'un utilisateur.</p>",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "{\n   \"Impossible de mettre a jour cet Utilisateur, tous les champs doivent être remplis.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n   \"Password Updated\"\n}",
           "type": "json"
         }
       ]
@@ -3219,6 +3714,68 @@
       ]
     },
     "filename": "routes/facturation/gestFact.js",
+    "groupTitle": "Facturation"
+  },
+  {
+    "type": "post",
+    "url": "/stripe/secure/createStripeCustomer",
+    "title": "Create customer in stripe",
+    "name": "verifPassword",
+    "group": "Facturation",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token auth</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password de l'utilisateur.</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": \"Password Valid\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/stripe/secure.js",
     "groupTitle": "Facturation"
   },
   {
