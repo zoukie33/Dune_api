@@ -353,7 +353,7 @@ router.put('/user', function(req, res, next) {
  *    "Impossible de mettre a jour cet élève, tous les champs doivent être remplis."
  * }
  */
- 
+
 router.put('/eleve', function(req, res, next) {
   var idEleve = req.body.idEleve,
     nomEleve = req.body.nomEleve,

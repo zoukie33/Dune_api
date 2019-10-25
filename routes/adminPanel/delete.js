@@ -184,7 +184,8 @@ router.delete('/deleteEcole/:idEcole', function(req, res, next) {
  */
 
 router.delete('/deleteProf/:idProf', function(req, res, next) {
-  var query = 'SELECT typeUser FROM d_users WHERE idUser = ' + req.params.idProf;
+  var query =
+    'SELECT typeUser FROM d_users WHERE idUser = ' + req.params.idProf;
 
   req.mysql.query(query, function(error, results, fields) {
     if (error) {
@@ -194,13 +195,37 @@ router.delete('/deleteProf/:idProf', function(req, res, next) {
         var query = 'DELETE FROM d_users WHERE iduser = ' + req.params.idProf;
         req.mysql.query(query, function(error, results, fields) {
           if (error) {
-            tools.dSend(res, 'NOK', 'Admin-Delete', 'deleteProf', 500, error, null);
+            tools.dSend(
+              res,
+              'NOK',
+              'Admin-Delete',
+              'deleteProf',
+              500,
+              error,
+              null
+            );
           } else {
-            tools.dSend(res, 'OK', 'Admin-Delete', 'deleteProf', 200, null, results);
+            tools.dSend(
+              res,
+              'OK',
+              'Admin-Delete',
+              'deleteProf',
+              200,
+              null,
+              results
+            );
           }
         });
       } else {
-        tools.dSend(res, 'NOK', 'Admin-Delete', 'deleteProf', 500, null, "Vous ne pouvez supprimer que des professeurs.");
+        tools.dSend(
+          res,
+          'NOK',
+          'Admin-Delete',
+          'deleteProf',
+          500,
+          null,
+          'Vous ne pouvez supprimer que des professeurs.'
+        );
       }
     }
   });

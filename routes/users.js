@@ -181,6 +181,7 @@ router.get('/infos', function(req, res, next) {
  * @apiParam {String} nom Nome de l'utilisateur.
  * @apiParam {String} prenom Prénom de l'utilisateur.
  * @apiParam {String} email Email de l'utilisateur
+ * @apiParam {Int} directorId Id du directeur
  *
  *
  * @apiDescription Route permettant la création d'un utilisateur.
