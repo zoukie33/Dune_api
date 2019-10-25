@@ -69,8 +69,8 @@ app.all('*', function(req, res, next) {
 var pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'fnbxfzmxfn33',
-  database: 'dune_api',
+  password: '*****',
+  database: '*****',
   insecureAuth: true,
   queueLimit: 0,
   connectionLimit: 0
