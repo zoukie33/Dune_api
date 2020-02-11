@@ -58,35 +58,6 @@
     "groupTitle": "Abonnement"
   },
   {
-    "type": "get",
-    "url": "/abonnement/isValid",
-    "title": "Verifying a sub",
-    "name": "isValid",
-    "group": "Abonnement",
-    "permission": [
-      {
-        "name": "Logged"
-      }
-    ],
-    "version": "1.0.0",
-    "description": "<p>Route permettant de vérifier si un abonnement est encore valide.</p>",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "token",
-            "description": "<p>auth</p>"
-          }
-        ]
-      }
-    },
-    "filename": "routes/abonnement.js",
-    "groupTitle": "Abonnement"
-  },
-  {
     "type": "post",
     "url": "/abonnement/subscribe",
     "title": "Subscribing to an abonnement",
@@ -108,6 +79,13 @@
             "optional": false,
             "field": "typeAbo",
             "description": "<p>Type d'abonnement (1 ou 2)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "quantity",
+            "description": "<p>quantite de tables associées a l'abonnement</p>"
           }
         ]
       }
@@ -179,6 +157,89 @@
           }
         ]
       }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "{\n   \"Cette route necessite que trous les champs soient remplis.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n      \"response\": {\n          \"fieldCount\": 0,\n          \"affectedRows\": 1,\n          \"insertId\": 11,\n          \"serverStatus\": 2,\n          \"warningCount\": 0,\n          \"message\": \"\",\n          \"protocol41\": true,\n          \"changedRows\": 0\n      }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/adminPanel/create.js",
+    "groupTitle": "AdminCreate"
+  },
+  {
+    "type": "post",
+    "url": "/admin/create/addAllStudents/",
+    "title": "Pushing all studients in one time",
+    "name": "createClass",
+    "group": "AdminCreate",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>AdminToken auth</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idClasse",
+            "description": "<p>Id de la classe</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "idEleves",
+            "description": "<p>Id des eleves</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"idClasse\": 1,\n  \"eleves\": {idEleve: [1, 2, 3, 4, 5, 6]}\n}",
+          "type": "json"
+        }
+      ]
     },
     "error": {
       "fields": {
@@ -303,9 +364,9 @@
   },
   {
     "type": "post",
-    "url": "/admin/create/addAllStudents/",
-    "title": "Pushing all studients in one time",
-    "name": "createClass",
+    "url": "/admin/create/createComp/",
+    "title": "Creating Competence",
+    "name": "createComp",
     "group": "AdminCreate",
     "permission": [
       {
@@ -331,38 +392,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Int",
-            "optional": false,
-            "field": "idEcole",
-            "description": "<p>Id de l'école</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Int",
-            "optional": false,
-            "field": "level",
-            "description": "<p>Niveau de la classe</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Int",
-            "optional": false,
-            "field": "num",
-            "description": "<p>Numero de la classe</p>"
-          },
-          {
-            "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "annee",
-            "description": "<p>Année de la classe (2019/2020)</p>"
+            "field": "libelleComp",
+            "description": "<p>Libelle de la compétence a ajouter</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Request-Example:",
-          "content": "{\n  \"idEcole\": 1,\n  \"Eleves\": [\n    {\n      \"nomEleve\":\"Fodid\",\n      \"prenomEleve\":\"Patrick\"\n    },\n    {\n      \"nomEleve\":\"Pastis\",\n      \"prenomEleve\":\"Landais\"\n    }\n  ]\n}",
+          "content": "{\n  \"libelleComp\": \"Reconnaitre les chiffres\"\n}",
           "type": "json"
         }
       ]
@@ -866,6 +906,119 @@
   },
   {
     "type": "get",
+    "url": "/admin/creators/genApiKey/:idCreator",
+    "title": "Generating ApiKey for a creator",
+    "name": "genApiKey",
+    "group": "AdminCreators",
+    "permission": [
+      {
+        "name": "Public"
+      }
+    ],
+    "version": "1.0.0",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n      \"response\": eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.*****.******\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "{\n  {\n     \"status\": 400,\n     \"error\": \"Ce creator dispose déjà d'une clé api\",\n     \"response\": null\n  }\n}",
+          "type": "json"
+        }
+      ],
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "502",
+            "description": "<p>Aucun utilisateur ne correspond à ces identifiants.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email de l'utilisateur</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Mot de passe de l'utilisateur</p>"
+          }
+        ]
+      }
+    },
+    "description": "<p>Route permettant à un utilisateur de se connecter.</p>",
+    "filename": "routes/adminPanel/creators.js",
+    "groupTitle": "AdminCreators"
+  },
+  {
+    "type": "get",
+    "url": "/admin/creators/",
+    "title": "Getting all creators",
+    "name": "getCreators",
+    "group": "AdminCreators",
+    "permission": [
+      {
+        "name": "Public"
+      }
+    ],
+    "version": "1.0.0",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Bad Request.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": [\n        {\n            \"idCreator\": 1,\n            \"nom\": \"VictorH\",\n            \"api_key\": \"null\"\n        },\n        {\n            \"idCreator\": 2,\n            \"nom\": \"MvCaster\",\n            \"api_key\": null\n        },\n        {\n            \"idCreator\": 3,\n            \"nom\": \"Corentin Bordes\",\n            \"api_key\": null\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "description": "<p>Route permettant de récupérer tous les créateurs</p>",
+    "filename": "routes/adminPanel/creators.js",
+    "groupTitle": "AdminCreators"
+  },
+  {
+    "type": "get",
     "url": "/admin/dashboard/getAllSchools",
     "title": "Getting Schools",
     "name": "getAllSchools",
@@ -1277,6 +1430,57 @@
   },
   {
     "type": "delete",
+    "url": "/admin/delete/deleteCompetence/:idCompetence",
+    "title": "Delete a Competence",
+    "name": "deleteCompetence",
+    "group": "AdminDelete",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idCompetence",
+            "description": "<p>Id de la competence</p>"
+          }
+        ]
+      }
+    },
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>AdminToken auth</p>"
+          }
+        ]
+      }
+    },
+    "description": "<p>Route permettant de supprimer une compétence.</p>",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": {\n       \"fieldCount\": 0,\n       \"affectedRows\": 1,\n       \"insertId\": 0,\n       \"serverStatus\": 2,\n       \"warningCount\": 0,\n       \"message\": \"\",\n       \"protocol41\": true,\n       \"changedRows\": 0\n   }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/adminPanel/delete.js",
+    "groupTitle": "AdminDelete"
+  },
+  {
+    "type": "delete",
     "url": "/admin/delete/deleteEcole/:idEcole",
     "title": "Delete a school",
     "name": "deleteEcole",
@@ -1505,6 +1709,12 @@
             "optional": false,
             "field": "500",
             "description": "<p>SQL Error</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Bad request.</p>"
           }
         ]
       }
@@ -1679,6 +1889,61 @@
     },
     "filename": "routes/adminPanel/statistiques.js",
     "groupTitle": "AdminStats"
+  },
+  {
+    "type": "put",
+    "url": "/admin/update/addBinaryGame",
+    "title": "Adding a binary for a game",
+    "name": "addBinaryGame",
+    "group": "AdminUpdate",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token auth</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idGame",
+            "description": "<p>Id de l'app/jeu.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": true,
+            "field": "binary",
+            "description": "<p>Zip of the game.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "url",
+            "description": "<p>Url of the game.</p>"
+          }
+        ]
+      }
+    },
+    "filename": "routes/adminPanel/update.js",
+    "groupTitle": "AdminUpdate"
   },
   {
     "type": "put",
@@ -2258,6 +2523,12 @@
             "optional": false,
             "field": "500",
             "description": "<p>SQL Error</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Bad request.</p>"
           }
         ]
       }
@@ -2283,6 +2554,15 @@
       }
     },
     "description": "<p>Route permettant à un utilisateur de se connecter.</p>",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n  \"status\": 200,\n  \"success\": true,\n  \"message\": \"Token generated\",\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjAsInR5cGVVc2VyIjo0LCJlbWFpbFVzZXIiOiJyb21haW4uZ2FkcmF0QGVwaXRlY2guZXUiLCJpZEVjb2xlIjowLCJpYXQiOjE1NzU1NDg0NTQsImV4cCI6MTU3NjE1MzI1NH0.UHbEztu-9wU8PUE8g_TF5k1z4-NreUOJw0FmvWl3WUs\",\n  \"typeUser\": 4,\n  \"currUser\": 0,\n  \"cgu\": 1\n}",
+          "type": "json"
+        }
+      ]
+    },
     "filename": "routes/auth/login.js",
     "groupTitle": "Auth"
   },
@@ -2804,7 +3084,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"nbGamesPlayedBC\": 1,\n   \"response\": [\n       {\n           \"idGP\": 1,\n           \"nameGame\": \"Compteclasse\",\n           \"idMatiere\": 1,\n           \"matiere\": \"Maths\",\n           \"moyenne\": 67.5,\n           \"nbJoueurs\": 4,\n           \"date\": \"2019-03-14T18:04:51.000Z\"\n       }\n   ]\n}",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"nbGamesPlayedBC\": 1,\n   \"response\": [\n       {\n           \"idGP\": 1,\n           \"nameGame\": \"Compteclasse\",\n           \"nbJoueurs\": 4,\n           \"date\": \"2019-03-14T18:04:51.000Z\"\n       }\n   ]\n}",
           "type": "json"
         }
       ]
@@ -2858,6 +3138,12 @@
             "optional": false,
             "field": "500",
             "description": "<p>SQL Error.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Bad request.</p>"
           }
         ]
       }
@@ -2866,7 +3152,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"ascEleve\": [\n       {\n           \"idEleve\": 13,\n           \"nom\": \"Bozo\",\n           \"prenom\": \"Jessico\",\n           \"note\": 88\n       },\n       {\n           \"idEleve\": 14,\n           \"nom\": \"Couturier\",\n           \"prenom\": \"Manon\",\n           \"note\": 75\n       }\n   ],\n   \"descNote\": [\n       {\n           \"idEleve\": 13,\n           \"nom\": \"Bozo\",\n           \"prenom\": \"Jessico\",\n           \"note\": 88\n       },\n       {\n           \"idEleve\": 14,\n           \"nom\": \"Couturier\",\n           \"prenom\": \"Manon\",\n           \"note\": 75\n       }\n   ]\n}",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"ascEleve\": [\n       {\n         \"idComp\": 1,\n          \"libelleComp\": \"Reconnaître les couleurs\",\n          \"notes\": [\n              {\n                  \"idEleve\": 1,\n                  \"nomEleve\": \"Merveillau\",\n                  \"prenomEleve\": \"Denis\",\n                  \"score\": 42,\n                  \"idComp\": 1\n              },\n              {\n                  \"idEleve\": 2,\n                  \"nomEleve\": \"Senouci\",\n                  \"prenomEleve\": \"Elies\",\n                  \"score\": 12,\n                  \"idComp\": 1\n              }\n          ]\n       },\n       {\n          \"idComp\": 2,\n          \"libelleComp\": \"Resas\",\n          \"notes\": [\n              {\n                  \"idEleve\": 1,\n                  \"nomEleve\": \"Merveillau\",\n                  \"prenomEleve\": \"Denis\",\n                  \"score\": 42,\n                  \"idComp\": 1\n              },\n              {\n                  \"idEleve\": 2,\n                  \"nomEleve\": \"Senouci\",\n                  \"prenomEleve\": \"Elies\",\n                  \"score\": 12,\n                  \"idComp\": 1\n              }\n          ]\n       }\n   ],\n   \"descNote\": [\n       {\n         \"idComp\": 1,\n          \"libelleComp\": \"Reconnaître les couleurs\",\n          \"notes\": [\n              {\n                  \"idEleve\": 1,\n                  \"nomEleve\": \"Merveillau\",\n                  \"prenomEleve\": \"Denis\",\n                  \"score\": 42,\n                  \"idComp\": 1\n              },\n              {\n                  \"idEleve\": 2,\n                  \"nomEleve\": \"Senouci\",\n                  \"prenomEleve\": \"Elies\",\n                  \"score\": 12,\n                  \"idComp\": 1\n              }\n          ]\n       },\n       {\n          \"idComp\": 2,\n          \"libelleComp\": \"Resas\",\n          \"notes\": [\n              {\n                  \"idEleve\": 1,\n                  \"nomEleve\": \"Merveillau\",\n                  \"prenomEleve\": \"Denis\",\n                  \"score\": 42,\n                  \"idComp\": 1\n              },\n              {\n                  \"idEleve\": 2,\n                  \"nomEleve\": \"Senouci\",\n                  \"prenomEleve\": \"Elies\",\n                  \"score\": 12,\n                  \"idComp\": 1\n              }\n          ]\n       }\n   ]\n}",
           "type": "json"
         }
       ]
@@ -2928,7 +3214,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"response\": [\n       {\n           \"idGP\": 1,\n           \"nameGame\": \"Compteclasse\",\n           \"matiere\": \"Maths\",\n           \"note\": 100,\n           \"date\": \"2019-03-14T18:04:51.000Z\",\n           \"moyenne\": 67.5\n       }\n   ]\n}",
+          "content": "{\n  \"status\": 200,\n  \"error\": null,\n  \"response\": [\n      {\n          \"idGP\": 183,\n          \"nameGame\": \"Invacouleur\",\n          \"date\": \"2019-11-19T16:12:01.000Z\",\n          \"notes\": [\n              {\n                  \"idComp\": 1,\n                  \"libelleComp\": \"Reconnaître les couleurs\",\n                  \"note\": 33\n              },\n              {\n                  \"idComp\": 2,\n                  \"libelleComp\": \"Reconnaître les lettres majuscules\",\n                  \"note\": 44\n              }\n          ]\n      },\n      {\n          \"idGP\": 336,\n          \"nameGame\": \"Compteclasse\",\n          \"date\": \"2019-12-05T00:14:25.000Z\",\n          \"notes\": [\n              {\n                  \"idComp\": 1,\n                  \"libelleComp\": \"Reconnaître les couleurs\",\n                  \"note\": 28\n              },\n              {\n                  \"idComp\": 7,\n                  \"libelleComp\": \"Compter jusqu'à 20\",\n                  \"note\": 84\n              },\n              {\n                  \"idComp\": 8,\n                  \"libelleComp\": \"Reconnaître des objets\",\n                  \"note\": 28\n              },\n              {\n                  \"idComp\": 9,\n                  \"libelleComp\": \"Reconnaître des animaux\",\n                  \"note\": 98\n              }\n          ]\n      }\n  ]\n}",
           "type": "json"
         }
       ]
@@ -2965,7 +3251,69 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n     \"status\":200,\n     \"error\":null,\n     \"response\":[\n         {\n         \"moyenne\":59.3913,\n         \"level\":4,\n             \"num\":1\n         },\n         {\n             \"moyenne\":100,\n             \"level\":5,\n             \"num\":1\n         }\n    ]\n}",
+          "content": "{\n     \"status\":200,\n     \"error\":null,\n     \"response\":[\n         {\n             \"moyenne\":59.3913,\n             \"level\":4,\n             \"num\":1\n         },\n         {\n             \"moyenne\":100,\n             \"level\":5,\n             \"num\":1\n         }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/eleves/elevesStats.js",
+    "groupTitle": "ElevesStats"
+  },
+  {
+    "type": "get",
+    "url": "/eleves/stats/getComps/:idEleve",
+    "title": "Get competences games played by a studient",
+    "name": "getComps",
+    "group": "ElevesStats",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token auth</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "int",
+            "optional": false,
+            "field": "idEleve",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"response\": [\n       {\n           \"idComp\": 1,\n           \"libelleComp\": \"Logique\"\n       },\n       {\n           \"idComp\": 2,\n           \"libelleComp\": \"Mathématiques\"\n       }\n   ]\n}",
           "type": "json"
         }
       ]
@@ -3002,7 +3350,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\"status\":200,\n\"error\":null,\n\"response\":[\n     {\n         \"score\":70.3333,\"idEleve\":2\n     },\n     {\n         \"score\":67.6667,\"idEleve\":4\n     },\n     {\n         \"score\":57.4286,\"idEleve\":3\n     },\n     {\n         \"score\":34,\"idEleve\":1\n     }\n     ]\n}",
+          "content": "{\n \"status\":200,\n \"error\":null,\n \"response\":\n   [\n     {\n         \"score\":70.3333,\"idEleve\":2\n     },\n     {\n         \"score\":67.6667,\"idEleve\":4\n     },\n     {\n         \"score\":57.4286,\"idEleve\":3\n     },\n     {\n         \"score\":34,\"idEleve\":1\n     }\n   ]\n}",
           "type": "json"
         }
       ]
@@ -3012,9 +3360,9 @@
   },
   {
     "type": "get",
-    "url": "/eleves/stats/getGamesByMatEleve/:idEleve/:idMat",
-    "title": "Get games played by a student for one gametype",
-    "name": "getGamesByMatEleve",
+    "url": "/eleves/stats/getGamesByCompEleve/:idEleve/:idComp",
+    "title": "Get games played by a student for one competence",
+    "name": "getGamesByCompEleve",
     "group": "ElevesStats",
     "permission": [
       {
@@ -3049,7 +3397,7 @@
             "group": "Parameter",
             "type": "int",
             "optional": false,
-            "field": "idMat",
+            "field": "idComp",
             "description": ""
           }
         ]
@@ -3071,69 +3419,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"response\": [\n       {\n           \"idGP\": 1,\n           \"nameGame\": \"Compteclasse\",\n           \"matiere\": \"Maths\",\n           \"note\": 100,\n           \"date\": \"2019-03-14T18:04:51.000Z\",\n           \"moyenne\": 67.5\n       }\n   ]\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "filename": "routes/eleves/elevesStats.js",
-    "groupTitle": "ElevesStats"
-  },
-  {
-    "type": "get",
-    "url": "/eleves/stats/getMat/:idEleve",
-    "title": "Get games type played by a student",
-    "name": "getMat",
-    "group": "ElevesStats",
-    "permission": [
-      {
-        "name": "Logged"
-      }
-    ],
-    "version": "1.0.0",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "token",
-            "description": "<p>Token auth</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "idEleve",
-            "description": ""
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "500",
-            "description": "<p>SQL Error.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"response\": [\n       {\n           \"idTypeGame\": 1,\n           \"labelType\": \"Logique\"\n       },\n       {\n           \"idTypeGame\": 2,\n           \"labelType\": \"Mathématiques\"\n       }\n   ]\n}",
+          "content": "{\n  \"status\": 200,\n  \"error\": null,\n  \"response\": [\n      {\n          \"idGP\": 183,\n          \"nameGame\": \"Invacouleur\",\n          \"date\": \"2019-11-19T16:12:01.000Z\",\n          \"notes\": [\n              {\n                  \"idComp\": 1,\n                  \"libelleComp\": \"Reconnaître les couleurs\",\n                  \"note\": 33\n              }\n          ]\n      },\n      {\n          \"idGP\": 336,\n          \"nameGame\": \"Compteclasse\",\n          \"date\": \"2019-12-05T00:14:25.000Z\",\n          \"notes\": [\n              {\n                  \"idComp\": 1,\n                  \"libelleComp\": \"Reconnaître les couleurs\",\n                  \"note\": 28\n              }\n          ]\n      }\n  ]\n}",
           "type": "json"
         }
       ]
@@ -3594,7 +3880,7 @@
   },
   {
     "type": "get",
-    "url": "/facturation/getFactures/:idEcole",
+    "url": "/facturation/getFactures/",
     "title": "Get all Bills from a school",
     "name": "getFactures",
     "group": "Facturation",
@@ -3617,19 +3903,6 @@
         ]
       }
     },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Int",
-            "optional": false,
-            "field": "idEcole",
-            "description": "<p>Id de l'école en question</p>"
-          }
-        ]
-      }
-    },
     "error": {
       "fields": {
         "Error 4xx": [
@@ -3638,6 +3911,12 @@
             "optional": false,
             "field": "500",
             "description": "<p>SQL Error.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Bad Request.</p>"
           }
         ]
       }
@@ -4271,6 +4550,24 @@
         ]
       }
     },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Bad request.</p>"
+          }
+        ]
+      }
+    },
     "filename": "routes/games/games.js",
     "groupTitle": "Games"
   },
@@ -4327,6 +4624,18 @@
         ]
       }
     },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          }
+        ]
+      }
+    },
     "success": {
       "examples": [
         {
@@ -4360,6 +4669,18 @@
             "optional": false,
             "field": "token",
             "description": "<p>Token auth</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
           }
         ]
       }
@@ -4484,6 +4805,12 @@
             "optional": false,
             "field": "500",
             "description": "<p>SQL Error.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Bad Request.</p>"
           }
         ]
       }
@@ -4766,6 +5093,68 @@
     "groupTitle": "Notifications"
   },
   {
+    "type": "get",
+    "url": "/play/getDataForGame/:tokenGame",
+    "title": "Get game infos",
+    "name": "getDataForGame",
+    "group": "Play_Gamerq",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token auth</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "tokenGame",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"response\": [\n      {\n          \"idGP\": 248,\n          \"idGame\": 1,\n          \"idProf\": 28,\n          \"idClasse\": 1,\n          \"tokenGame\": \"ba0e2da88b7dbc16e3b1fb949e73e756\",\n          \"isPlayed\": 0,\n          \"TimeStamp\": \"2019-12-02T19:50:35.000Z\"\n      }\n  ],\n  \"eleves\": [\n      {\n          \"idEleve\": 1,\n          \"nomEleve\": \"Merveillau\",\n          \"prenomEleve\": \"Denis\"\n      },\n      {\n          \"idEleve\": 2,\n          \"nomEleve\": \"Senouci\",\n          \"prenomEleve\": \"Elies\"\n      }\n  ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/table/play.js",
+    "groupTitle": "Play_Gamerq"
+  },
+  {
     "type": "post",
     "url": "/play/createGame/",
     "title": "Create a game",
@@ -4809,9 +5198,9 @@
           },
           {
             "group": "Parameter",
-            "type": "int",
+            "type": "array",
             "optional": false,
-            "field": "idTypeGame",
+            "field": "idEleves",
             "description": ""
           }
         ]
@@ -4823,8 +5212,14 @@
           {
             "group": "Error 4xx",
             "optional": false,
+            "field": "400",
+            "description": "<p>Bad request.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
             "field": "500",
-            "description": "<p>SQL Error.</p>"
+            "description": "<p>Bad token.</p>"
           }
         ]
       }
@@ -4833,7 +5228,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"response\": [\n  {\n      \"status\": 200,\n      \"idGP\": 11,\n      \"response\": {\n          \"fieldCount\": 0,\n          \"affectedRows\": 1,\n          \"insertId\": 11,\n          \"serverStatus\": 2,\n          \"warningCount\": 0,\n          \"message\": \"\",\n          \"protocol41\": true,\n          \"changedRows\": 0\n      }\n  }\n     ]\n}",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"response\": [\n  {\n      \"status\": 200,\n      \"idGP\": 11,\n      \"tokenGame\": 8cee9523fbe40d8eb4ef6f336903ee4c,\n      \"response\": {\n          \"fieldCount\": 0,\n          \"affectedRows\": 1,\n          \"insertId\": 11,\n          \"serverStatus\": 2,\n          \"warningCount\": 0,\n          \"message\": \"\",\n          \"protocol41\": true,\n          \"changedRows\": 0\n      }\n  }\n     ]\n}",
           "type": "json"
         }
       ]
@@ -4843,9 +5238,9 @@
   },
   {
     "type": "post",
-    "url": "/play/endGame/",
-    "title": "Ending a game",
-    "name": "endGame",
+    "url": "/play/endGameUnit/",
+    "title": "Ending a game for unity",
+    "name": "endGameUnit",
     "group": "Play",
     "permission": [
       {
@@ -4871,66 +5266,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "int",
+            "type": "String",
             "optional": false,
-            "field": "idGP",
+            "field": "tokenGame",
             "description": ""
           },
           {
             "group": "Parameter",
-            "type": "int",
+            "type": "Array",
             "optional": false,
-            "field": "player1",
-            "description": ""
-          },
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "player2",
-            "description": ""
-          },
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "player3",
-            "description": ""
-          },
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "player4",
-            "description": ""
-          },
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "scorePlayer1",
-            "description": ""
-          },
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "scorePlayer2",
-            "description": ""
-          },
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "scorePlayer3",
-            "description": ""
-          },
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "scorePlayer4",
-            "description": ""
+            "field": "tabScores",
+            "description": "<p>Tableau triple entrée avec en colonnes idEleve, idComp, note</p>"
           }
         ]
       }
@@ -4951,7 +5297,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n   \"status\": 200,\n   \"idGP\": 11,\n   \"response\": 4\n}",
+          "content": "{\n   \"status\": 200\n}",
           "type": "json"
         }
       ]
@@ -5013,7 +5359,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"response\": [\n   {\n           \"idGP\": 1,\n           \"idGame\": 1,\n           \"idTypeGame\": 2,\n           \"idProf\": 33,\n           \"idClasse\": 1,\n           \"isPlayed\": 1,\n           \"TimeStamp\": \"2019-03-14T18:04:51.000Z\"\n       }\n  }\n     ]\n}",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"response\": [\n   {\n           \"idGP\": 1,\n           \"idGame\": 1,\n           \"idProf\": 33,\n           \"idClasse\": 1,\n           \"tokenGame\": \"4bf23e5d365539f6e08243705065fa82\",\n           \"isPlayed\": 1,\n           \"TimeStamp\": \"2019-03-14T18:04:51.000Z\"\n       }\n  }\n     ]\n}",
           "type": "json"
         }
       ]
@@ -5194,9 +5540,45 @@
   },
   {
     "type": "post",
-    "url": "/store/buyAppDirecteur",
-    "title": "Buying directly an App",
-    "name": "buyAppDirecteur",
+    "url": "/store/buyAppCheckout",
+    "title": "Create checkout session for buying an app",
+    "name": "buyAppCheckout",
+    "group": "Store",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idApp",
+            "description": "<p>Id de l'application demandée.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "items",
+            "description": "<p>note donnée par l'utilisateur.</p>"
+          }
+        ]
+      }
+    },
+    "description": "<p>Route permettant la création d'une session d'achat pour une app.</p>",
+    "filename": "routes/stripe/payments.js",
+    "groupTitle": "Store"
+  },
+  {
+    "type": "post",
+    "url": "/store/buyAppFree",
+    "title": "Buying directly an App for free",
+    "name": "buyAppFree",
     "group": "Store",
     "permission": [
       {
@@ -5217,7 +5599,7 @@
         ]
       }
     },
-    "description": "<p>Route permettant l'achat d'une application sans vérification nécessaire.</p>",
+    "description": "<p>Route permettant l'achat d'une application sans vérification nécessaire. Cette route n'est appelee que dans le cas ou il reste des applications gratuites dans l'abonnement de l'école. Sinon, c'est la route createCheckoutPayment qui est utilisee pour le paiement via stripe.</p>",
     "success": {
       "examples": [
         {
@@ -5260,7 +5642,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": [\n       {\n           \"id\": 1,\n           \"nomApp\": \"testApp\",\n           \"nomCreator\": \"test\",\n           \"picPath\": \"1-app.png\",\n           \"path\": \"NULL\",\n           \"prix\": \"400euros\",\n           \"nb_joueurs\": 4,\n           \"current_version\": \"1.0\",\n           \"niveau\": 2\n       }\n   ]\n}",
+          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": [\n       {\n           \"id\": 1,\n           \"nomApp\": \"testApp\",\n           \"nomCreator\": \"test\",\n           \"picPath\": \"1-app.png\",\n           \"path\": \"NULL\",\n           \"prix\": \"50euros\",\n           \"nb_joueurs\": 4,\n           \"current_version\": \"1.0\",\n           \"niveau\": 2\n       }\n   ]\n}",
           "type": "json"
         }
       ]
@@ -5699,6 +6081,18 @@
         ]
       }
     },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Bad Request.</p>"
+          }
+        ]
+      }
+    },
     "header": {
       "fields": {
         "Header": [
@@ -5725,7 +6119,7 @@
     "groupTitle": "Table"
   },
   {
-    "type": "get",
+    "type": "post",
     "url": "/table/gestApps/appsNotOnTable",
     "title": "Getting Games not installed",
     "name": "appsNotOnTable",
@@ -5753,7 +6147,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": [\n        {\n            \"idGame\": 2,\n            \"idType\": 1,\n            \"name\": \"Invacouleur\",\n            \"creator\": 1,\n            \"picPath\": null\n        }\n    ]\n}",
+          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": [\n        {\n            \"idGame\": 2,\n            \"name\": \"Invacouleur\",\n            \"path\": NULL,\n            \"creator\": 1,\n            \"picPath\": null\n        }\n    ]\n}",
           "type": "json"
         }
       ]
@@ -5762,7 +6156,7 @@
     "groupTitle": "Table"
   },
   {
-    "type": "get",
+    "type": "post",
     "url": "/table/gestApps/appsOnTable",
     "title": "Getting Games installed",
     "name": "appsOnTable",
@@ -5790,7 +6184,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": [\n        {\n            \"idGame\": 2,\n            \"idType\": 1,\n            \"name\": \"Invacouleur\",\n            \"creator\": 1,\n            \"picPath\": null\n        }\n    ]\n}",
+          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": [\n        {\n            \"idGame\": 2,\n            \"name\": \"Invacouleur\",\n            \"path\": NULL,\n            \"creator\": 1,\n            \"picPath\": null\n        }\n    ]\n}",
           "type": "json"
         }
       ]
@@ -5799,8 +6193,8 @@
     "groupTitle": "Table"
   },
   {
-    "type": "post",
-    "url": "/cnxTable/delToken",
+    "type": "delete",
+    "url": "/cnxTable/delToken/:tokenTable",
     "title": "Deleting a token Table",
     "name": "delToken",
     "group": "Table",
@@ -5810,15 +6204,42 @@
       }
     ],
     "version": "1.0.0",
-    "header": {
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"response\": \"Token deleted : 1354d30e4a461c7c67be73139e95ff61\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
       "fields": {
-        "Header": [
+        "Error 4xx": [
           {
-            "group": "Header",
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Bad Request.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "token",
-            "description": "<p>TokenTable auth</p>"
+            "field": "tokenTable",
+            "description": ""
           }
         ]
       }
@@ -5838,6 +6259,44 @@
       }
     ],
     "version": "1.0.0",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "tokenTable",
+            "description": "<p>Token de connexion.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"tokenTable\": \"07d0cd6468bb33e519a84f5556b795c1\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Bad Request.</p>"
+          }
+        ]
+      }
+    },
     "parameter": {
       "fields": {
         "Parameter": [
@@ -5851,6 +6310,7 @@
         ]
       }
     },
+    "description": "<p>Route permettant la génération d'un token de connexion à la table.</p>",
     "filename": "routes/table/cnxTable.js",
     "groupTitle": "Table"
   },
@@ -5866,6 +6326,33 @@
       }
     ],
     "version": "1.0.0",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n    \"idTable\": 1,\n    \"response\": \"Table Installed\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Bad Request.</p>"
+          }
+        ]
+      }
+    },
     "parameter": {
       "fields": {
         "Parameter": [
@@ -5874,14 +6361,14 @@
             "type": "String",
             "optional": false,
             "field": "licence",
-            "description": ""
+            "description": "<p>Licence à attribuer à la table.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "nom",
-            "description": ""
+            "description": "<p>Nom de la table à installer.</p>"
           }
         ]
       }
@@ -5931,8 +6418,8 @@
     "groupTitle": "Table"
   },
   {
-    "type": "post",
-    "url": "/cnxTable/verifToken",
+    "type": "get",
+    "url": "/cnxTable/verifToken/:tokenTable",
     "title": "Verifying a token Table",
     "name": "verifToken",
     "group": "Table",
@@ -5942,19 +6429,6 @@
       }
     ],
     "version": "1.0.0",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "token",
-            "description": "<p>TokenTable auth</p>"
-          }
-        ]
-      }
-    },
     "success": {
       "examples": [
         {
@@ -5963,6 +6437,43 @@
           "type": "json"
         }
       ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>SQL Error.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Bad Request.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "202",
+            "description": "<p>Token pas encore utilisé</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "tokenTable",
+            "description": "<p>Token de la table à vérifier.</p>"
+          }
+        ]
+      }
     },
     "filename": "routes/table/cnxTable.js",
     "groupTitle": "Table"
@@ -6216,6 +6727,13 @@
             "optional": false,
             "field": "email",
             "description": "<p>Email de l'utilisateur</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "directorId",
+            "description": "<p>Id du directeur</p>"
           }
         ]
       }
@@ -6326,6 +6844,35 @@
       ]
     },
     "description": "<p>Route permettant la récupération de tous les utilisateurs.</p>",
+    "filename": "routes/users.js",
+    "groupTitle": "Users"
+  },
+  {
+    "type": "get",
+    "url": "/users/acceptCgu",
+    "title": "Accepting CGU for an user",
+    "name": "acceptCgu",
+    "group": "Users",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token auth</p>"
+          }
+        ]
+      }
+    },
+    "description": "<p>Route permettant d'accepter les cgu pour un utilisateur.</p>",
     "filename": "routes/users.js",
     "groupTitle": "Users"
   },
@@ -6734,5 +7281,221 @@
     "description": "<p>Route permettant la mise à jour d'un utilisateur.</p>",
     "filename": "routes/users.js",
     "groupTitle": "Users"
+  },
+  {
+    "type": "get",
+    "url": "/competences/getAppComps/:idApp",
+    "title": "Get Competences By Id App",
+    "name": "getAppComps",
+    "group": "competences",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "description": "<p>Route permettant la récupération des informations d'une compétence via son id.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idApp",
+            "description": "<p>Id de l'app demandée.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n   \"error\": null,\n   \"response\": [\n       {\n         \"idComp\": 1,\n         \"libelleComp\": \"Comp1\"\n      },\n      {\n          \"idComp\": 2,\n          \"libelleComp\": \"Comp2\"\n      }\n  ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/competences.js",
+    "groupTitle": "competences"
+  },
+  {
+    "type": "get",
+    "url": "/competences/getCompById/:idComp",
+    "title": "Get Competences By Id",
+    "name": "getCompById",
+    "group": "competences",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "description": "<p>Route permettant la récupération des informations d'une compétence via son id.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idComp",
+            "description": "<p>Id de la compétence demandée.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n   \"status\": 200,\n   \"error\": null,\n   \"response\": [\n       {\n         \"idComp\": 1,\n         \"libelleComp\": \"Comp1\"\n      },\n      {\n          \"idComp\": 2,\n          \"libelleComp\": \"Comp2\"\n      }\n  ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/competences.js",
+    "groupTitle": "competences"
+  },
+  {
+    "type": "get",
+    "url": "/competences/getCompByStudent/:idStudent",
+    "title": "Get Competences By Student",
+    "name": "getCompByStudent",
+    "group": "competences",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "description": "<p>Route permettant la récupération des compétences attachées à un élève.</p>",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n  \"error\": null,\n  \"response\": [\n      {\n          \"idComp\": 1,\n          \"libelleComp\": \"Reconnaître les couleurs\",\n          \"valide\": 0\n      },\n      {\n          \"idComp\": 2,\n          \"libelleComp\": \"Reconnaître les lettres\",\n          \"valide\": 1\n      }\n  ]\n\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/competences.js",
+    "groupTitle": "competences"
+  },
+  {
+    "type": "get",
+    "url": "/competences/getCompetences",
+    "title": "Get all Competences",
+    "name": "getCompetences",
+    "group": "competences",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "description": "<p>Route permettant la récupération de toutes les compétences existantes dans la base de donnée.</p>",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n    \"error\": null,\n    \"response\": [\n        {\n            \"idComp\": 1,\n            \"libelleComp\": \"Comp1\"\n        },\n        {\n            \"idComp\": 2,\n            \"libelleComp\": \"Comp2\"\n        }\n    ]\n\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/competences.js",
+    "groupTitle": "competences"
+  },
+  {
+    "type": "put",
+    "url": "/competences/unvalidateCompStud",
+    "title": "unValidating Competence for a student",
+    "name": "unvalidateCompStud",
+    "group": "competences",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "description": "<p>Route permettant la dé-validation d'une compétence pour un élève.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idComp",
+            "description": "<p>Id de la compétence demandée.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idEleve",
+            "description": "<p>Id de l'élève à qui enlever la compétence.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/competences.js",
+    "groupTitle": "competences"
+  },
+  {
+    "type": "post",
+    "url": "/competences/validateCompStud",
+    "title": "Validating Competence for a student",
+    "name": "validateCompStud",
+    "group": "competences",
+    "permission": [
+      {
+        "name": "Logged"
+      }
+    ],
+    "version": "1.0.0",
+    "description": "<p>Route permettant la validation d'une compétence pour un élève.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idComp",
+            "description": "<p>Id de la compétence demandée.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "idEleve",
+            "description": "<p>Id de l'élève à qui attribuer la compétence.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/competences.js",
+    "groupTitle": "competences"
   }
 ]

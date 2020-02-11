@@ -1,0 +1,10 @@
+{
+  "uid": "DuneApi",
+  "append": "true",
+  "watch": "true",
+  "script": "bin/www",
+  "sourceDir": ".",
+  "logFile": "./logs/forever.log",
+  "outFile": "./logs/out.log",
+  "errFile": "./logs/error.log"
+}

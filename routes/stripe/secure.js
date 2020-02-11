@@ -1,5 +1,5 @@
 var express = require('express');
-var mysql = require('mysql');
+var mysql = require('mysql2');
 var router = express.Router();
 var tools = require('../../functions/tools');
 var md5 = require('MD5');
@@ -7,7 +7,7 @@ const stripe = require('stripe')('sk_test_x28sxZXrTkZlaoGNujXlYGNk');
 
 /**
  * @api {post} /stripe/secure/createStripeCustomer Create customer in stripe
- * @apiName verifPassword
+ * @apiName createStripeCustomer
  * @apiGroup Facturation
  * @apiPermission Logged
  * @apiVersion 1.0.0
@@ -29,8 +29,7 @@ router.post('/add', function(req, res, next) {
       address: req.body.address,
       balance: 0,
       description: 'Account for ' + req.body.ecoleName + ' school.',
-      email: req.body.email,
-      source: 'tok_mastercard' // obtained with Stripe.js
+      email: req.body.email
     },
     function(err, customer) {
       // asynchronously called

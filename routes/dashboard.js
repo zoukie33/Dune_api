@@ -1,5 +1,5 @@
 var express = require('express');
-var mysql = require('mysql');
+var mysql = require('mysql2');
 var router = express.Router();
 var tools = require('../functions/tools');
 
@@ -230,9 +230,9 @@ router.get('/nbGamesPlayed', function(req, res, next) {
   var time =
     date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
   var query =
-    "SELECT COUNT(gp.idGP) AS nbGamesPlayed FROM d_gamesPlayed AS gp WHERE MONTH(gp.Timestamp)=MONTH('" +
+    "SELECT COUNT(gp.idGP) AS nbGamesPlayed FROM d_gamesPlayed AS gp INNER JOIN d_classeEcole ce ON ce.idClasse=gp.idClasse WHERE MONTH(gp.Timestamp)=MONTH('" +
     time +
-    "')";
+    "') AND ce.idEcole="+req.currUser.idEcole;
   if (req.currUser.typeUser !== 2) {
     query += ' AND gp.idProf=' + idUser;
   }

@@ -1,5 +1,5 @@
 var express = require('express');
-var mysql = require('mysql');
+var mysql = require('mysql2');
 var router = express.Router();
 var md5 = require('MD5');
 var jwt = require('jsonwebtoken');
@@ -89,7 +89,7 @@ router.post('/validate/', function(req, res, next) {
     if (error) {
       tools.dSend(res, 'NOK', 'Table-Licence', 'Validate', 500, error, null);
     } else {
-      if (results.length == 1) {
+      if (results.length === 1) {
         req.mysql.query(
           'UPDATE d_tables SET idSerial = ' +
             results[0].idLicence +

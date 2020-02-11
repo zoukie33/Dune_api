@@ -1,12 +1,12 @@
-var express = require('express');
-var mysql = require('mysql');
-var serial = require('generate-serial-key');
-var generator = require('generate-password');
-var md5 = require('MD5');
-var router = express.Router();
-var filez = require('../../functions/files/files');
-var tools = require('../../functions/tools');
-var resetPass = require('../../functions/mails/resetPass');
+const express = require('express');
+const mysql = require('mysql2');
+const generator = require('generate-password');
+const md5 = require('MD5');
+const router = express.Router();
+const filez = require('../../functions/files/files');
+const tools = require('../../functions/tools');
+const resetPass = require('../../functions/mails/resetPass');
+// const serial = require('generate-serial-key');
 
 /**
  * @api {put} /admin/update/updateLicence/ Updating a licence
@@ -38,10 +38,10 @@ var resetPass = require('../../functions/mails/resetPass');
  */
 
 router.put('/updateLicence', function(req, res, next) {
-  var licence = req.body.licence;
-  var used = req.body.used;
-  var dateExpire = req.body.dateExpire;
-  var query =
+  let licence = req.body.licence;
+  let used = req.body.used;
+  let dateExpire = req.body.dateExpire;
+  let query =
     'UPDATE d_licencesTables SET used = ' +
     used +
     ', dateExpire = ' +
@@ -90,43 +90,74 @@ router.put('/updateLicence', function(req, res, next) {
  * @apiParam {Int} niveau Niveau de difficulté de l'app/jeu (1 ou 2)
  * @apiParam {Int} prix Prix de l'app/jeu (0 = free)
  * @apiParam {Int} Creator Id du createur du jeu
+ *
+ * @apiError 400 Bad request.
+ * @apiError 500 SQL Error.
  */
 
 router.put('/updateGame', function(req, res, next) {
-  var id = req.body.id;
-  var name = req.body.name;
-  var creator = req.body.creator;
-  var description = req.body.description;
-  var nbJoueurs = req.body.nbJoueurs;
-  var currVersion = req.body.currVersion;
-  var niveau = req.body.niveau;
-  var prix = req.body.prix;
-  var query =
-    "UPDATE d_games SET name = '" +
-    name +
-    "', creator = '" +
-    creator +
-    "', description = '" +
-    description +
-    "', nb_joueurs = " +
-    nbJoueurs +
-    ", current_version = '" +
-    currVersion +
-    "', niveau = " +
-    niveau +
-    ", prix = '" +
-    prix +
-    "' WHERE id = " +
-    id;
-
-  req.mysql.query(query, function(error, results, fields) {
-    if (error) {
-      tools.dSend(res, 'NOK', 'Games', 'updateGame', 500, error, null);
-    } else {
-      tools.dSend(res, 'OK', 'Games', 'updateGame', 200, null, 'Game Updated');
-    }
-    res.end(JSON.stringify(results));
-  });
+  let id = req.body.id,
+    name = req.body.name,
+    creator = req.body.creator,
+    description = req.body.description,
+    nbJoueurs = req.body.nbJoueurs,
+    currVersion = req.body.currVersion,
+    niveau = req.body.niveau,
+    prix = req.body.prix,
+    query =
+      "UPDATE d_games SET name = '" +
+      name +
+      "', creator = '" +
+      creator +
+      "', description = '" +
+      description +
+      "', nb_joueurs = " +
+      nbJoueurs +
+      ", current_version = '" +
+      currVersion +
+      "', niveau = " +
+      niveau +
+      ", prix = '" +
+      prix +
+      "' WHERE id = " +
+      id;
+  if (
+    typeof id != 'undefined' &&
+    typeof name != 'undefined' &&
+    typeof creator != 'undefined' &&
+    typeof description != 'undefined' &&
+    typeof nbJoueurs != 'undefined' &&
+    typeof currVersion != 'undefined' &&
+    typeof niveau != 'undefined' &&
+    typeof prix != 'undefined'
+  ) {
+    req.mysql.query(query, function(error, results, fields) {
+      if (error) {
+        tools.dSend(res, 'NOK', 'updateGame', 'updateGame', 500, error, null);
+      } else {
+        tools.dSend(
+          res,
+          'OK',
+          'updateGame',
+          'createGame',
+          200,
+          null,
+          'Game Updated'
+        );
+      }
+      res.end(JSON.stringify(results));
+    });
+  } else {
+    tools.dSend(
+      res,
+      'NOK',
+      'updateGame',
+      'createGame',
+      400,
+      'Bad request',
+      null
+    );
+  }
 });
 
 /**
@@ -143,13 +174,13 @@ router.put('/updateGame', function(req, res, next) {
 
 router.put('/picGame', function(req, res, next) {
   if (Object.keys(req.files).length != 0) {
-    var id = req.body.idGame;
+    let id = req.body.idGame;
     let file;
 
     file = req.files.picGame;
-    var fileName = id + '-app.png';
+    let fileName = id + '-app.png';
     if (filez.filesGest(file, 'apps/', fileName)) {
-      var query =
+      let query =
         "UPDATE d_games SET picPath = '" + fileName + "'  WHERE id = " + id;
       req.mysql.query(query, function(error, results, fields) {
         if (error) {
@@ -184,6 +215,93 @@ router.put('/picGame', function(req, res, next) {
 });
 
 /**
+ * @api {put} /admin/update/addBinaryGame Adding a binary for a game
+ * @apiName addBinaryGame
+ * @apiGroup AdminUpdate
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token Token auth
+ * @apiParam {Int} idGame Id de l'app/jeu.
+ * @apiParam {File}[binary] Zip of the game.
+ * @apiParam {String}[url] Url of the game.
+ */
+
+router.put('/addBinaryGame', function(req, res, next) {
+  if (typeof req.body.idGame != 'undefined') {
+    if (req.files && Object.keys(req.files).length != 0) {
+      let id = req.body.idGame;
+      let file;
+
+      file = req.files.binary;
+      let fileName = id + '.zip';
+      if (filez.filesGestGame(file, fileName)) {
+        tools.dSend(
+          res,
+          'OK',
+          'Games',
+          'addBinaryGame',
+          200,
+          null,
+          'Game Updated'
+        );
+      } else {
+        tools.dSend(
+          res,
+          'NOK',
+          'Games',
+          'addBinaryGame',
+          500,
+          'Directory error',
+          null
+        );
+      }
+    } else {
+      let url = req.body.url,
+        id = req.body.idGame;
+      if (typeof url != 'undefined') {
+        let query = "UPDATE d_games SET path = '" + url + "'  WHERE id = " + id;
+        req.mysql.query(query, function(error, results, fields) {
+          if (error) {
+            tools.dSend(res, 'NOK', 'Games', 'addBinaryGame', 500, error, null);
+          } else {
+            tools.dSend(
+              res,
+              'OK',
+              'Games',
+              'addBinaryGame',
+              200,
+              null,
+              results
+            );
+          }
+        });
+      } else {
+        tools.dSend(
+          res,
+          'NOK',
+          'Games',
+          'addBinaryGame',
+          400,
+          'Vous devez remplir au moins un  des deux champs facultatifs',
+          null
+        );
+      }
+    }
+  } else {
+    tools.dSend(
+      res,
+      'NOK',
+      'Games',
+      'addBinaryGame',
+      400,
+      'Vous devez remplir au moins un  des deux champs facultatifs',
+      null
+    );
+  }
+});
+
+/**
  * @api {put} /admin/update/ecole Uploading a School
  * @apiName ecole
  * @apiGroup AdminUpdate
@@ -210,7 +328,7 @@ router.put('/picGame', function(req, res, next) {
  */
 
 router.put('/ecole', function(req, res, next) {
-  var id = req.body.idEcole,
+  let id = req.body.idEcole,
     name = req.body.nomEcole,
     rue = req.body.rueEcole,
     numRue = req.body.numRueEcole,
@@ -219,9 +337,9 @@ router.put('/ecole', function(req, res, next) {
     tel = req.body.telEcole;
 
   if (id && name && rue && numRue && ville && departement && tel) {
-    var query =
+    let query =
       'UPDATE ?? SET nomEcole = ?, rue = ?, numRue = ?, ville = ?, departement = ?, tel = ? WHERE id = ?';
-    var data = ['d_ecole', name, rue, numRue, ville, departement, tel, id];
+    let data = ['d_ecole', name, rue, numRue, ville, departement, tel, id];
     query = mysql.format(query, data);
     req.mysql.query(query, function(error, results, fields) {
       if (error) {
@@ -284,15 +402,15 @@ router.put('/ecole', function(req, res, next) {
  */
 
 router.put('/user', function(req, res, next) {
-  var idUser = req.body.idUser,
+  let idUser = req.body.idUser,
     nomUser = req.body.nomUser,
     prenomUser = req.body.prenomUser,
     emailUser = req.body.emailUser;
 
   if (idUser && nomUser && prenomUser && emailUser) {
-    var query =
+    let query =
       'UPDATE ?? SET nomUser = ?, prenomUser = ?, emailUser = ? WHERE idUser = ?';
-    var data = ['d_users', nomUser, prenomUser, emailUser, idUser];
+    let data = ['d_users', nomUser, prenomUser, emailUser, idUser];
     query = mysql.format(query, data);
     req.mysql.query(query, function(error, results, fields) {
       if (error) {
@@ -355,13 +473,13 @@ router.put('/user', function(req, res, next) {
  */
 
 router.put('/eleve', function(req, res, next) {
-  var idEleve = req.body.idEleve,
+  let idEleve = req.body.idEleve,
     nomEleve = req.body.nomEleve,
     prenomEleve = req.body.prenomEleve;
 
   if (idEleve && nomEleve && prenomEleve) {
-    var query = 'UPDATE ?? SET nomEleve = ?, prenomEleve = ? WHERE idEleve = ?';
-    var data = ['d_eleves', nomEleve, prenomEleve, idEleve];
+    let query = 'UPDATE ?? SET nomEleve = ?, prenomEleve = ? WHERE idEleve = ?';
+    let data = ['d_eleves', nomEleve, prenomEleve, idEleve];
     query = mysql.format(query, data);
     req.mysql.query(query, function(error, results, fields) {
       if (error) {
@@ -421,15 +539,15 @@ router.put('/eleve', function(req, res, next) {
  * }
  */
 router.put('/passwordUser', function(req, res, next) {
-  var idUser = req.body.idUser;
+  let idUser = req.body.idUser;
 
   if (idUser) {
-    var password = generator.generate({
+    let password = generator.generate({
       length: 8,
       numbers: true
     });
-    var query = 'SELECT emailUser FROM ?? WHERE idUser = ?';
-    var data = ['d_user', idUser];
+    let query = 'SELECT emailUser FROM ?? WHERE idUser = ?';
+    let data = ['d_user', idUser];
     query = mysql.format(query, data);
     req.mysql.query(query, function(error, results, fields) {
       if (error) {
@@ -443,8 +561,8 @@ router.put('/passwordUser', function(req, res, next) {
           'Impossible de mettre a jour cet utilisateur.'
         );
       } else {
-        var query = 'UPDATE ?? SET pass = ? WHERE idUser = ?';
-        var data = ['d_user', md5(password), idUser];
+        let query = 'UPDATE ?? SET pass = ? WHERE idUser = ?';
+        let data = ['d_user', md5(password), idUser];
         query = mysql.format(query, data);
         resetPass.sendPasswordReset(results[0].emailUser, password);
         req.mysql.query(query, function(error, results, fields) {

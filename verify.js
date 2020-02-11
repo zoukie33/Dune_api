@@ -1,5 +1,5 @@
 var jwt = require('jsonwebtoken');
-var mysql = require('mysql');
+var mysql = require('mysql2');
 var config = require('./config');
 
 var verifyToken = function(req, res, next) {

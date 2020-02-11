@@ -1,9 +1,9 @@
-var express = require('express');
-var mysql = require('mysql');
-var serial = require('generate-serial-key');
-var router = express.Router();
-var filez = require('../../functions/files/files');
-var tools = require('../../functions/tools');
+const express = require('express');
+const router = express.Router();
+const tools = require('../../functions/tools');
+// const filez = require('../../functions/files/files');
+// const mysql = require('mysql2');
+// const serial = require('generate-serial-key');
 
 /**
  * @api {delete} /admin/delete/deleteLicence/:idLicence Delete a licence
@@ -33,9 +33,9 @@ var tools = require('../../functions/tools');
  */
 
 router.delete('/deleteLicence/:idLicence', function(req, res, next) {
-  var idLicence = req.params.idLicence;
+  let idLicence = req.params.idLicence;
 
-  var query = 'DELETE FROM d_licencesTables WHERE idLicence = ' + idLicence;
+  let query = 'DELETE FROM d_licencesTables WHERE idLicence = ' + idLicence;
 
   req.mysql.query(query, function(error, results, fields) {
     if (error) {
@@ -90,7 +90,7 @@ router.delete('/deleteLicence/:idLicence', function(req, res, next) {
  */
 
 router.delete('/deleteGame/:idGame', function(req, res, next) {
-  var query = 'DELETE FROM d_games WHERE id = ' + req.params.idGame;
+  let query = 'DELETE FROM d_games WHERE id = ' + req.params.idGame;
 
   req.mysql.query(query, function(error, results, fields) {
     if (error) {
@@ -145,7 +145,7 @@ router.delete('/deleteGame/:idGame', function(req, res, next) {
  */
 
 router.delete('/deleteEcole/:idEcole', function(req, res, next) {
-  var query = 'DELETE FROM d_ecole WHERE id = ' + req.params.idEcole;
+  let query = 'DELETE FROM d_ecole WHERE id = ' + req.params.idEcole;
 
   req.mysql.query(query, function(error, results, fields) {
     if (error) {
@@ -184,7 +184,7 @@ router.delete('/deleteEcole/:idEcole', function(req, res, next) {
  */
 
 router.delete('/deleteProf/:idProf', function(req, res, next) {
-  var query =
+  let query =
     'SELECT typeUser FROM d_users WHERE idUser = ' + req.params.idProf;
 
   req.mysql.query(query, function(error, results, fields) {
@@ -192,7 +192,7 @@ router.delete('/deleteProf/:idProf', function(req, res, next) {
       tools.dSend(res, 'NOK', 'Admin-Delete', 'deleteProf', 500, error, null);
     } else {
       if (results[0].typeUser == 1) {
-        var query = 'DELETE FROM d_users WHERE iduser = ' + req.params.idProf;
+        let query = 'DELETE FROM d_users WHERE iduser = ' + req.params.idProf;
         req.mysql.query(query, function(error, results, fields) {
           if (error) {
             tools.dSend(
@@ -227,6 +227,63 @@ router.delete('/deleteProf/:idProf', function(req, res, next) {
           'Vous ne pouvez supprimer que des professeurs.'
         );
       }
+    }
+  });
+});
+
+/**
+ * @api {delete} /admin/delete/deleteCompetence/:idCompetence Delete a Competence
+ * @apiName deleteCompetence
+ * @apiGroup AdminDelete
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiParam {Int} idCompetence Id de la competence
+ * @apiHeader {String} token AdminToken auth
+ * @apiDescription Route permettant de supprimer une compétence.
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "error": null,
+ *     "response": {
+ *        "fieldCount": 0,
+ *        "affectedRows": 1,
+ *        "insertId": 0,
+ *        "serverStatus": 2,
+ *        "warningCount": 0,
+ *        "message": "",
+ *        "protocol41": true,
+ *        "changedRows": 0
+ *    }
+ * }
+ */
+
+router.delete('/deleteCompetence/:idCompetence', function(req, res, next) {
+  let idCompetence = req.params.idCompetence;
+
+  let query = 'DELETE FROM d_competences WHERE idComp = ' + idCompetence;
+
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(
+        res,
+        'NOK',
+        'Admin-Delete',
+        'deleteCompetence',
+        500,
+        error,
+        null
+      );
+    } else {
+      tools.dSend(
+        res,
+        'OK',
+        'Admin-Delete',
+        'deleteCompetence',
+        200,
+        null,
+        results
+      );
     }
   });
 });

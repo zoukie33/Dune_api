@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
-var tools = require('../../functions/tools');
-var filez = require('../../functions/files/files');
-var md5 = require('MD5');
-const fileUpload = require('express-fileupload');
+const express = require('express');
+const router = express.Router();
+const md5 = require('MD5');
+const tools = require('../../functions/tools');
+const filez = require('../../functions/files/files');
+const mysql = require('mysql2');
 
 /**
  * @api {post} /filesManager/uploadFile Upload a file
@@ -33,35 +33,28 @@ const fileUpload = require('express-fileupload');
 
 router.post('/uploadFile', function(req, res, next) {
   if (Object.keys(req.files).length != 0) {
-    var idUser = req.currUser.idUser;
-    var idEcole = req.currUser.idEcole;
-    var fileName = req.body.fileName;
-    var description = req.body.description;
-    var fileType = req.body.fileType;
-    var private = req.body.private;
-    let file = req.files.fileUser;
-    var fileRName = req.files.fileUser.name;
-
-    if (fileName == '') {
-      var nameS = fileRName.split('.');
+    let idUser = req.currUser.idUser,
+      idEcole = req.currUser.idEcole,
+      fileName = req.body.fileName,
+      description = req.body.description,
+      fileType = req.body.fileType,
+      private = req.body.private,
+      file = req.files.fileUser,
+      fileRName = req.files.fileUser.name;
+    let md5name = md5(Math.random() + new Date());
+    if (typeof fileName === 'undefined') {
+      let nameS = fileRName.split('.');
       fileName = nameS[0];
     }
-    if (description == '') {
+    if (typeof description === 'undefined') {
       description = 'n/a';
     }
-    if (filez.filesManagerUpload(file, 'fm/', fileRName)) {
-      var query =
-        "INSERT INTO d_files(nom, path, type, description, private) VALUES ('" +
-        fileName +
-        "', '" +
-        fileRName +
-        "', '" +
-        fileType +
-        "', '" +
-        description +
-        "', '" +
-        private +
-        "')";
+    if (file.mimetype === 'image/jpeg') { md5name = md5name + '.jpg'; }
+      else if (file.mimetype === 'image/png') { md5name = md5name + '.png'; }
+      else if (file.mimetype === 'application/pdf') { md5name = md5name + '.pdf'; }
+      else if (file.mimetype === 'video/mp4') { md5name = md5name + '.mp4'; }
+    if (filez.filesManagerUpload(file, 'fm/', md5name)) {
+      let query = `INSERT INTO d_files(nom, path, type, description, private) VALUES ("${fileName}","${md5name}","${fileType}","${description}", "${private}")`;
       req.mysql.query(query, function(error, results, fields) {
         if (error) {
           tools.dSend(
@@ -151,9 +144,8 @@ router.post('/uploadFile', function(req, res, next) {
  */
 
 router.delete('/deleteFile', function(req, res, next) {
-  var idUser = req.currUser.idUser;
-  var idFile = req.body.idFile;
-  var query = 'DELETE FROM d_files WHERE idFile = ' + idFile;
+  let idFile = req.body.idFile;
+  let query = 'DELETE FROM d_files WHERE idFile = ' + idFile;
 
   req.mysql.query(query, function(error, results, fields) {
     if (error) {
@@ -195,19 +187,17 @@ router.delete('/deleteFile', function(req, res, next) {
  */
 
 router.put('/editFile', function(req, res, next) {
-  var data = {
+  let data = {
     idFile: req.body.idFile,
     nom: req.body.nomFile,
     description: req.body.description,
     private: req.body.private
   };
-  var query =
-    'UPDATE d_files SET nom = ?, description = ?, private = ? WHERE idFile = ?';
+  let query_params = [data.nom, data.description, data.private, data.idFile];
+  let query = 'UPDATE d_files SET nom = ?, description = ?, private = ? WHERE idFile = ?';
 
-  req.mysql.query(
-    query,
-    [data.nom, data.description, data.private, data.idFile],
-    function(error, results, fields) {
+  query = mysql.format(query, query_params);
+  req.mysql.query(query, function(error, results, fields) {
       if (error) {
         tools.dSend(
           res,
@@ -266,17 +256,18 @@ router.put('/editFile', function(req, res, next) {
  */
 
 router.post('/getAll', function(req, res, next) {
-  var private = req.body.private;
-  var idUser = req.currUser.idUser;
-  var idEcole = req.currUser.idEcole;
-  var title = req.body.title;
-  var type = req.body.type;
-  var classement = req.body.classement;
+  var private_ = req.body.private,
+    idUser = req.currUser.idUser,
+    idEcole = req.currUser.idEcole,
+    title = req.body.title,
+    type = req.body.type,
+    classement = req.body.classement;
+  let query = '';
 
-  if (private == 1) {
-    var query =
-      'SELECT f.* FROM d_files AS f, d_filesAppsUser AS fau ' +
-      'WHERE f.idFile = fau.idFile AND fau.idEcole = ' +
+  if (req.body.private === "1") {
+    query =
+      'SELECT f.* FROM d_files AS f INNER JOIN d_filesAppsUser fau ON fau.idFile=f.idFile ' +
+      'WHERE fau.idEcole = ' +
       idEcole +
       ' ' +
       'AND fau.idUser = ' +
@@ -286,14 +277,14 @@ router.post('/getAll', function(req, res, next) {
     if (title !== '') {
       query += " AND f.nom LIKE '%" + title + "%'";
     }
-    if (type != []) {
+    if (type !== '') {
       query += " AND f.type='" + type + "'";
     }
   } else {
-    var query =
-      'SELECT DISTINCT(f.idFile), f.nom, f.path, f.type, f.description, f.private, fau.idUser FROM d_files AS f, d_filesAppsUser AS fau WHERE (f.idFile = fau.idFile AND (fau.idEcole = ' +
+    query =
+      'SELECT f.*, fau.idUser FROM d_files AS f INNER JOIN d_filesAppsUser fau ON fau.idFile=f.idFile WHERE (f.idFile = fau.idFile AND (fau.idEcole = ' +
       idEcole +
-      ' AND f.private = 0) OR (fau.idEcole = 1 AND fau.idUser = ' +
+      ' AND f.private = 0) OR (fau.idEcole = ' + idEcole + ' AND fau.idUser = ' +
       idUser +
       '))';
     if (title !== '') {
@@ -302,7 +293,7 @@ router.post('/getAll', function(req, res, next) {
     if (type != []) {
       let cond = '';
       let tmp = type.split(',');
-      for (var i = 0; i < tmp.length; i++) {
+      for (let i = 0; i < tmp.length; i++) {
         cond += "'" + tmp[i] + "'";
         cond += i + 1 === tmp.length ? '' : ', ';
       }
@@ -310,9 +301,8 @@ router.post('/getAll', function(req, res, next) {
     }
   }
 
-  if (classement == 1) query += ' ORDER BY f.type';
-  else if (classement == 2) query += ' ORDER BY f.nom';
-
+  if (classement === 1) query += ' ORDER BY f.type';
+  else if (classement === 2) query += ' ORDER BY f.nom';
   req.mysql.query(query, function(error, results, fields) {
     if (error) {
       tools.dSend(res, 'NOK', 'FileManager', 'getAll', 500, error, 'SQL Error');
@@ -353,10 +343,8 @@ router.post('/getAll', function(req, res, next) {
  */
 
 router.get('/getOne/:idFile', function(req, res, next) {
-  var idFile = req.params.idFile;
-  var idUser = req.currUser.idUser;
-  var idEcole = req.currUser.idEcole;
-  var query = 'SELECT * FROM d_files AS f WHERE f.idFile = ' + idFile;
+  let idFile = req.params.idFile;
+  let query = 'SELECT * FROM d_files AS f WHERE f.idFile = ' + idFile;
 
   req.mysql.query(query, function(error, results, fields) {
     if (error) {

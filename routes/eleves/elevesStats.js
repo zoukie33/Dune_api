@@ -1,7 +1,7 @@
-var express = require('express');
-var mysql = require('mysql');
-var router = express.Router();
-var filez = require('../../functions/files/files');
+const express = require('express');
+const mysql = require('mysql2');
+const router = express.Router();
+const filez = require('../../functions/files/files');
 var tools = require('../../functions/tools');
 
 /**
@@ -14,6 +14,7 @@ var tools = require('../../functions/tools');
  * @apiHeader {String} token Token auth
  * @apiParam {int} idGP
  * @apiError 500 SQL Error.
+ * @apiError 400 Bad request.
  *
  * @apiSuccessExample Success-Response:
  * {
@@ -21,88 +22,188 @@ var tools = require('../../functions/tools');
  *    "error": null,
  *    "ascEleve": [
  *        {
- *            "idEleve": 13,
- *            "nom": "Bozo",
- *            "prenom": "Jessico",
- *            "note": 88
+ *          "idComp": 1,
+ *           "libelleComp": "Reconnaître les couleurs",
+ *           "notes": [
+ *               {
+ *                   "idEleve": 1,
+ *                   "nomEleve": "Merveillau",
+ *                   "prenomEleve": "Denis",
+ *                   "score": 42,
+ *                   "idComp": 1
+ *               },
+ *               {
+ *                   "idEleve": 2,
+ *                   "nomEleve": "Senouci",
+ *                   "prenomEleve": "Elies",
+ *                   "score": 12,
+ *                   "idComp": 1
+ *               }
+ *           ]
  *        },
  *        {
- *            "idEleve": 14,
- *            "nom": "Couturier",
- *            "prenom": "Manon",
- *            "note": 75
+ *           "idComp": 2,
+ *           "libelleComp": "Resas",
+ *           "notes": [
+ *               {
+ *                   "idEleve": 1,
+ *                   "nomEleve": "Merveillau",
+ *                   "prenomEleve": "Denis",
+ *                   "score": 42,
+ *                   "idComp": 1
+ *               },
+ *               {
+ *                   "idEleve": 2,
+ *                   "nomEleve": "Senouci",
+ *                   "prenomEleve": "Elies",
+ *                   "score": 12,
+ *                   "idComp": 1
+ *               }
+ *           ]
  *        }
  *    ],
  *    "descNote": [
  *        {
- *            "idEleve": 13,
- *            "nom": "Bozo",
- *            "prenom": "Jessico",
- *            "note": 88
+ *          "idComp": 1,
+ *           "libelleComp": "Reconnaître les couleurs",
+ *           "notes": [
+ *               {
+ *                   "idEleve": 1,
+ *                   "nomEleve": "Merveillau",
+ *                   "prenomEleve": "Denis",
+ *                   "score": 42,
+ *                   "idComp": 1
+ *               },
+ *               {
+ *                   "idEleve": 2,
+ *                   "nomEleve": "Senouci",
+ *                   "prenomEleve": "Elies",
+ *                   "score": 12,
+ *                   "idComp": 1
+ *               }
+ *           ]
  *        },
  *        {
- *            "idEleve": 14,
- *            "nom": "Couturier",
- *            "prenom": "Manon",
- *            "note": 75
+ *           "idComp": 2,
+ *           "libelleComp": "Resas",
+ *           "notes": [
+ *               {
+ *                   "idEleve": 1,
+ *                   "nomEleve": "Merveillau",
+ *                   "prenomEleve": "Denis",
+ *                   "score": 42,
+ *                   "idComp": 1
+ *               },
+ *               {
+ *                   "idEleve": 2,
+ *                   "nomEleve": "Senouci",
+ *                   "prenomEleve": "Elies",
+ *                   "score": 12,
+ *                   "idComp": 1
+ *               }
+ *           ]
  *        }
  *    ]
  * }
  */
 router.get('/bySession/:idGP', function(req, res, next) {
-  var idProf = req.currUser.idUser;
-  var idGP = req.params.idGP;
-  if (req.currUser.typeUser == 2) {
-    var query1 =
-      'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_profsAppEcole AS pae, d_classeEcole AS ce, d_classe AS c, d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND gp.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEcole = pae.idEcole AND e.idEleve = gs.idEleve AND pae.idProf = ' +
-      idProf +
-      ' AND gp.idGP = ' +
-      idGP +
-      ' ORDER BY e.nomEleve ASC';
-    var query2 =
-      'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_profsAppEcole AS pae, d_classeEcole AS ce, d_classe AS c, d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND gp.idClasse = c.idClasse AND c.idClasse = ce.idClasse AND ce.idEcole = pae.idEcole AND e.idEleve = gs.idEleve AND pae.idProf = ' +
-      idProf +
-      ' AND gp.idGP = ' +
-      idGP +
-      ' ORDER BY gs.score DESC';
+  let idGP = req.params.idGP;
+  if (typeof idGP != 'undefined') {
+    let query1 = `SELECT gs.idEleve, e.nomEleve, e.prenomEleve, gs.score, gs.idComp FROM d_gamesScored AS gs, d_eleves AS e WHERE gs.idEleve = e.idEleve AND idGP = ${idGP} ORDER BY gs.idComp ASC, e.nomEleve ASC`;
+    let query2 = `SELECT gs.idEleve, e.nomEleve, e.prenomEleve, gs.score, gs.idComp FROM d_gamesScored AS gs, d_eleves AS e WHERE gs.idEleve = e.idEleve AND idGP = ${idGP} ORDER BY gs.idComp ASC, gs.score DESC`;
+    let query3 = `SELECT DISTINCT gs.idComp, c.libelleComp FROM d_gamesScored AS gs, d_competences AS c WHERE c.idComp = gs.idComp AND idGP = ${idGP} ORDER BY gs.idComp ASC`;
+    let query4 = `SELECT DISTINCT (SELECT COUNT(CP.idComp) As nsComp FROM d_gamesPlayed AS GP, d_compGame AS CP WHERE GP.idGame = CP.idGame AND GP.idGP = ${idGP}) AS nbComp, COUNT(gs.idEleve) AS nbEleves FROM d_gamesScored AS gs WHERE gs.idGP = ${idGP} GROUP BY gs.idComp`;
+    req.mysql.query(query1, function(error, results1) {
+      if (error) {
+        tools.dSend(res, 'NOK', 'ElevesStats', 'byGame', 500, error, null);
+      } else {
+        req.mysql.query(query2, function(error, results2) {
+          if (error) {
+            tools.dSend(res, 'NOK', 'ElevesStats', 'byGame', 500, error, null);
+          } else {
+            req.mysql.query(query3, function(error, results3) {
+              if (error) {
+                tools.dSend(
+                  res,
+                  'NOK',
+                  'ElevesStats',
+                  'byGame',
+                  500,
+                  error,
+                  null
+                );
+              } else {
+                req.mysql.query(query4, function(error, results4) {
+                  if (error) {
+                    tools.dSend(
+                      res,
+                      'NOK',
+                      'ElevesStats',
+                      'byGame',
+                      500,
+                      error,
+                      null
+                    );
+                  } else {
+                    let tab1 = new Array();
+                    for (var i = 0; i < results4[0].nbComp; i++) {
+                      let objNotes = new Array();
+                      for (var j = 0; j < results1.length; j++) {
+                        if (results1[j].idComp == results3[i].idComp) {
+                          objNotes.push(results1[j]);
+                        }
+                      }
+                      let obj = {
+                        idComp: results3[i].idComp,
+                        libelleComp: results3[i].libelleComp,
+                        notes: objNotes
+                      };
+                      tab1.push(obj);
+                    }
+
+                    let tab2 = new Array();
+                    for (var i = 0; i < results4[0].nbComp; i++) {
+                      let objNotes = new Array();
+                      for (var j = 0; j < results2.length; j++) {
+                        if (results2[j].idComp == results3[i].idComp) {
+                          objNotes.push(results2[j]);
+                        }
+                      }
+                      let obj = {
+                        idComp: results3[i].idComp,
+                        libelleComp: results3[i].libelleComp,
+                        notes: objNotes
+                      };
+                      tab2.push(obj);
+                    }
+
+                    tools.dLog(
+                      'OK',
+                      'ElevesStats',
+                      'byGame',
+                      200,
+                      null,
+                      '"ascEleve": ' + results1 + ', "descNote":' + results2
+                    );
+                    res.send(
+                      JSON.stringify({
+                        status: 200,
+                        error: null,
+                        ascEleve: tab1,
+                        descNote: tab2
+                      })
+                    );
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    });
   } else {
-    var query1 =
-      'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND e.idEleve = gs.idEleve AND gp.idGP = ' +
-      idGP +
-      ' ORDER BY e.nomEleve ASC';
-    var query2 =
-      'SELECT gs.idEleve, e.nomEleve AS nom, e.prenomEleve AS prenom, gs.score AS note FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_eleves AS e WHERE gp.idGP = gs.idGP AND e.idEleve = gs.idEleve AND gp.idGP = ' +
-      idGP +
-      ' ORDER BY gs.score DESC';
+    tools.dSend(res, 'NOK', 'ElevesStats', 'byGame', 400, 'Bad Request.', null);
   }
-  req.mysql.query(query1, function(error, results1, fields) {
-    if (error) {
-      tools.dSend(res, 'NOK', 'ElevesStats', 'byGame', 500, error, null);
-    } else {
-      req.mysql.query(query2, function(error, results2, fields) {
-        if (error) {
-          tools.dSend(res, 'NOK', 'ElevesStats', 'byGame', 500, error, null);
-        } else {
-          tools.dLog(
-            'OK',
-            'ElevesStats',
-            'byGame',
-            200,
-            null,
-            '"ascEleve": ' + results1 + ', "descNote":' + results2
-          );
-          res.send(
-            JSON.stringify({
-              status: 200,
-              error: null,
-              ascEleve: results1,
-              descNote: results2
-            })
-          );
-        }
-      });
-    }
-  });
 });
 
 /**
@@ -125,9 +226,6 @@ router.get('/bySession/:idGP', function(req, res, next) {
  *        {
  *            "idGP": 1,
  *            "nameGame": "Compteclasse",
- *            "idMatiere": 1,
- *            "matiere": "Maths",
- *            "moyenne": 67.5,
  *            "nbJoueurs": 4,
  *            "date": "2019-03-14T18:04:51.000Z"
  *        }
@@ -135,10 +233,9 @@ router.get('/bySession/:idGP', function(req, res, next) {
  * }
  */
 router.get('/byClasse/:idClasse', function(req, res, next) {
-  var idProf = req.currUser.idUser;
-  var idClasse = req.params.idClasse;
-  var query =
-    'SELECT gp.idGP AS idGP, g.name AS nameGame, tg.idType AS idMatiere, tg.labelType AS matiere, AVG(gs.score) AS moyenne, COUNT(gs.idEleve) AS nbJoueurs, gp.TimeStamp AS date FROM d_gamesPlayed AS gp, d_typeGames AS tg, d_games AS g, d_gamesScored AS gs WHERE g.id = gp.idGame AND gp.idGP = gs.idGP AND g.idType = tg.idType AND gp.idClasse = ' +
+  let idClasse = req.params.idClasse;
+  let query =
+    'SELECT gp.idGP AS idGP, g.name AS nameGame, COUNT(DISTINCT gs.idEleve) AS nbJoueurs, gp.TimeStamp AS date FROM d_gamesPlayed AS gp, d_games AS g, d_gamesScored AS gs WHERE g.id = gp.idGame AND gp.idGP = gs.idGP AND gp.idClasse = ' +
     idClasse +
     ' AND gp.isPlayed = 1 GROUP BY gp.idGP ORDER BY gp.TimeStamp';
 
@@ -178,40 +275,93 @@ router.get('/byClasse/:idClasse', function(req, res, next) {
  * @apiError 500 SQL Error.
  *
  * @apiSuccessExample Success-Response:
- * {
- *    "status": 200,
- *    "error": null,
- *    "response": [
- *        {
- *            "idGP": 1,
- *            "nameGame": "Compteclasse",
- *            "matiere": "Maths",
- *            "note": 100,
- *            "date": "2019-03-14T18:04:51.000Z",
- *            "moyenne": 67.5
- *        }
- *    ]
- * }
+ *{
+ *   "status": 200,
+ *   "error": null,
+ *   "response": [
+ *       {
+ *           "idGP": 183,
+ *           "nameGame": "Invacouleur",
+ *           "date": "2019-11-19T16:12:01.000Z",
+ *           "notes": [
+ *               {
+ *                   "idComp": 1,
+ *                   "libelleComp": "Reconnaître les couleurs",
+ *                   "note": 33
+ *               },
+ *               {
+ *                   "idComp": 2,
+ *                   "libelleComp": "Reconnaître les lettres majuscules",
+ *                   "note": 44
+ *               }
+ *           ]
+ *       },
+ *       {
+ *           "idGP": 336,
+ *           "nameGame": "Compteclasse",
+ *           "date": "2019-12-05T00:14:25.000Z",
+ *           "notes": [
+ *               {
+ *                   "idComp": 1,
+ *                   "libelleComp": "Reconnaître les couleurs",
+ *                   "note": 28
+ *               },
+ *               {
+ *                   "idComp": 7,
+ *                   "libelleComp": "Compter jusqu'à 20",
+ *                   "note": 84
+ *               },
+ *               {
+ *                   "idComp": 8,
+ *                   "libelleComp": "Reconnaître des objets",
+ *                   "note": 28
+ *               },
+ *               {
+ *                   "idComp": 9,
+ *                   "libelleComp": "Reconnaître des animaux",
+ *                   "note": 98
+ *               }
+ *           ]
+ *       }
+ *   ]
+ *}
  */
-router.get('/gamesPlayed/:idEleve', function(req, res, next) {
-  var idEleve = req.params.idEleve;
-  var query =
-    'SELECT gp.idGP, g.name AS nameGame, tg.labelType AS matiere, gs.score AS note, gp.TimeStamp AS date, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp2.idGP = gp.idGP) AS moyenne FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_games AS g, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idGame = g.id AND gp.idTypeGame = tg.idType AND gs.idEleve =' +
-    idEleve;
 
-  req.mysql.query(query, function(error, results, fields) {
+router.get('/gamesPlayed/:idEleve', async function(req, res, next) {
+  let idEleve = req.params.idEleve;
+  let query = `SELECT gp.idGP, g.name AS nameGame, gp.TimeStamp AS date
+    FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_games AS g 
+    WHERE gp.idGP = gs.idGP 
+      AND gp.idGame = g.id 
+      AND gs.idEleve = ${idEleve}
+      AND gp.isPlayed = 1
+    GROUP BY gp.idGP`;
+
+  return req.mysql.query(query, async function(error, results, fields) {
     if (error) {
       tools.dSend(res, 'NOK', 'ElevesStats', 'gamesPlayed', 500, error, null);
     } else {
-      tools.dLog(
-        'OK',
-        'ElevesStats',
-        'gamesPlayed',
-        200,
-        null,
-        'response":' + results
-      );
-      res.send(JSON.stringify({ status: 200, error: null, response: results }));
+      let tab1 = new Array();
+      for (let i = 0; i < results.length; i++) {
+        let idGP = results[i].idGP;
+        let objNotes = new Array();
+        let query2 = `SELECT gs.idComp, c.libelleComp, gs.score AS note 
+                          FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_competences AS c 
+                          WHERE gs.idComp = c.idComp 
+                            AND gs.idGP = gp.idGP 
+                            AND gp.isPlayed = 1 
+                            AND gs.idEleve = ${idEleve}
+                            AND gs.idGP = ${idGP}`;
+        const result = await req.mysql.query(query2);
+        let obj = {
+          idGP: results[i].idGP,
+          nameGame: results[i].nameGame,
+          date: results[i].date,
+          notes: result[0]
+        };
+        tab1.push(obj);
+      }
+      tools.dSend(res, 'OK', 'ElevesStats', 'gamesPlayed', 200, null, tab1);
     }
   });
 });
@@ -251,11 +401,12 @@ router.get('/gamesPlayed/:idEleve', function(req, res, next) {
  */
 
 router.get('/bulletin/:idEleve', function(req, res, next) {
-  var idEleve = req.params.idEleve;
-  var query =
-    'SELECT tg.labeltype, AVG(gs.score) AS moyenne, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp.idTypeGame = gp2.idTypeGame AND gs2.score != -1 AND gp2.isPlayed = 1) AS moyenneClasse, COUNT(gp.idGP) AS nbPlayed FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idTypeGame = tg.idType AND gs.score != -1 AND gp.isPlayed = 1 AND gs.idEleve = ' +
-    idEleve +
-    ' GROUP BY gp.idTypeGame ORDER BY gp.idTypeGame ASC';
+  let idEleve = req.params.idEleve;
+  let query =   `SELECT AVG(gs.score) AS moyenne, c.libelleComp AS labeltype, COUNT(gs.idGP) AS nbPlayed, 
+                  (SELECT AVG(d_gamesScored.score) 
+                  FROM d_gamesScored INNER JOIN d_eleves e ON e.idEleve = d_gamesScored.idEleve INNER JOIN d_elevesEcole ele ON ele.idEleve=e.idEleve 
+                        WHERE ele.idEcole = ${req.currUser.idEcole} AND d_gamesScored.idComp = gs.idComp) AS moyenneClasse 
+                        FROM d_gamesScored gs INNER JOIN d_competences c ON gs.idComp=c.idComp WHERE gs.idEleve = ${idEleve} AND gs.score IS NOT NULL GROUP BY gs.idComp`;
 
   req.mysql.query(query, function(error, results, fields) {
     if (error) {
@@ -263,12 +414,11 @@ router.get('/bulletin/:idEleve', function(req, res, next) {
     } else {
       let moyGen = 0;
       let moyGenClasse = 0;
-      for (const k in results) {
+      for (let k = 0 ; k < results.length ; k++) {
         let moyMat = results[k].moyenne;
         let moyClasse = results[k].moyenneClasse;
-        moyGen += moyMat;
-        moyGenClasse += moyClasse;
-        console.log('moyGen: ' + moyGen + ' - moyGenClasse: ' + moyGenClasse);
+        moyGen += parseInt(moyMat);
+        moyGenClasse += parseInt(moyClasse);
       }
       moyGen = moyGen / results.length;
       moyGenClasse = moyGenClasse / results.length;
@@ -299,114 +449,6 @@ router.get('/bulletin/:idEleve', function(req, res, next) {
 });
 
 /**
- * @api {get} /eleves/stats/getMat/:idEleve Get games type played by a student
- * @apiName getMat
- * @apiGroup ElevesStats
- * @apiPermission Logged
- * @apiVersion 1.0.0
- *
- * @apiHeader {String} token Token auth
- * @apiParam {int} idEleve
- * @apiError 500 SQL Error.
- *
- * @apiSuccessExample Success-Response:
- * {
- *    "status": 200,
- *    "error": null,
- *    "response": [
- *        {
- *            "idTypeGame": 1,
- *            "labelType": "Logique"
- *        },
- *        {
- *            "idTypeGame": 2,
- *            "labelType": "Mathématiques"
- *        }
- *    ]
- * }
- */
-
-router.get('/getMat/:idEleve', function(req, res, next) {
-  var idEleve = req.params.idEleve;
-  var query =
-    'SELECT gp.idTypeGame, tg.labelType FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_typeGames AS tg WHERE gp.idGP = gs.idGP AND gp.idTypeGame = tg.idType AND gs.idEleve = ' +
-    idEleve +
-    ' AND gs.score != -1 GROUP BY gp.idTypeGame';
-
-  req.mysql.query(query, function(error, results, fields) {
-    if (error) {
-      tools.dSend(res, 'NOK', 'ElevesStats', 'getMat', 500, error, null);
-    } else {
-      tools.dSend(res, 'OK', 'ElevesStats', 'getMat', 200, null, results);
-    }
-  });
-});
-
-/**
- * @api {get} /eleves/stats/getGamesByMatEleve/:idEleve/:idMat Get games played by a student for one gametype
- * @apiName getGamesByMatEleve
- * @apiGroup ElevesStats
- * @apiPermission Logged
- * @apiVersion 1.0.0
- *
- * @apiHeader {String} token Token auth
- * @apiParam {int} idEleve
- * @apiParam {int} idMat
- * @apiError 500 SQL Error.
- *
- * @apiSuccessExample Success-Response:
- * {
- *    "status": 200,
- *    "error": null,
- *    "response": [
- *        {
- *            "idGP": 1,
- *            "nameGame": "Compteclasse",
- *            "matiere": "Maths",
- *            "note": 100,
- *            "date": "2019-03-14T18:04:51.000Z",
- *            "moyenne": 67.5
- *        }
- *    ]
- * }
- */
-
-router.get('/getGamesByMatEleve/:idEleve/:idMat', function(req, res, next) {
-  var idEleve = req.params.idEleve;
-  var idMat = req.params.idMat;
-  var query =
-    'SELECT gp.idGP, g.name AS nameGame, tg.labelType AS matiere, gs.score AS note, gp.TimeStamp AS date, (SELECT AVG(gs2.score) FROM d_gamesPlayed AS gp2, d_gamesScored AS gs2 WHERE gp2.idGP = gs2.idGP AND gp2.idGP = gp.idGP) AS moyenne FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_games AS g, d_typeGames AS tg WHERE gs.idGP = gp.idGP AND gp.idGame = g.id AND gp.idTypeGame = tg.idType AND gs.idEleve =' +
-    idEleve +
-    ' AND gp.idTypeGame = ' +
-    idMat +
-    ' AND gs.score != -1 ORDER BY gp.TimeStamp DESC';
-
-  req.mysql.query(query, function(error, results, fields) {
-    if (error) {
-      tools.dSend(
-        res,
-        'NOK',
-        'ElevesStats',
-        'getGamesByMatEleve',
-        500,
-        error,
-        null
-      );
-    } else {
-      tools.dSend(
-        res,
-        'OK',
-        'ElevesStats',
-        'getGamesByMatEleve',
-        200,
-        null,
-        results
-      );
-    }
-  });
-});
-
-/**
  * @api {get} /eleves/stats/getElevesRank Get the rank of the 10 best student of the current user
  * @apiName getElevesRank
  * @apiGroup ElevesStats
@@ -416,9 +458,11 @@ router.get('/getGamesByMatEleve/:idEleve/:idMat', function(req, res, next) {
  * @apiHeader {String} token Token auth
  *
  * @apiSuccessExample Success-Response:
- * {"status":200,
- * "error":null,
- * "response":[
+ * {
+ *  "status":200,
+ *  "error":null,
+ *  "response":
+ *    [
  *      {
  *          "score":70.3333,"idEleve":2
  *      },
@@ -431,37 +475,28 @@ router.get('/getGamesByMatEleve/:idEleve/:idMat', function(req, res, next) {
  *      {
  *          "score":34,"idEleve":1
  *      }
- *      ]
+ *    ]
  * }
  */
 
 router.get('/getElevesRank', function(req, res, next) {
-  var idEleve = req.params.idEleve;
-  var idMat = req.params.idMat;
-
   if (req.currUser.typeUser === 1) {
-    var query =
-      'SELECT AVG(score) score, s.idEleve, e.nomEleve, e.prenomEleve FROM d_gamesScored s ' +
-      'INNER JOIN d_eleves e ON e.idEleve=s.idEleve ' +
-      'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
-      'INNER JOIN d_profsAppClasse pc ON pc.idClasse=ce.idClasse ' +
-      'WHERE pc.idProf=' +
-      req.currUser.idUser +
-      ' ' +
-      'GROUP BY ce.idEleve ' +
-      'ORDER BY score DESC';
+    var query = `SELECT AVG(score) score, s.idEleve, e.nomEleve, e.prenomEleve FROM d_gamesScored s
+      INNER JOIN d_eleves e ON e.idEleve=s.idEleve
+      INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve
+      INNER JOIN d_profsAppClasse pc ON pc.idClasse=ce.idClasse
+      WHERE pc.idProf= ${req.currUser.idUser}
+      GROUP BY ce.idEleve
+      ORDER BY score DESC`;
   } else if (req.currUser.typeUser === 2) {
-    var query =
-      'SELECT AVG(score) score, s.idEleve, el.nomEleve, el.prenomEleve FROM d_gamesScored s ' +
-      'INNER JOIN d_eleves el ON el.idEleve=s.idEleve ' +
-      'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
-      'INNER JOIN d_classeEcole e ON e.idClasse=ce.idClasse ' +
-      'WHERE e.idEcole= ' +
-      req.currUser.idEcole +
-      ' ' +
-      'GROUP BY ce.idEleve ' +
-      'ORDER BY score DESC ' +
-      'LIMIT 10';
+    var query = `SELECT AVG(score) score, s.idEleve, el.nomEleve, el.prenomEleve FROM d_gamesScored s
+      INNER JOIN d_eleves el ON el.idEleve=s.idEleve
+      INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve
+      INNER JOIN d_classeEcole e ON e.idClasse=ce.idClasse
+      WHERE e.idEcole= ${req.currUser.idEcole}
+      GROUP BY ce.idEleve
+      ORDER BY score DESC
+      LIMIT 10`;
   }
 
   req.mysql.query(query, function(error, results, fields) {
@@ -496,8 +531,8 @@ router.get('/getElevesRank', function(req, res, next) {
  *      "error":null,
  *      "response":[
  *          {
- *          "moyenne":59.3913,
- *          "level":4,
+ *              "moyenne":59.3913,
+ *              "level":4,
  *              "num":1
  *          },
  *          {
@@ -510,29 +545,20 @@ router.get('/getElevesRank', function(req, res, next) {
  */
 
 router.get('/getClassesAvg', function(req, res, next) {
-  var idEleve = req.params.idEleve;
-  var idMat = req.params.idMat;
-
   if (req.currUser.typeUser === 1) {
-    var query =
-      'SELECT AVG(s.score) as moyenne, cl.level, cl.num FROM d_gamesScored s ' +
-      'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
-      'INNER JOIN d_classe cl ON cl.idClasse=ce.idClasse ' +
-      'INNER JOIN d_profsAppClasse ap ON ap.idClasse=cl.idClasse ' +
-      'WHERE ap.idProf=' +
-      req.currUser.idUser +
-      ' ' +
-      'GROUP BY cl.idClasse';
+    var query = `SELECT AVG(s.score) as moyenne, cl.level, cl.num FROM d_gamesScored s
+      INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve
+      INNER JOIN d_classe cl ON cl.idClasse=ce.idClasse
+      INNER JOIN d_profsAppClasse ap ON ap.idClasse=cl.idClasse
+      WHERE ap.idProf= ${req.currUser.idUser}
+      GROUP BY cl.idClasse`;
   } else if (req.currUser.typeUser === 2) {
-    var query =
-      'SELECT AVG(s.score) as moyenne, cl.level, cl.num FROM d_gamesScored s ' +
-      'INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve ' +
-      'INNER JOIN d_classe cl ON cl.idClasse=ce.idClasse ' +
-      'INNER JOIN d_classeEcole ceo ON ceo.idClasse=cl.idClasse ' +
-      'WHERE ceo.idEcole=' +
-      req.currUser.idEcole +
-      ' ' +
-      'GROUP BY cl.idClasse';
+    var query = `SELECT AVG(s.score) as moyenne, cl.level, cl.num FROM d_gamesScored s
+      INNER JOIN d_classeEleve ce ON ce.idEleve=s.idEleve
+      INNER JOIN d_classe cl ON cl.idClasse=ce.idClasse
+      INNER JOIN d_classeEcole ceo ON ceo.idClasse=cl.idClasse
+      WHERE ceo.idEcole= ${req.currUser.idEcole}
+      GROUP BY cl.idClasse`;
   }
 
   req.mysql.query(query, function(error, results, fields) {
@@ -548,6 +574,136 @@ router.get('/getClassesAvg', function(req, res, next) {
         null,
         results
       );
+    }
+  });
+});
+
+/**
+ * @api {get} /eleves/stats/getComps/:idEleve Get competences games played by a studient
+ * @apiName getComps
+ * @apiGroup ElevesStats
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token Token auth
+ * @apiParam {int} idEleve
+ * @apiError 500 SQL Error.
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *    "status": 200,
+ *    "error": null,
+ *    "response": [
+ *        {
+ *            "idComp": 1,
+ *            "libelleComp": "Logique"
+ *        },
+ *        {
+ *            "idComp": 2,
+ *            "libelleComp": "Mathématiques"
+ *        }
+ *    ]
+ * }
+ */
+
+router.get('/getComps/:idEleve', function(req, res, next) {
+  let idEleve = req.params.idEleve;
+  let query = `SELECT c.idComp, c.libelleComp
+  FROM d_gamesScored AS gs, d_competences AS c
+  WHERE gs.idComp = c.idComp AND gs.idEleve =  ${idEleve} AND gs.score > -1 GROUP BY c.idComp`;
+
+  req.mysql.query(query, function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'ElevesStats', 'getComps', 500, error, null);
+    } else {
+      tools.dSend(res, 'OK', 'ElevesStats', 'getComps', 200, null, results);
+    }
+  });
+});
+
+/**
+ * @api {get}  /eleves/stats/getGamesByCompEleve/:idEleve/:idComp Get games played by a student for one competence
+ * @apiName getGamesByCompEleve
+ * @apiGroup ElevesStats
+ * @apiPermission Logged
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} token Token auth
+ * @apiParam {int} idEleve
+ * @apiParam {int} idComp
+ * @apiError 500 SQL Error.
+ *
+ * @apiSuccessExample Success-Response:
+ *{
+ *   "status": 200,
+ *   "error": null,
+ *   "response": [
+ *       {
+ *           "idGP": 183,
+ *           "nameGame": "Invacouleur",
+ *           "date": "2019-11-19T16:12:01.000Z",
+ *           "notes": [
+ *               {
+ *                   "idComp": 1,
+ *                   "libelleComp": "Reconnaître les couleurs",
+ *                   "note": 33
+ *               }
+ *           ]
+ *       },
+ *       {
+ *           "idGP": 336,
+ *           "nameGame": "Compteclasse",
+ *           "date": "2019-12-05T00:14:25.000Z",
+ *           "notes": [
+ *               {
+ *                   "idComp": 1,
+ *                   "libelleComp": "Reconnaître les couleurs",
+ *                   "note": 28
+ *               }
+ *           ]
+ *       }
+ *   ]
+ *}
+ */
+
+router.get('/getGamesByCompEleve/:idEleve/:idComp', function(req, res, next) {
+  let idEleve = req.params.idEleve,
+    idComp = req.params.idComp;
+  let query = `SELECT gp.idGP, g.name AS nameGame, gp.TimeStamp AS date
+    FROM d_gamesPlayed AS gp, d_gamesScored AS gs, d_games AS g 
+    WHERE gp.idGP = gs.idGP 
+      AND gp.idGame = g.id 
+      AND gs.idComp = ${idComp}
+      AND gs.idEleve = ${idEleve}
+      AND gp.isPlayed = 1
+    GROUP BY gp.idGP`;
+
+  return req.mysql.query(query, async function(error, results, fields) {
+    if (error) {
+      tools.dSend(res, 'NOK', 'ElevesStats', 'gamesPlayed', 500, error, null);
+    } else {
+      let tab1 = new Array();
+      for (let i = 0; i < results.length; i++) {
+        let idGP = results[i].idGP;
+        let objNotes = new Array();
+        let query2 = `SELECT gs.idComp, c.libelleComp, gs.score AS note 
+                          FROM d_gamesScored AS gs, d_gamesPlayed AS gp, d_competences AS c 
+                          WHERE gs.idComp = c.idComp 
+                            AND gs.idGP = gp.idGP 
+                            AND gp.isPlayed = 1 
+                            AND gs.idComp = ${idComp}
+                            AND gs.idEleve = ${idEleve}
+                            AND gs.idGP = ${idGP}`;
+        const result = await req.mysql.query(query2);
+        let obj = {
+          idGP: results[i].idGP,
+          nameGame: results[i].nameGame,
+          date: results[i].date,
+          notes: result[0]
+        };
+        tab1.push(obj);
+      }
+      tools.dSend(res, 'OK', 'ElevesStats', 'gamesPlayed', 200, null, tab1);
     }
   });
 });

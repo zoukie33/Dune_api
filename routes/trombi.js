@@ -1,5 +1,5 @@
 var express = require('express');
-var mysql = require('mysql');
+var mysql = require('mysql2');
 var router = express.Router();
 var tools = require('../functions/tools');
 
@@ -145,14 +145,16 @@ router.post('/', function(req, res, next) {
 router.get('/classes', function(req, res, next) {
   var idUser = req.currUser.idUser;
   var typeUser = req.currUser.typeUser;
+  let myQuery = null;
+
   if (typeUser && idUser) {
-    if (typeUser == 1) {
-      var myQuery =
+    if (typeUser === 1) {
+      myQuery =
         'SELECT c.* FROM d_classe AS c, d_users AS u, d_profsAppClasse AS ac WHERE u.idUser = ac.idProf AND ac.idClasse = c.idClasse AND u.idUser = ' +
         idUser +
         ' ORDER BY c.level, c.num ASC';
     } else {
-      var myQuery =
+      myQuery =
         'SELECT c.* FROM d_classe AS c, d_users AS u, d_classeEcole AS ce2, d_profsAppEcole AS ae WHERE u.idUser = ae.idProf AND ae.idEcole = ce2.idEcole AND ce2.idClasse = c.idClasse AND u.idUser = ' +
         idUser +
         ' ORDER BY c.level, c.num ASC';

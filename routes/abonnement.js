@@ -1,5 +1,5 @@
 var express = require('express');
-var mysql = require('mysql');
+var mysql = require('mysql2');
 var serial = require('generate-serial-key');
 var router = express.Router();
 var filez = require('../functions/files/files');
@@ -14,30 +14,57 @@ var stripe = require('../functions/stripe');
  * @apiVersion 1.0.0
  * @apiDescription Route permettant de souscrire à un abonnement.
  * @apiParam {Int} typeAbo Type d'abonnement (1 ou 2)
+ * @apiParam {Int} quantity quantite de tables associées a l'abonnement
  * @apiHeader {String} token auth
  */
 
 router.post('/subscribe', function(req, res, next) {
-  var queryCustomer =
-    'SELECT id_customer FROM d_ecole WHERE id=' + req.currUser.idEcole;
 
-  req.mysql.query(queryCustomer, function(error, results, fields) {
-    if (error) {
-      tools.dSend(
+  if (req.currUser.typeUser !== 2){
+    tools.dSend(
         res,
         'NOK',
         'Abonnement',
         'subscribe',
-        500,
-        error,
-        "Can't get id customer"
-      );
-    } else {
-      customer = results[0].id_customer;
+        403,
+        'Unauthorized',
+        'Vous n\'avez pas les droits nécéssairec pour effectuer cette action.'
+    );
+  } else {
+    var queryCustomer =
+        'SELECT id_customer FROM d_ecole WHERE id=' + req.currUser.idEcole;
 
-      let ret = stripe.createSub(req, res, { customer: customer });
+    if (typeof req.body.idAbo != 'undefined' && typeof req.body.quantity != 'undefined') {
+      req.mysql.query(queryCustomer, function(error, results, fields) {
+        if (error) {
+          tools.dSend(
+              res,
+              'NOK',
+              'Abonnement',
+              'subscribe',
+              500,
+              error,
+              "Can't get id customer"
+          );
+        } else {
+          customer = results[0].id_customer;
+
+          stripe.createSub(req, res, { customer: customer });
+        }
+      });
+    } else {
+      tools.dSend(
+          res,
+          'NOK',
+          'Abonnement',
+          'subscribe',
+          400,
+          'Bad Request',
+          null
+      );
     }
-  });
+  }
+
 });
 
 /**
@@ -88,8 +115,10 @@ router.get('/getSub', function(req, res, next) {
   var idEcole = req.currUser.idEcole;
 
   var query =
-    'SELECT typeAbo, status FROM d_abonnement WHERE idEcole = ' + idEcole;
-
+        'SELECT ae.id_abonnement, status, (a.nb_app - ae.nb_app) AS apps_left, (a.data_stockage_go - ae.nb_stockage) AS storage_left, a.nb_app AS apps_total, a.data_stockage_go AS storage_total ' +
+        'FROM d_abonnement_ecole ae ' +
+        'INNER JOIN d_abonnement a ON a.id_abonnement=ae.id_abonnement ' +
+        'WHERE id_ecole = ' + idEcole;
   req.mysql.query(query, function(error, results, fields) {
     if (error) {
       tools.dSend(res, 'NOK', 'Abonnement', 'getSub', 500, error, null);

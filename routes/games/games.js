@@ -1,9 +1,11 @@
-var express = require('express');
-var mysql = require('mysql');
-var router = express.Router();
+const express = require('express');
+const mysql = require('mysql2');
+const router = express.Router();
+const { dirname } = require('../../config');
 const fileUpload = require('express-fileupload');
-var filez = require('../../functions/files/files');
-var tools = require('../../functions/tools');
+const fs = require('fs');
+const filez = require('../../functions/files/files');
+const tools = require('../../functions/tools');
 
 /**
  * @api {get} /games/nbGames Get nb of Games by idEcole
@@ -56,6 +58,7 @@ router.get('/nbGames', function(req, res, next) {
  * @apiVersion 1.0.0
  *
  * @apiHeader {String} token Token auth
+ * @apiError 500 SQL Error.
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,
@@ -79,6 +82,23 @@ router.get('/', function(req, res, next) {
     if (error) {
       tools.dSend(res, 'NOK', 'Games', 'games', 500, error, null);
     } else {
+      if (req.currUser.typeUser === 4) {
+        for (let i = 0; i < results.length; i++) {
+          if (results[i].path == null) {
+            try {
+              if (
+                fs.statSync(dirname + '/files/Games/' + results[i].id + '.zip')
+              ) {
+                results[i].path = results[i].id + '.zip';
+              }
+            } catch (err) {
+              if (err.code === 'ENOENT') {
+                results[i].path = null;
+              }
+            }
+          }
+        }
+      }
       tools.dSend(res, 'OK', 'Games', 'games', 200, null, results);
     }
   });
@@ -92,6 +112,7 @@ router.get('/', function(req, res, next) {
  * @apiVersion 1.0.0
  *
  * @apiHeader {String} token Token auth
+ * @apiError 500 SQL Error.
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,
@@ -133,27 +154,32 @@ router.get('/:id?', function(req, res, next) {
  * @apiHeader {String} token Token auth
  * @apiParam {String} name Nom de l'application/jeu.
  * @apiParam {String} creator Nom du créateur.
+ * @apiError 500 SQL Error.
+ * @apiError 400 Bad request.
  */
 
 router.post('/add', function(req, res, next) {
-  var name = req.body.name;
-  var creator = req.body.creator;
+  let name = req.body.name;
+  let creator = req.body.creator;
+  if (typeof name != 'undefined' && typeof creator != 'undefined') {
+    let query =
+      "INSERT INTO d_games (name, creator, path) VALUES ('" +
+      name +
+      "', '" +
+      creator +
+      "', 'NULL')";
 
-  var query =
-    "INSERT INTO d_games (name, creator, path) VALUES ('" +
-    name +
-    "', '" +
-    creator +
-    "', 'NULL')";
-
-  req.mysql.query(query, function(error, results, fields) {
-    if (error) {
-      tools.dSend(res, 'NOK', 'Games', 'addGame', 500, error, null);
-    } else {
-      tools.dSend(res, 'OK', 'Games', 'addGame', 200, null, 'Game Added');
-    }
-    res.end(JSON.stringify(results));
-  });
+    req.mysql.query(query, function(error, results, fields) {
+      if (error) {
+        tools.dSend(res, 'NOK', 'Games', 'addGame', 500, error, null);
+      } else {
+        tools.dSend(res, 'OK', 'Games', 'addGame', 200, null, 'Game Added');
+      }
+      res.end(JSON.stringify(results));
+    });
+  } else {
+    tools.dSend(res, 'NOK', 'Games', 'addGame', 400, 'Bad request.', null);
+  }
 });
 
 module.exports = router;

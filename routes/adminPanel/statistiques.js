@@ -1,9 +1,9 @@
-var express = require('express');
-var mysql = require('mysql');
-var serial = require('generate-serial-key');
-var router = express.Router();
-var filez = require('../../functions/files/files');
-var tools = require('../../functions/tools');
+const express = require('express');
+const router = express.Router();
+const tools = require('../../functions/tools');
+// const filez = require('../../functions/files/files');
+// const mysql = require('mysql2');
+// const serial = require('generate-serial-key');
 
 /**
  * @api {get} /admin/statistiques/nbGamesPlayed Get nb of games played in total

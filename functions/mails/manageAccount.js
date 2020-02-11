@@ -1,8 +1,8 @@
-var nodeMailer = require("nodemailer");
-var EmailTemplate = require('email-templates').EmailTemplate;
-var config = require('../../config');
+const nodeMailer = require("nodemailer");
+const EmailTemplate = require('email-templates').EmailTemplate;
+const { sender, emailPass } = require('../../config');
 
-var transporter = nodeMailer.createTransport('smtps://' + config.sender + ':' + config.emailPass + '@smtp.gmail.com');
+var transporter = nodeMailer.createTransport('smtps://' + sender + ':' + emailPass + '@smtp.gmail.com');
 
 var sendCreateAccountLink = transporter.templateSender(
   new EmailTemplate('./templates/createAccount'), {
@@ -82,8 +82,8 @@ exports.sendContactToDune = function (pbType, pbDetail, emailUser) {
     }, function (err, info) {
         if (err) {
             console.log(err)
-        } else {
+        } /* else {
             console.log('Link sent\n' + JSON.stringify(info));
-        }
+        } */
     });
 };

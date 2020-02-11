@@ -6,4 +6,6 @@
 
 /coverage
 
+/bin/server.crt
+.env
 npm-debug.log*

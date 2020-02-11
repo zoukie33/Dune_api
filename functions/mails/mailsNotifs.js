@@ -1,8 +1,8 @@
-var nodeMailer = require("nodemailer");
-var EmailTemplate = require('email-templates').EmailTemplate;
-var config = require('../../config');
+const nodeMailer = require("nodemailer");
+const EmailTemplate = require('email-templates').EmailTemplate;
+const { sender, emailPass } = require('../../config');
 
-var transporter = nodeMailer.createTransport('smtps://' + config.sender + ':' + config.emailPass + '@smtp.gmail.com');
+var transporter = nodeMailer.createTransport('smtps://' + sender + ':' + emailPass + '@smtp.gmail.com');
 
 var sendAskAppLink = transporter.templateSender(
   new EmailTemplate('./templates/mailNotifAskApp'), {

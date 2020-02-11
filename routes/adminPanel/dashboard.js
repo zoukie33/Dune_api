@@ -1,9 +1,9 @@
-var express = require('express');
-var mysql = require('mysql');
-var serial = require('generate-serial-key');
-var router = express.Router();
-var filez = require('../../functions/files/files');
-var tools = require('../../functions/tools');
+const express = require('express');
+const mysql = require('mysql2');
+// const serial = require('generate-serial-key');
+const router = express.Router();
+// const filez = require('../../functions/files/files');
+const tools = require('../../functions/tools');
 
 /**
  * @api {get} /admin/dashboard/getAllSchools Getting Schools
@@ -50,7 +50,7 @@ var tools = require('../../functions/tools');
  */
 
 router.get('/getAllSchools', function(req, res, next) {
-  var query =
+  let query =
     'SELECT e.*, u.nomUser, u.prenomUser FROM d_ecole AS e, d_users AS u WHERE e.idDirecteur = u.idUser';
 
   req.mysql.query(query, function(error, results, fields) {
@@ -110,8 +110,10 @@ router.get('/getAllSchools', function(req, res, next) {
  */
 
 router.get('/getProfsBySchool/:idEcole', function(req, res, next) {
-  var query =
-    'SELECT u.idUser AS idProf, u.nomUser AS nom, u.prenomUser AS prenom, u.emailUser AS email, u.picPath FROM d_profsAppEcole AS pae, d_users AS u WHERE u.idUser = pae.idProf AND pae.idEcole = ' +
+  let query =
+    'SELECT u.idUser AS idProf, u.nomUser AS nom, u.prenomUser AS prenom, u.emailUser AS email, u.picPath ' +
+    'FROM d_profsAppEcole pae INNER JOIN d_users u ON u.idUser=pae.idProf ' +
+    'WHERE pae.idEcole = ' +
     req.params.idEcole;
 
   req.mysql.query(query, function(error, results, fields) {
@@ -169,9 +171,9 @@ router.get('/getProfsBySchool/:idEcole', function(req, res, next) {
  */
 
 router.get('/getClassesBySchool/:idEcole', function(req, res, next) {
-  var query =
+  let query =
     'SELECT c.idClasse, c.level, c.num, c.annee FROM d_classeEcole AS ce, d_classe AS c WHERE ce.idClasse = c.idClasse AND ce.idEcole = ?';
-  var data = [req.params.idEcole];
+  let data = [req.params.idEcole];
   query = mysql.format(query, data);
 
   req.mysql.query(query, function(error, results, fields) {
@@ -229,9 +231,9 @@ router.get('/getClassesBySchool/:idEcole', function(req, res, next) {
  */
 
 router.get('/getStudentsByClasse/:idClasse', function(req, res, next) {
-  var query =
+  let query =
     'SELECT e.idEleve, e.nomEleve, e.prenomEleve, e.picPath FROM d_classeEleve AS ce, d_eleves AS e WHERE ce.idEleve = e.idEleve AND ce.idClasse = ?';
-  var data = [req.params.idClasse];
+  let data = [req.params.idClasse];
   query = mysql.format(query, data);
 
   req.mysql.query(query, function(error, results, fields) {
@@ -291,7 +293,7 @@ router.get('/getStudentsByClasse/:idClasse', function(req, res, next) {
  */
 
 router.get('/getLicencesBySchool/:idEcole', function(req, res, next) {
-  var query =
+  let query =
     'SELECT idLicence AS id, idEcole, serial AS licence, used, dateExpire FROM d_licencesTables WHERE idEcole = ' +
     req.params.idEcole;
 
@@ -345,7 +347,7 @@ router.get('/getLicencesBySchool/:idEcole', function(req, res, next) {
  */
 
 router.get('/getCreators', function(req, res, next) {
-  var query = 'SELECT * FROM d_creator';
+  let query = 'SELECT * FROM d_creator';
 
   req.mysql.query(query, function(error, results, fields) {
     if (error) {
@@ -390,7 +392,7 @@ router.get('/getCreators', function(req, res, next) {
  */
 
 router.get('/getNbSchools', function(req, res, next) {
-  var query = 'SELECT COUNT(id) AS nbSchool FROM d_ecole';
+  let query = 'SELECT COUNT(id) AS nbSchool FROM d_ecole';
 
   req.mysql.query(query, function(error, results, fields) {
     if (error) {
@@ -455,7 +457,7 @@ router.get('/getNbSchools', function(req, res, next) {
  */
 
 router.get('/getTableBySchool/:idEcole', function(req, res, next) {
-  var query =
+  let query =
     'SELECT u.idUser AS idProf, u.nomUser AS nom, u.prenomUser AS prenom, u.emailUser AS email, u.picPath FROM d_tables AS pae, d_users AS u WHERE u.idUser = pae.idProf AND pae.idEcole = ' +
     req.params.idEcole;
 
@@ -465,7 +467,7 @@ router.get('/getTableBySchool/:idEcole', function(req, res, next) {
         res,
         'NOK',
         'Admin-Dashboard',
-        'getProfsBySchool',
+        'getTableBySchool',
         500,
         error,
         null
@@ -475,7 +477,7 @@ router.get('/getTableBySchool/:idEcole', function(req, res, next) {
         res,
         'OK',
         'Admin-Dashboard',
-        'getProfsBySchool',
+        'getTableBySchool',
         200,
         null,
         results
@@ -514,9 +516,9 @@ router.get('/getTableBySchool/:idEcole', function(req, res, next) {
  */
 
 router.get('/getStudentsBySchool/:idSchool', function(req, res, next) {
-  var query =
+  let query =
     'SELECT e.idEleve, e.nomEleve, e.prenomEleve, e.picPath FROM d_elevesEcole AS ee, d_eleves AS e WHERE e.idEleve = ee.idEleve AND ee.idEcole = ?';
-  var data = [req.params.idSchool];
+  let data = [req.params.idSchool];
   query = mysql.format(query, data);
 
   req.mysql.query(query, function(error, results, fields) {
@@ -543,4 +545,138 @@ router.get('/getStudentsBySchool/:idSchool', function(req, res, next) {
     }
   });
 });
+
+/**
+ * @api {get} /admin/dashboard/getStudentsNotInClassBySchool/:idSchool Getting students by School not in a class
+ * @apiName getStudentsNotInClassBySchool
+ * @apiGroup AdminDashboard
+ * @apiPermission notLogged
+ * @apiVersion 1.0.0
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *  "status": 200,
+ *  "error": null,
+ *  "response": [
+ *      {
+ *          "idEleve": 1,
+ *          "nomEleve": "Merveillau",
+ *          "prenomEleve": "Denis",
+ *          "picPath": "1-eleve.png"
+ *      },
+ *      {
+ *          "idEleve": 2,
+ *          "nomEleve": "Senouci",
+ *          "prenomEleve": "Elies",
+ *          "picPath": "2-eleve.png"
+ *      }
+ *    ]
+ * }
+ * @apiHeader {String} token AdminToken auth
+ * @apiParam {Int} idSchool
+ */
+
+router.get('/getStudentsNotInClassBySchool/:idSchool', function(req, res, next) {
+  let idEcole = req.params.idSchool;
+  if (typeof idEcole != 'undefined') {
+    let query =
+    `SELECT e.idEleve, e.nomEleve, e.prenomEleve, e.picPath FROM d_elevesEcole AS ee, d_eleves AS e WHERE e.idEleve = ee.idEleve AND ee.idEcole = ${idEcole} AND e.idEleve NOT IN (SELECT idEleve FROM d_classeEleve)`;
+    query = mysql.format(query);
+
+    req.mysql.query(query, function(error, results, fields) {
+      if (error) {
+        tools.dSend(
+          res,
+          'NOK',
+          'Admin-Dashboard',
+          'getStudentsNotInClassBySchool',
+          500,
+          error,
+          null
+        );
+      } else {
+        tools.dSend(
+          res,
+          'OK',
+          'Admin-Dashboard',
+          'getStudentsNotInClassBySchool',
+          200,
+          null,
+          results
+        );
+      }
+    });
+  } else {
+    tools.dSend(
+      res,
+      'NOK',
+      'Admin-Dashboard',
+      'getStudentsNotInClassBySchool',
+      400,
+      'Bad request.',
+      null
+    );
+  }
+});
+
+router.get('/getClassesByProfessor/:idProf', function(req, res, next) {
+  var idUser = req.params.idProf;
+  let query_classes = null;
+
+  let query_directeur =
+      'SELECT e.idDirecteur FROM d_ecole e WHERE e.idDirecteur=?';
+  let data = [req.params.idProf];
+  query_directeur = mysql.format(query_directeur, data);
+
+  req.mysql.query(query_directeur, function(error, results, fields) {
+    if (error) {
+      tools.dSend(
+          res,
+          'NOK',
+          'Admin-Dashboard',
+          'getStudentsBySchool',
+          500,
+          error,
+          null
+      );
+    } else {
+      if (results.length > 0) {
+        query_classes = "SELECT idClasse " +
+            "FROM d_classeEcole ce " +
+            "INNER JOIN d_profsAppEcole pa ON pa.idEcole=ce.idEcole " +
+            "WHERE pa.idProf=?";
+      } else {
+        query_classes = "SELECT idClasse " +
+            "FROM d_profsAppClasse pa " +
+            "WHERE pa.idProf=?";
+      }
+      let data = [req.params.idProf];
+      query_classes = mysql.format(query_classes, data);
+
+      req.mysql.query(query_classes, function (error, results, fields) {
+        if (error) {
+          tools.dSend(
+              res,
+              'NOK',
+              'Admin-Dashboard',
+              'getClassesByProfessor',
+              500,
+              error,
+              null
+          );
+        } else {
+          tools.dSend(
+              res,
+              'OK',
+              'Admin-Dashboard',
+              'getClassesByProfessor',
+              200,
+              null,
+              results
+          );
+        }
+      });
+    }
+  });
+});
+
 module.exports = router;

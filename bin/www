@@ -1,23 +1,20 @@
 #!/usr/bin/env node
+const { apiPort, apiPortSsl,tlsRej, nodeEnv } = require('../config');
 
-/**
- * Module dependencies.
- */
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-var app = require('../app');
-var debug = require('debug')('dune-api:server');
-var fs = require('fs');
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = tlsRej;
+console.log("PLUS DE BONJOUR CA SUFFIT LAAAAA");
+const app = require('../app');
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
 
-var http = require('http');
-var https = require('https');
-
-var credentials = {
+const credentials = {
   key: fs.readFileSync(__dirname + '/server.key'),
   cert: fs.readFileSync(__dirname + '/server.crt')
 };
 
-http.createServer(app).listen(80);
-https.createServer(credentials, app).listen(443);
+const server = http.createServer(app).listen(apiPort);
+const serverSSL = https.createServer(credentials, app).listen(apiPortSsl);
 
 app.use(function(req, res, next) {
   if (!req.secure) {
@@ -25,3 +22,42 @@ app.use(function(req, res, next) {
   }
   next();
 });
+
+if (nodeEnv === "developement") {
+  const debug = require('debug')('dune_api:server');
+
+  server.on('error', onError);
+  server.on('listening', onListening);
+
+  function onError(error) {
+    if (error.syscall !== 'listen') {
+      throw error;
+    }
+
+    var bind = typeof apiPort === 'string'
+      ? 'Pipe ' + apiPort
+      : 'Port ' + apiPort;
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+      case 'EACCES':
+        console.error(bind + ' requires elevated privileges');
+        process.exit(1);
+        break;
+      case 'EADDRINUSE':
+        console.error(bind + ' is already in use');
+        process.exit(1);
+        break;
+      default:
+        throw error;
+    }
+  }
+
+  function onListening() {
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+      ? 'pipe ' + addr
+      : 'port ' + addr.apiPort;
+    debug('Listening on ' + bind);
+  }
+}

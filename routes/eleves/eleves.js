@@ -1,9 +1,9 @@
-var express = require('express');
-var mysql = require('mysql');
-var router = express.Router();
+const express = require('express');
+const mysql = require('mysql2');
+const router = express.Router();
 const fileUpload = require('express-fileupload');
-var filez = require('../../functions/files/files');
-var tools = require('../../functions/tools');
+const filez = require('../../functions/files/files');
+const tools = require('../../functions/tools');
 
 /**
  * @api {get} /eleves/ Get all students
@@ -117,7 +117,7 @@ router.get('/:id?', function(req, res, next) {
  */
 
 router.post('/byClasse', function(req, res, next) {
-  var idClasse = req.body.idClasse;
+  let idClasse = req.body.idClasse;
   if (idClasse) {
     req.mysql.query(
       'SELECT e.nomEleve, e.prenomEleve FROM d_classeEleve as c, d_eleves as e WHERE e.idEleve = c.idEleve AND c.idClasse = ' +
@@ -227,10 +227,10 @@ router.post('/add', function(req, res, next) {
   let file;
   let idEleve;
   var query = 'INSERT INTO ?? SET ?';
-  var table = ['d_eleves'];
+  var table = ['d_eleves', postData];
   query = mysql.format(query, table);
 
-  req.mysql.query(query, postData, function(error, results, fields) {
+  req.mysql.query(query, function(error, results, fields) {
     if (error) {
       tools.dSend(res, 'NOK', 'Eleves', 'add', 500, error, null);
     } else {
@@ -246,32 +246,41 @@ router.post('/add', function(req, res, next) {
           function(error, results, fields) {}
         );
       }
-      if (req.files && Object.keys(req.files).length != 0) {
-        file = req.files.picEleve;
-        var fileName = idEleve + '-eleve.png';
-        if (filez.filesGest(file, 'eleves/', fileName)) {
-          var query =
-            "UPDATE d_eleves SET picPath = '" +
-            fileName +
-            "'  WHERE idEleve = " +
-            idEleve;
-          req.mysql.query(query, function(error, results, fields) {
-            if (error) {
-              tools.dLog('NOK', 'Eleves', 'add', 500, null, null);
-            } else {
-              tools.dLog(
-                'OK',
-                'Eleves',
-                'add',
-                200,
-                null,
-                'Une photo User a été mis a jour : [' + fileName + ']'
-              );
+      var q = 'INSERT INTO ?? SET idEleve = ?, idEcole = ?';
+      var table = ['d_elevesEcole', idEleve, req.currUser.idEcole];
+      q = mysql.format(q, table);
+      req.mysql.query(q, function(error, results, fields) {
+        if (error) {
+          tools.dSend(res, 'NOK', 'Eleves', 'add', 500, error, null);
+        } else {
+          if (req.files && Object.keys(req.files).length != 0) {
+            file = req.files.picEleve;
+            var fileName = idEleve + '-eleve.png';
+            if (filez.filesGest(file, 'eleves/', fileName)) {
+              var query =
+                "UPDATE d_eleves SET picPath = '" +
+                fileName +
+                "'  WHERE idEleve = " +
+                idEleve;
+              req.mysql.query(query, function(error, results, fields) {
+                if (error) {
+                  tools.dLog('NOK', 'Eleves', 'add', 500, null, null);
+                } else {
+                  tools.dLog(
+                    'OK',
+                    'Eleves',
+                    'add',
+                    200,
+                    null,
+                    'Une photo User a été mis a jour : [' + fileName + ']'
+                  );
+                }
+                res.end(JSON.stringify(results));
+              });
             }
-            res.end(JSON.stringify(results));
-          });
+          }
         }
-      }
+    });
     }
     res.end(JSON.stringify(results));
   });

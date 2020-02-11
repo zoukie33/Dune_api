@@ -14,6 +14,7 @@ var help = require('../functions/mails/manageAccount');
  * @apiParam {String} pbType Type du problème
  * @apiParam {String} pbDetail Détail du problème
  * @apiError 500 SQL Error.
+ * @apiError 400 Bad Request.
  *
  * @apiSuccessExample Success-Response:
  * {
@@ -26,20 +27,11 @@ var help = require('../functions/mails/manageAccount');
 router.post('/contact', function(req, res, next) {
   var pbType = req.body.pbType;
   var pbDetail = req.body.pbDetail;
-
-  if (pbType != '' && pbDetail != '') {
+  if (typeof pbType != 'undefined' && typeof pbDetail != 'undefined') {
     help.sendContactToDune(pbType, pbDetail, req.currUser.emailUser);
     tools.dSend(res, 'OK', 'Help', 'contact', 200, null, 'Form help valid.');
   } else {
-    tools.dSend(
-      res,
-      'NOK',
-      'Help',
-      'verifPassword',
-      500,
-      null,
-      'Champs incomplets'
-    );
+    tools.dSend(res, 'NOK', 'Help', 'verifPassword', 400, null, 'Bad Request');
   }
 });
 

@@ -1,5 +1,5 @@
 var tools = require('./tools');
-var mysql = require('mysql');
+var mysql = require('mysql2');
 
 exports.factureAbonnement = function(req, idGP) {
   var query = 'UPDATE d_gamesPlayed SET isPlayed = 1 WHERE idGP = ' + idGP;
@@ -12,30 +12,25 @@ exports.factureAbonnement = function(req, idGP) {
   });
 };
 
-exports.factureGame = function(req, res, idGame, idEcole) {
-  var query = 'SELECT prix, prixTTC FROM ?? WHERE id = ?';
-  var data = ['d_games', idGame];
-  query = mysql.format(query, data);
-  req.mysql.query(query, function(error, results, fields) {
-    if (error) {
-      tools.dLog('NOK', 'Facturation', 'factureGame', 500, error, results);
-    } else {
-      var prixHT = results[0].prix == null ? 0 : results[0].prix,
-        prixTTC = results[0].prixTTC == null ? 0 : results[0].prixTTC,
-        date = new Date(),
-        typeFacture = 2;
+exports.factureGameFree = function(req, res, idGame, idEcole) {
 
-      query =
-        'INSERT INTO ?? (idEcole, typeFacture, date, prixHT, prixTTC) VALUES (?,?,?,?,?)';
-      data = ['d_facturation', idEcole, typeFacture, date, prixHT, prixTTC];
-      query = mysql.format(query, data);
-      req.mysql.query(query, function(error, results, fields) {
+    let query_app = "SELECT name from d_games WHERE id="+idGame;
+    query_app = mysql.format(query_app);
+
+    req.mysql.query(query_app, function(error, results, fields) {
         if (error) {
-          tools.dLog('NOK', 'Facturation', 'factureGame', 500, error, results);
+            tools.dLog('NOK', 'Facturation', 'factureGameFree', 500, error, results);
         } else {
-          tools.dLog('OK', 'Facturation', 'factureGame', 200, null, results);
+            let queryFact = 'INSERT INTO ?? (idEcole, id_app, id_abonnement, entity_name, typeFacture, prixHT, prixTTC, free_app, paid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            let data = ['d_facturation', idEcole, idGame, 0, results[0].name, 2, 0, 0, 1, 1];
+            queryFact = mysql.format(queryFact, data);
+            req.mysql.query(queryFact, function(error, results, fields) {
+                if (error) {
+                    tools.dLog('NOK', 'Facturation', 'factureGameFree', 500, error, results);
+                } else {
+                    tools.dLog('OK', 'Facturation', 'factureGameFree', 200, null, results);
+                }
+            });
         }
-      });
-    }
-  });
+    });
 };

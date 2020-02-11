@@ -1,53 +1,64 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
-var verifyToken = require('./verify');
-var verifyTokenAdmin = require('./verifyAdmin');
-var mysql = require('mysql');
-var fileUpload = require('express-fileupload');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+const verifyToken = require('./verify');
+const verifyTokenAdmin = require('./verifyAdmin');
+const mysql = require('mysql2');
+const fileUpload = require('express-fileupload');
 
-// Routes
-var loginRouter = require('./routes/auth/login');
-var helpRouter = require('./routes/help');
-var adminLoginRouter = require('./routes/adminPanel/login');
-var adminCreateRouter = require('./routes/adminPanel/create');
-var adminDashboardRouter = require('./routes/adminPanel/dashboard');
-var adminStatistiquesRouter = require('./routes/adminPanel/statistiques');
-var adminDeleteRouter = require('./routes/adminPanel/delete');
-var adminUpdateRouter = require('./routes/adminPanel/update');
-var logoutRouter = require('./routes/auth/logout');
-var tokensRouter = require('./routes/auth/tokens');
-var usersRouter = require('./routes/users');
-var dashRouter = require('./routes/dashboard');
-var compRouter = require('./routes/competences');
-var elevesRouter = require('./routes/eleves/eleves');
-var elevesStatsRouter = require('./routes/eleves/elevesStats');
-var trombiRouter = require('./routes/trombi');
-var ecoleRouter = require('./routes/ecole');
-var filesManagerRouter = require('./routes/filesManager/filesManager');
-var storeRouter = require('./routes/store/store');
-var notifsRouter = require('./routes/notifs');
-var gamesRouter = require('./routes/games/games');
-var playRouter = require('./routes/table/play');
-var gestLicencesRouter = require('./routes/table/licences/lic');
-var tablesRouter = require('./routes/table/tables');
-var gestAppsRouter = require('./routes/table/gestApps');
-var cnxTableRouter = require('./routes/table/cnxTable');
-var cnxTableRouter2 = require('./routes/table/cnxTable2');
-var cProfsRouter = require('./routes/classe/classeProfs');
-var classeRouter = require('./routes/classe/classe');
-var cEcoleRouter = require('./routes/classe/classeEcole');
-var cEleveRouter = require('./routes/classe/classeEleve');
-var gameDownload = require('./routes/gameDownload/gameDownload');
-var abonnementRouter = require('./routes/abonnement');
-var secureRouter = require('./routes/facturation/secure');
-var facturationRouter = require('./routes/facturation/gestFact');
-var stripeRouter = require('./routes/stripe/payments');
+const loginRouter = require('./routes/auth/login');
+const helpRouter = require('./routes/help');
+const adminLoginRouter = require('./routes/adminPanel/login');
+const adminCreateRouter = require('./routes/adminPanel/create');
+const adminCreatorsRouter = require('./routes/adminPanel/creators');
+const adminDashboardRouter = require('./routes/adminPanel/dashboard');
+const adminStatistiquesRouter = require('./routes/adminPanel/statistiques');
+const adminDeleteRouter = require('./routes/adminPanel/delete');
+const adminUpdateRouter = require('./routes/adminPanel/update');
+const tokensRouter = require('./routes/auth/tokens');
+const usersRouter = require('./routes/users');
+const dashRouter = require('./routes/dashboard');
+const compRouter = require('./routes/competences');
+const elevesRouter = require('./routes/eleves/eleves');
+const elevesStatsRouter = require('./routes/eleves/elevesStats');
+const trombiRouter = require('./routes/trombi');
+const ecoleRouter = require('./routes/ecole');
+const filesManagerRouter = require('./routes/filesManager/filesManager');
+const storeRouter = require('./routes/store/store');
+const notifsRouter = require('./routes/notifs');
+const gamesRouter = require('./routes/games/games');
+const playRouter = require('./routes/table/play');
+const gestLicencesRouter = require('./routes/table/licences/lic');
+const tablesRouter = require('./routes/table/tables');
+const gestAppsRouter = require('./routes/table/gestApps');
+const cnxTableRouter = require('./routes/table/cnxTable');
+const cnxTableRouter2 = require('./routes/table/cnxTable2');
+const cProfsRouter = require('./routes/classe/classeProfs');
+const classeRouter = require('./routes/classe/classe');
+const cEcoleRouter = require('./routes/classe/classeEcole');
+const cEleveRouter = require('./routes/classe/classeEleve');
+const gameDownload = require('./routes/gameDownload/gameDownload');
+const abonnementRouter = require('./routes/abonnement');
+const secureRouter = require('./routes/facturation/secure');
+const facturationRouter = require('./routes/facturation/gestFact');
+const stripeRouter = require('./routes/stripe/payments');
+const stripeHooksRouter = require('./routes/stripe/webhooks');
 
-var app = express();
+const app = express();
+
+const {
+  mysqlHost,
+  mysqlUser,
+  mysqlPassword,
+  mysqlDatabase,
+  mysqlQLimit,
+  mysqlCoLimit,
+  debugLogging,
+  dirname
+} = require('./config');
 
 app.all('*', function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -66,16 +77,21 @@ app.all('*', function(req, res, next) {
   }
 });
 
-var pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '*****',
-  database: '*****',
+var pool1 = mysql.createPool({
+  host: mysqlHost,
+  user: mysqlUser,
+  password: mysqlPassword,
+  database: mysqlDatabase,
   insecureAuth: true,
-  queueLimit: 0,
-  connectionLimit: 0
+  queueLimit: mysqlQLimit,
+  connectionLimit: mysqlCoLimit
 });
+const pool = pool1.promise();
+if (debugLogging === true) {
+  console.log(pool);
+}
 
+app.use(logger('dev'));
 app.use(
   fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 },
@@ -83,26 +99,27 @@ app.use(
   })
 );
 
-app.use('/', express.static(__dirname + '/public/apidoc'));
-app.use('/files/apps', express.static(__dirname + '/files/apps'));
-app.use('/files/eleves', express.static(__dirname + '/files/eleves'));
-app.use('/files/profs', express.static(__dirname + '/files/profs'));
-app.use('/files/fm', express.static(__dirname + '/files/fm'));
+app.use('/', express.static(dirname + '/public/apidoc'));
+app.use('/files/apps', express.static(dirname + '/files/apps'));
+app.use('/files/eleves', express.static(dirname + '/files/eleves'));
+app.use('/files/profs', express.static(dirname + '/files/profs'));
+app.use('/files/fm', express.static(dirname + '/files/fm'));
 
-app.use(bodyParser.json()); // to support JSON-encoded bodies
+app.use('/hooks/stripeHooks', bodyParser.raw({ type: '*/*' }));
+
+app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
-    // to support URL-encoded bodies
     extended: true
   })
 );
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(dirname, 'public')));
+
 app.use(function(req, res, next) {
   req.mysql = pool;
   next();
@@ -110,9 +127,9 @@ app.use(function(req, res, next) {
 
 app.use('/login', loginRouter);
 app.use('/admin/login', adminLoginRouter);
-app.use('/logout', logoutRouter);
 app.use('/cnxTable', cnxTableRouter);
 app.use('/tokens', tokensRouter);
+app.use('/hooks', stripeHooksRouter);
 app.use(verifyToken);
 app.use('/', gameDownload);
 app.use('/help', helpRouter);
@@ -142,23 +159,20 @@ app.use('/classes/ecole', cEcoleRouter);
 app.use('/stripe/payments', stripeRouter);
 app.use(verifyTokenAdmin);
 app.use('/admin/create', adminCreateRouter);
+app.use('/admin/creators', adminCreatorsRouter);
 app.use('/admin/dashboard', adminDashboardRouter);
 app.use('/admin/statistiques', adminStatistiquesRouter);
 app.use('/admin/delete', adminDeleteRouter);
 app.use('/admin/update', adminUpdateRouter);
 
-// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });

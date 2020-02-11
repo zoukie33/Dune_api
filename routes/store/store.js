@@ -1,7 +1,8 @@
 var express = require('express');
-var mysql = require('mysql');
+var mysql = require('mysql2');
 var router = express.Router();
 var doNotif = require('../../functions/notifications');
+var store = require('../../functions/store');
 var tools = require('../../functions/tools');
 var facturation = require('../../functions/facturation');
 
@@ -89,7 +90,7 @@ router.post('/', function(req, res, next) {
  *            "nomCreator": "test",
  *            "picPath": "1-app.png",
  *            "path": "NULL",
- *            "prix": "400euros",
+ *            "prix": "50euros",
  *            "nb_joueurs": 4,
  *            "current_version": "1.0",
  *            "niveau": 2
@@ -99,10 +100,17 @@ router.post('/', function(req, res, next) {
  */
 
 router.post('/getApp', function(req, res, next) {
+  if (store.isFreeApps(req, req.currUser.idEcole)) {
+    console.log('FODID');
+  } else {
+    console.log('NOT FODID');
+  }
   var idApp = req.body.idApp;
   if (idApp) {
     req.mysql.query(
-      'SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path, g.prix, g.nb_joueurs, g.current_version, g.niveau, g.description FROM d_games AS g, d_creator as c WHERE g.creator = c.idCreator AND g.id = ' +
+      'SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path, g.prix, g.nb_joueurs, g.current_version, g.niveau, g.description ' +
+        'FROM d_games AS g, d_creator as c ' +
+        'WHERE g.creator = c.idCreator AND g.id = ' +
         idApp,
       function(error, results, fields) {
         if (error) {
@@ -153,7 +161,9 @@ router.get('/getAppsEcole', function(req, res, next) {
   var idEcole = req.currUser.idEcole;
   if (idEcole) {
     req.mysql.query(
-      'SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path FROM d_games AS g, d_gamesAppEcole AS ga, d_creator as c WHERE g.id = ga.idGame AND g.creator = c.idCreator AND ga.idEcole = ' +
+      'SELECT g.id, g.name as "nomApp", c.nom as "nomCreator", g.picPath, g.path ' +
+        'FROM d_games AS g, d_gamesAppEcole AS ga, d_creator as c ' +
+        'WHERE g.id = ga.idGame AND g.creator = c.idCreator AND ga.idEcole = ' +
         idEcole,
       function(error, results, fields) {
         if (error) {
@@ -197,7 +207,9 @@ router.get('/getAppStatus/:idApp', function(req, res, next) {
   var idApp = req.params.idApp;
   if (idEcole && idApp) {
     req.mysql.query(
-      'SELECT * FROM d_gamesAppEcole AS ga WHERE ga.idGame = ' +
+      'SELECT ga.* ' +
+        'FROM d_gamesAppEcole AS ga ' +
+        'WHERE ga.idGame = ' +
         idApp +
         ' AND ga.idEcole = ' +
         idEcole,
@@ -218,17 +230,42 @@ router.get('/getAppStatus/:idApp', function(req, res, next) {
               JSON.stringify({ status: 200, error: null, appStatus: '1' })
             );
           } else {
-            tools.dLog(
-              'OK',
-              'Store',
-              'getAppStatus',
-              200,
-              null,
-              '"appStatus": "0"'
-            );
-            res.send(
-              JSON.stringify({ status: 200, error: null, appStatus: '0' })
-            );
+            let query_apps_left =
+              'SELECT (a.nb_app - ae.nb_app) AS free_apps_left ' +
+              'FROM d_abonnement a ' +
+              'INNER JOIN d_abonnement_ecole ae ON ae.id_abonnement=a.id_Abonnement ' +
+              'WHERE ae.id_ecole=' +
+              idEcole;
+            req.mysql.query(query_apps_left, function(error, results, fields) {
+              if (error) {
+                tools.dSend(
+                  res,
+                  'NOK',
+                  'Store',
+                  'getAppStatus',
+                  500,
+                  error,
+                  null
+                );
+              } else {
+                tools.dLog(
+                  'OK',
+                  'Store',
+                  'getAppStatus',
+                  200,
+                  null,
+                  '"appStatus": "0", "apps_left":' + results[0].free_apps_left
+                );
+                res.send(
+                  JSON.stringify({
+                    status: 200,
+                    error: null,
+                    appStatus: '0',
+                    apps_left: results[0].free_apps_left
+                  })
+                );
+              }
+            });
           }
         }
       }
@@ -373,14 +410,15 @@ router.post('/buyApp', function(req, res, next) {
 });
 
 /**
- * @api {post} /store/buyAppDirecteur Buying directly an App
- * @apiName buyAppDirecteur
+ * @api {post} /store/buyAppFree Buying directly an App for free
+ * @apiName buyAppFree
  * @apiGroup Store
  * @apiPermission Logged + Director
  * @apiVersion 1.0.0
  *
  * @apiParam {Int} idApp Id de l'application a acheter.
- * @apiDescription Route permettant l'achat d'une application sans vérification nécessaire.
+ * @apiDescription Route permettant l'achat d'une application sans vérification nécessaire. Cette route n'est appelee que dans le cas ou
+ * il reste des applications gratuites dans l'abonnement de l'école. Sinon, c'est la route createCheckoutPayment qui est utilisee pour le paiement via stripe.
  * @apiSuccessExample Success-Response:
  * {
  *     "status": 200,
@@ -398,7 +436,7 @@ router.post('/buyApp', function(req, res, next) {
  * }
  */
 
-router.post('/buyAppDirecteur', function(req, res, next) {
+router.post('/buyAppFree', function(req, res, next) {
   var idApp = req.body.idApp;
   var idEcole = req.currUser.idEcole;
   var query =
@@ -428,7 +466,8 @@ router.post('/buyAppDirecteur', function(req, res, next) {
               null
             );
           } else {
-            facturation.factureGame(req, res, idApp, idEcole);
+            facturation.factureGameFree(req, res, idApp, idEcole);
+            store.updateAppCount(req, idEcole); //on met a jour le nbr d'app dont l'ecole peut envore beneficier gratos
             tools.dSend(
               res,
               'OK',
@@ -520,11 +559,9 @@ router.get('/typesGames', function(req, res, next) {
  */
 
 router.post('/validating', function(req, res, next) {
-  var typeUser = req.currUser.typeUser;
-  var idDemande = req.body.idDemande;
-  var validate = req.body.validate;
-
-  console.log(validate);
+  let typeUser = req.currUser.typeUser;
+  let idDemande = req.body.idDemande;
+  let validate = req.body.validate;
 
   if (typeUser && idDemande && validate) {
     if (typeUser == 2) {
@@ -548,49 +585,28 @@ router.post('/validating', function(req, res, next) {
         tools.dSend(res, 'NOK', 'Store', 'Validating', 500, error, null);
       } else {
         if (validate == 1) {
-          var query =
-            "INSERT INTO d_gamesAppEcole (idGame, idEcole) VALUES ('" +
-            results1[0].idGame +
-            "', '" +
-            results1[0].idEcole +
-            "')";
           var query2 =
             "UPDATE d_demandeAchatGame SET isAccepted = '1' WHERE idDemande = " +
             idDemande;
-          req.mysql.query(query, function(error, results, fields) {
+          req.mysql.query(query2, function(error, results2, fields) {
             if (error) {
               tools.dSend(res, 'NOK', 'Store', 'Validating', 500, error, null);
             } else {
-              req.mysql.query(query2, function(error, results2, fields) {
-                if (error) {
-                  tools.dSend(
-                    res,
-                    'NOK',
-                    'Store',
-                    'Validating',
-                    500,
-                    error,
-                    null
-                  );
-                } else {
-                  console.log('FAIS TA NOTIF');
-                  doNotif.createPoolNotif(
-                    req,
-                    idDemande,
-                    1,
-                    "Votre demande d'achat a été validée par le directeur."
-                  );
-                  tools.dSend(
-                    res,
-                    'OK',
-                    'Store',
-                    'Validating',
-                    200,
-                    null,
-                    results
-                  );
-                }
-              });
+              doNotif.createPoolNotif(
+                req,
+                idDemande,
+                1,
+                "Votre demande d'achat a été validée par le directeur."
+              );
+              tools.dSend(
+                res,
+                'OK',
+                'Store',
+                'Validating',
+                200,
+                null,
+                results2
+              );
             }
           });
         } else {
@@ -617,7 +633,7 @@ router.post('/validating', function(req, res, next) {
                 'Validating',
                 200,
                 null,
-                results1
+                results2
               );
             }
           });
@@ -661,10 +677,10 @@ router.post('/addAvis', function(req, res, next) {
 
   let idAvis;
   var query = 'INSERT INTO ?? SET ?';
-  var table = ['d_gamesAvis'];
+  var table = ['d_gamesAvis', postData];
   query = mysql.format(query, table);
 
-  req.mysql.query(query, postData, function(error, results, fields) {
+  req.mysql.query(query, function(error, results, fields) {
     if (error) {
       tools.dSend(res, 'NOK', 'Avis', 'add', 500, error, null);
     } else {
@@ -862,5 +878,4 @@ router.put('/updateUserAvis', function(req, res, next) {
     }
   });
 });
-
 module.exports = router;
